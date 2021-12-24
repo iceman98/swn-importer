@@ -10,6 +10,7 @@ const HEX_RADIUS = 100;
 const HEX_WIDTH = 2 * HEX_RADIUS;
 const HEX_HEIGHT = 2 * ((-1 * ((HEX_RADIUS / 2) ** 2 - HEX_RADIUS ** 2)) ** 0.5);
 const HEX_VERTICAL_RADIUS = HEX_HEIGHT / 2;
+const ORBITING_DISTANCE = 0.5 * HEX_RADIUS;
 
 export class Importer {
 
@@ -21,7 +22,7 @@ export class Importer {
 
     importFile() {
         fetch(this.fileName).then(str => str.json()).then(d => {
-            const data: SectorData = {
+            const sectorData: SectorData = {
                 asteroidBase: new Map(d.asteroidBase),
                 asteroidBelt: new Map(d.asteroidBelt),
                 blackHole: new Map(d.blackHole),
@@ -38,7 +39,30 @@ export class Importer {
                 spaceStation: new Map(d.spaceStation),
                 system: new Map(d.system)
             };
-            this.processSector(data);
+
+            this.preprocessEntity(sectorData, 'asteroidBase');
+            this.preprocessEntity(sectorData, 'asteroidBelt');
+            this.preprocessEntity(sectorData, 'blackHole');
+            this.preprocessEntity(sectorData, 'deepSpaceStation');
+            this.preprocessEntity(sectorData, 'gasGiantMine');
+            this.preprocessEntity(sectorData, 'moon');
+            this.preprocessEntity(sectorData, 'moonBase');
+            this.preprocessEntity(sectorData, 'orbitalRuin');
+            this.preprocessEntity(sectorData, 'planet');
+            this.preprocessEntity(sectorData, 'refuelingStation');
+            this.preprocessEntity(sectorData, 'researchBase');
+            this.preprocessEntity(sectorData, 'spaceStation');
+            this.preprocessEntity(sectorData, 'system');
+
+            this.processSector(sectorData);
+        });
+    }
+
+    preprocessEntity(sectorData: SectorData, type: keyof SectorData) {
+        const entities = (<Map<string, BaseEntity>>sectorData[type]).entries();
+        entities.forEach(e => {
+            e.value.id = e.key;
+            e.value.type = type;
         });
     }
 
@@ -74,7 +98,7 @@ export class Importer {
     createScene(sectorData: SectorData, journals): Promise<Scene | null> {
         const sector = sectorData.sector.entries()[0];
 
-        const notes: Note.Data[] = this.getEntityNotes(sectorData, journals);
+        const notes: Note.Data[] = this.getSectorNotes(sectorData, journals);
 
         const sceneData: Partial<Scene.Data> = {
             active: true,
@@ -88,7 +112,7 @@ export class Importer {
             gridUnits: "units",
             height: this.getSceneHeight(sector.value.rows),
             img: "modules/swn-importer/images/starField.png",
-            name: `Sector ${sector.value.name} ${(new Date()).getTime()}`,
+            name: `Sector ${sector.value.name}`,
             padding: 0,
             notes: notes,
             width: this.getSceneWidth(sector.value.columns)
@@ -97,25 +121,188 @@ export class Importer {
         return Scene.create(sceneData);
     }
 
-    getEntityNotes(sectorData: SectorData, journals: JournalEntry[]): Note.Data[] {
+    getSectorNotes(sectorData: SectorData, journals: JournalEntry[]): Note.Data[] {
         const notes: Note.Data[] = [];
 
-        notes.push(...this.createEntityNotes(sectorData, 'system', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'blackHole', journals));
+        const groupedEntities = this.getGroupedEntities(sectorData);
 
-        notes.push(...this.createEntityNotes(sectorData, 'asteroidBase', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'asteroidBelt', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'deepSpaceStation', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'gasGiantMine', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'moon', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'moonBase', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'orbitalRuin', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'planet', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'refuelingStation', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'researchBase', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'spaceStation', journals));
+        groupedEntities.forEach((k, v) => {
+            const system = this.getSystemById(sectorData, k);
+            if (system) {
+                notes.push(...this.getSystemNotes(system, journals, v));
+            }
+        });
 
         return notes;
+    }
+
+    getSystemNotes(system: PositionedEntity, journals: JournalEntry[], entities: BaseEntity[]): Note.Data[] {
+        const notes: Note.Data[] = [];
+
+        console.log("Importer", system, entities);
+
+        const systemNote = this.createEntityNote(system, journals);
+        if (systemNote) {
+            notes.push(systemNote);
+        }
+
+        for (let entityIndex = 0; entityIndex < entities.length; entityIndex++) {
+            const note = this.createEntityNote(system, journals, entities[entityIndex], entities.length, entityIndex);
+            if (note) {
+                notes.push(note);
+            }
+        }
+
+        return notes;
+    }
+
+    getSystemById(sectorData: SectorData, k: string): PositionedEntity | null {
+        const entities: PositionedEntity[] = [];
+        entities.push(...sectorData.system.values());
+        entities.push(...sectorData.blackHole.values());
+        const entity = entities.filter(e => e.id === k);
+        if (entity.length) {
+            return entity[0];
+        } else {
+            return null;
+        }
+    }
+
+    getGroupedEntities(sectorData: SectorData): Map<string, BaseEntity[]> {
+        const sectorMap = new Map<string, BaseEntity[]>({});
+
+        sectorData.system.forEach((k, _) => {
+            sectorMap.put(k, []);
+        });
+
+        sectorData.blackHole.forEach((k, _) => {
+            sectorMap.put(k, []);
+        });
+
+        sectorData.asteroidBase.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.asteroidBelt.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.deepSpaceStation.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.gasGiantMine.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.moon.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.moonBase.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.orbitalRuin.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.planet.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.refuelingStation.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.researchBase.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        sectorData.spaceStation.forEach((_, v) => {
+            const systemId = this.getContainingSystemId(sectorData, v);
+            if (systemId) {
+                sectorMap.get(systemId).push(v);
+            }
+        });
+
+        const result = new Map<string, BaseEntity[]>({});
+        sectorMap.forEach((k, v) => {
+            result.put(k, this.getSortedEntityArray(v));
+        });
+
+        return result;
+    }
+
+    getSortedEntityArray(entities: BaseEntity[]): BaseEntity[] {
+        const result: BaseEntity[] = [];
+
+        entities.filter(ab => ab.type === 'asteroidBelt').forEach(ab => {
+            result.push(ab);
+            entities.filter(b => b.type === 'asteroidBase' && b.parent === ab.id).forEach(b => result.push(b));
+            entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === ab.id).forEach(rs => result.push(rs));
+        });
+
+        entities.filter(p => p.type === 'planet').forEach(p => {
+            result.push(p);
+            entities.filter(m => m.type === 'moon' && m.parent === p.id).forEach(m => {
+                result.push(m);
+                entities.filter(mb => mb.type === 'moonBase' && mb.parent === m.id).forEach(mb => result.push(mb));
+                entities.filter(or => or.type === 'orbitalRuin' && or.parent === m.id).forEach(or => result.push(or));
+                entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === m.id).forEach(rs => result.push(rs));
+                entities.filter(rb => rb.type === 'researchBase' && rb.parent === m.id).forEach(rb => result.push(rb));
+            });
+            entities.filter(ggm => ggm.type === 'gasGiantMine' && ggm.parent === p.id).forEach(ggm => result.push(ggm));
+            entities.filter(or => or.type === 'orbitalRuin' && or.parent === p.id).forEach(or => result.push(or));
+            entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === p.id).forEach(rs => result.push(rs));
+            entities.filter(rb => rb.type === 'researchBase' && rb.parent === p.id).forEach(rb => result.push(rb));
+            entities.filter(ss => ss.type === 'spaceStation' && ss.parent === p.id).forEach(ss => result.push(ss));
+        });
+
+        entities.filter(rs => rs.type === 'refuelingStation' && rs.parentEntity === 'system').forEach(rs => result.push(rs));
+        entities.filter(rs => rs.type === 'refuelingStation' && rs.parentEntity === 'blackHole').forEach(rs => result.push(rs));
+
+        entities.filter(rb => rb.type === 'researchBase' && rb.parentEntity === 'system').forEach(rs => result.push(rs));
+        entities.filter(rb => rb.type === 'researchBase' && rb.parentEntity === 'blackHole').forEach(rs => result.push(rs));
+
+        entities.filter(dss => dss.type === 'deepSpaceStation' && dss.parentEntity === 'system').forEach(dss => result.push(dss));
+        entities.filter(dss => dss.type === 'deepSpaceStation' && dss.parentEntity === 'blackHole').forEach(dss => result.push(dss));
+
+        if (result.length != entities.length) {
+            throw new Error("Some entity is not linked with its parent");
+        }
+
+        return result;
     }
 
     getSceneWidth(columns: number): number {
@@ -126,30 +313,26 @@ export class Importer {
         return Math.floor((rows + 1) * HEX_HEIGHT);
     }
 
-    createEntityNotes(sectorData: SectorData, type: keyof SectorData, journals: JournalEntry[]): Note.Data[] {
-        const entities = <Map<string, BaseEntity>>sectorData[type];
+    createEntityNote(parentEntity: PositionedEntity, journals: JournalEntry[], entity?: BaseEntity, entityCount?: number, entityIndex?: number): Note.Data | null {
+        const iconPosition = this.getIconPosition(parentEntity, entityCount, entityIndex);
 
-        const notes = entities.entries().map(e => {
-            const iconData = this.getIconPosition(sectorData, type, e.value);
+        if (iconPosition) {
+            const note: any = {
+                entryId: entity ? this.getJournalEntry(journals, entity.id) : null,
+                x: iconPosition.x,
+                y: iconPosition.y,
+                icon: this.getEntityIcon(entity ? entity.type : parentEntity.type),
+                iconSize: 32,
+                text: entity ? entity.name : parentEntity.name,
+                //flags: { "swn-importer.id": e.key, "swn-importer.type": type }
+            };
 
-            if (iconData) {
-                const note: any = {
-                    entryId: this.getJournalEntry(journals, e.key),
-                    x: iconData.x,
-                    y: iconData.y,
-                    icon: this.getEntityIcon(type),
-                    iconSize: 32,
-                    text: e.value.name,
-                    //flags: { "swn-importer.id": e.key, "swn-importer.type": type }
-                };
+            console.log("Importer", note);
 
-                return note;
-            } else {
-                return null;
-            }
-        }).filter(n => n != null);
-
-        return notes;
+            return note;
+        } else {
+            return null;
+        }
     }
 
     getJournalEntry(journals: JournalEntry[], key: string): string | null {
@@ -190,38 +373,17 @@ export class Importer {
         }
     }
 
-    getEntityOffset(type: keyof SectorData): { horizontal: number, vertical: number } {
-        switch (type) {
-            case 'system':
-                return { horizontal: 0, vertical: 0 };
-            case 'blackHole':
-                return { horizontal: 0, vertical: 0 };
-            default:
-                return { horizontal: 50, vertical: 0 };
-        }
-    }
+    getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): { x: number; y: number; } | null {
+        const column = parentEntity.x - 1;
+        const row = parentEntity.x - 1;
 
-    getIconPosition(sectorData: SectorData, type: keyof SectorData, entity: BaseEntity): { x: number; y: number; } | null {
-        let row: number;
-        let column: number;
+        let offset: { horizontal: number, vertical: number };
 
-        sectorData; // TODO: remove
-
-        if ('x' in entity) {
-            const positionedEntity = <PositionedEntity>entity;
-            column = positionedEntity.x - 1;
-            row = positionedEntity.y - 1;
+        if (entityCount && entityIndex) {
+            offset = this.getEntityOffset(entityCount, entityIndex);
         } else {
-            const system = this.getContainingSystem(sectorData, entity);
-            if (system) {
-                column = system.x - 1;
-                row = system.y - 1;
-            } else {
-                return null;
-            }
+            offset = { horizontal: 0, vertical: 0 };
         }
-
-        const offset = this.getEntityOffset(type);
 
         if (column % 2 == 0) {
             offset.vertical += HEX_VERTICAL_RADIUS;
@@ -231,6 +393,16 @@ export class Importer {
             x: Math.floor(((3 / 4) * HEX_WIDTH * column) + HEX_RADIUS + offset.horizontal),
             y: Math.floor((HEX_HEIGHT * row) + HEX_VERTICAL_RADIUS + offset.vertical)
         };
+    }
+
+    getEntityOffset(entityCount: number, entityIndex: number): { horizontal: number, vertical: number } {
+        const step = (2 * Math.PI) / entityCount;
+        const angle = entityIndex * step;
+
+        const x = Math.cos(angle) * ORBITING_DISTANCE;
+        const y = Math.sin(angle) * ORBITING_DISTANCE;
+
+        return { horizontal: x, vertical: y };
     }
 
     getContainingSystem(sectorData: SectorData, entity: BaseEntity): PositionedEntity | null {
@@ -400,7 +572,7 @@ export class Importer {
 
     createSectorJournalFolder(sectorData: SectorData): Promise<Folder | null> {
         const sector = sectorData.sector.entries()[0];
-        const sectorName = `Sector - ${sector.value.name} ${(new Date()).getTime()}`;
+        const sectorName = `Sector - ${sector.value.name}`;
         return Folder.create({ name: sectorName, type: "JournalEntry", flags: { id: sector.key, type: 'sector' } });
     }
 
