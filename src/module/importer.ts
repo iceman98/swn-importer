@@ -1,15 +1,26 @@
 import { SectorData } from './model/sector-data';
 import { BaseEntity } from './model/base-entity';
 import { Map } from './model/map';
+import { PlanetAttributes } from './model/planet-attributes';
+import { Attributes } from './model/attributes';
+import { PositionedEntity } from './model/positioned-entity';
 
 const MODULE_NAME = 'swn-importer';
-// const HEX_RADIUS = 100;
-// const HEX_WIDTH = 2 * HEX_RADIUS;
-// const HEX_HEIGHT = 2 * Utils.sqrt(-1 * ((HEX_RADIUS / 2) ** 2 - HEX_RADIUS ** 2));
+const HEX_RADIUS = 100;
+const HEX_WIDTH = 2 * HEX_RADIUS;
+const HEX_HEIGHT = 2 * ((-1 * ((HEX_RADIUS / 2) ** 2 - HEX_RADIUS ** 2)) ** 0.5);
+const HEX_VERTICAL_RADIUS = HEX_HEIGHT / 2;
 
 export class Importer {
-    importFile(fileName: string) {
-        fetch(fileName).then(str => str.json()).then(d => {
+
+    constructor(private fileName: string) {
+        game.folders?.forEach(f => f.delete());
+        game.journal?.forEach(j => j.delete());
+        game.scenes?.forEach(s => s.delete());
+    }
+
+    importFile() {
+        fetch(this.fileName).then(str => str.json()).then(d => {
             const data: SectorData = {
                 asteroidBase: new Map(d.asteroidBase),
                 asteroidBelt: new Map(d.asteroidBelt),
@@ -32,92 +43,230 @@ export class Importer {
     }
 
     processSector(sectorData: SectorData) {
-        // const sector = sectorData.sector.values()[0];
+        const holder: {
+            sectorJournalFolder?: Folder | null,
+            systemJournalFolders?: Folder[],
+            entityJournals?: JournalEntry[],
+            scene?: Scene | null
+        } = {};
 
-        this.createFolders(sectorData).then(fs => this.createJournals(sectorData, fs));
-
-        // const sceneData: Partial<Scene.Data> = {
-        //     name: sector.name,
-        //     active: true,
-        //     navigation: false,
-        //     gridType: CONST.GRID_TYPES.HEXODDQ,
-        //     grid: HEX_WIDTH,
-        //     gridDistance: 1,
-        //     gridUnits: "spaces",
-        //     width: Utils.getMapWidth(sector.columns, HEX_WIDTH),
-        //     height: Utils.getMapHeight(sector.rows, HEX_HEIGHT),
-        //     padding: 0,
-        //     notes: this.getNotes(sectorData),
-        //     img: `modules/${MODULE_NAME}/images/starfield.png`,
-        //     gridColor: "#aaaaaa",
-        //     gridAlpha: 0.6,
-        //     backgroundColor: "#000000",
-        // };
-        // Scene.create(sceneData);
+        Promise.resolve(sectorData)
+            .then(d => {
+                return this.createSectorJournalFolder(d)
+            })
+            .then(f => {
+                holder.sectorJournalFolder = f;
+                return this.createSystemJournalFolders(sectorData, f);
+            })
+            .then(sf => {
+                holder.systemJournalFolders = sf;
+                return this.createJournals(sectorData, sf);
+            })
+            .then(js => {
+                holder.entityJournals = js;
+                return this.createScene(sectorData, js);
+            })
+            .then(s => {
+                holder.scene = s;
+            });
     }
 
-    createJournals(sectorData: SectorData, fs: Folder | Folder[] | null): Promise<JournalEntry | JournalEntry[] | null> {
-        if (fs) {
-            const journals: Partial<JournalEntry.Data>[] = [];
-            const systems = fs instanceof Folder ? [fs] : fs;
+    createScene(sectorData: SectorData, journals): Promise<Scene | null> {
+        const sector = sectorData.sector.entries()[0];
 
-            this.createEntityJournals(sectorData, 'asteroidBase', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'asteroidBelt', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'deepSpaceStation', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'gasGiantMine', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'moon', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'moonBase', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'orbitalRuin', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'planet', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'refuelingStation', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'researchBase', systems).forEach(j => journals.push(j));
-            this.createEntityJournals(sectorData, 'spaceStation', systems).forEach(j => journals.push(j));
+        const notes: Note.Data[] = [];
+        notes.push(...this.createEntityNotes(sectorData, 'system', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'blackHole', journals));
 
-            return JournalEntry.create(journals);
-        } else {
-            return Promise.resolve(null);
+        const sceneData: Partial<Scene.Data> = {
+            active: true,
+            backgroundColor: "#000000",
+            flags: { "swn-importer.id": sector.key, "swn-importer.type": 'sector' },
+            grid: HEX_WIDTH,
+            gridAlpha: 0.6,
+            gridColor: "#aaaaaa",
+            gridDistance: 1,
+            gridType: CONST.GRID_TYPES.HEXODDQ,
+            gridUnits: "units",
+            height: this.getSceneHeight(sector.value.rows),
+            img: "modules/swn-importer/images/starfield.png",
+            name: `Sector ${sector.value.name} ${(new Date()).getTime()}`,
+            padding: 0,
+            notes: notes,
+            width: this.getSceneWidth(sector.value.columns)
+        };
+
+        return Scene.create(sceneData);
+    }
+
+    getSceneWidth(columns: number): number {
+        return Math.floor((((3 / 4) * HEX_WIDTH) * columns) + ((1 / 4) * HEX_WIDTH));
+    }
+
+    getSceneHeight(rows: number): number {
+        return Math.floor((rows + 1) * HEX_HEIGHT);
+    }
+
+    createEntityNotes(sectorData: SectorData, type: keyof SectorData, journals: JournalEntry[]): Note.Data[] {
+        const entities = <Map<string, BaseEntity>>sectorData[type];
+
+        journals.map;
+
+        const notes = entities.entries().map(e => {
+            const iconData: { x: number; y: number; } = this.getIconPosition(sectorData, type, e.value);
+
+            const note: any = {
+                entryId: this.getJournalEntry(journals, e.key),
+                x: iconData.x,
+                y: iconData.y,
+                icon: this.getEntityIcon(type),
+                iconSize: 32,
+                text: e.value.name,
+                //flags: { "swn-importer.id": e.key, "swn-importer.type": type }
+            };
+
+            return note;
+        });
+
+        return notes;
+    }
+
+    getJournalEntry(journals: JournalEntry[], key: string): string | null {
+        const journal = journals.filter(j => j.getFlag(MODULE_NAME, "id") === key);
+        return journal.length ? journal[0].id : null;
+    }
+
+    getEntityIcon(type: keyof SectorData): string | null {
+        switch (type) {
+            case 'system':
+                return "modules/swn-importer/images/sun.png";
+            case 'blackHole':
+                return "modules/swn-importer/images/blackhole.png";
+            default:
+                return null;
         }
     }
 
-    createEntityJournals(sectorData: SectorData, type: keyof SectorData, systemFolders: Folder[]): Partial<JournalEntry.Data>[] {
-        const journals: Partial<JournalEntry.Data>[] = [];
+    getEntityOffset(type: keyof SectorData): { horizontal: number, vertical: number } {
+        switch (type) {
+            case 'system':
+                return { horizontal: 0, vertical: 0 };
+            case 'blackHole':
+                return { horizontal: 0, vertical: 0 };
+            default:
+                return { horizontal: 0, vertical: 0 };
+        }
+    }
+
+    getIconPosition(sectorData: SectorData, type: keyof SectorData, entity: BaseEntity): { x: number; y: number; } {
+        let row: number;
+        let column: number;
+
+        sectorData; // TODO: remove
+
+        if ('x' in entity) {
+            const positionedEntity = <PositionedEntity>entity;
+            column = positionedEntity.x - 1;
+            row = positionedEntity.y - 1;
+        } else {
+            row = 0;
+            column = 0;
+        }
+
+        const offset = this.getEntityOffset(type);
+
+        if (column % 2 == 0) {
+            offset.vertical += HEX_VERTICAL_RADIUS;
+        }
+
+        return {
+            x: Math.floor(((3 / 4) * HEX_WIDTH * column) + HEX_RADIUS + offset.horizontal),
+            y: Math.floor((HEX_HEIGHT * row) + HEX_VERTICAL_RADIUS + offset.vertical)
+        };
+    }
+
+    createJournals(sectorData: SectorData, systems: Folder[]): Promise<JournalEntry[]> {
+        const promises: Promise<Partial<JournalEntry.Data>[]>[] = [];
+
+        promises.push(this.createEntityJournals(sectorData, 'asteroidBase', systems));
+        promises.push(this.createEntityJournals(sectorData, 'asteroidBelt', systems));
+        promises.push(this.createEntityJournals(sectorData, 'deepSpaceStation', systems));
+        promises.push(this.createEntityJournals(sectorData, 'gasGiantMine', systems));
+        promises.push(this.createEntityJournals(sectorData, 'moon', systems));
+        promises.push(this.createEntityJournals(sectorData, 'moonBase', systems));
+        promises.push(this.createEntityJournals(sectorData, 'orbitalRuin', systems));
+        promises.push(this.createEntityJournals(sectorData, 'planet', systems));
+        promises.push(this.createEntityJournals(sectorData, 'refuelingStation', systems));
+        promises.push(this.createEntityJournals(sectorData, 'researchBase', systems));
+        promises.push(this.createEntityJournals(sectorData, 'spaceStation', systems));
+
+        return Promise.all(promises).then(jaa => {
+            const journals: Partial<JournalEntry.Data>[] = [];
+            jaa.forEach(ja => {
+                ja.forEach(j => journals.push(j));
+            });
+            return JournalEntry.create(journals).then(js => js ? (js instanceof JournalEntry ? [js] : js) : []);
+        });
+    }
+
+    createEntityJournals(sectorData: SectorData, type: keyof SectorData, systemFolders: Folder[]): Promise<Partial<JournalEntry.Data>[]> {
         const entities = <Map<string, BaseEntity>>sectorData[type];
 
-        entities.forEach((k, v) => {
-            journals.push({
-                type: 'JournalEntry',
-                name: this.getJournalName(v, type),
-                content: this.getJournalContent(v, type),
-                folder: this.getContainingSystemFolder(sectorData, systemFolders, v),
-                flags: { "swn-importer.id": k, "swn-importer.type": type }
+        const promises = entities.entries().map(e => {
+            return new Promise<Partial<JournalEntry.Data>>(accept => {
+                this.getJournalContent(e.value, type).then(c => {
+                    const journal = {
+                        type: 'JournalEntry',
+                        name: this.getJournalName(e.value, type),
+                        folder: this.getContainingSystemFolder(sectorData, systemFolders, e.value),
+                        content: c,
+                        flags: { "swn-importer.id": e.key, "swn-importer.type": type }
+                    };
+                    accept(journal);
+                });
             });
         });
 
-        return journals;
+        return Promise.all(promises);
     }
 
     getContainingSystemFolder(sectorData: SectorData, systemFolders: Folder[], entity: BaseEntity): string | undefined {
         const systemId = this.getContainingSystemId(sectorData, entity);
         if (systemId) {
-            return systemFolders.filter(f => f.getFlag(MODULE_NAME, 'id') === systemId)[0].id;
+            const folder = systemFolders.filter(f => f.getFlag(MODULE_NAME, 'id') === systemId);
+            if (folder.length) {
+                return folder[0].id;
+            } else {
+                return undefined;
+            }
         } else {
             return undefined;
         }
     }
 
-    getJournalContent(entity: BaseEntity, type: keyof SectorData): string {
+    getJournalContent(entity: BaseEntity, type: keyof SectorData): Promise<string> {
         if ('atmosphere' in entity.attributes) {
             return this.getPlanetJournalContent(entity);
         } else {
-            const typeName = this.getTypeName(type);
-            return `This is a journal for the ${typeName} entity called ${entity.name}\n${JSON.stringify(entity)}`;
+            return this.getEntityJournalContent(entity, type);
         }
     }
 
-    getPlanetJournalContent(planet: BaseEntity): string {
-        // const attributes = <PlanetAttributes>planet.attributes;
-        //renderTemplate('static/templates/planet.html', { ...attributes, name: planet.name });
-        return `This is a journal for the Planet called ${planet.name}\n${JSON.stringify(planet)}`;
+    getEntityJournalContent(entity: BaseEntity, type: keyof SectorData): Promise<string> {
+        const attributes = <Attributes>entity.attributes;
+        return renderTemplate('modules/swn-importer/templates/entity.html', {
+            ...attributes,
+            name: entity.name,
+            type: this.getTypeName(type)
+        });
+    }
+
+    getPlanetJournalContent(planet: BaseEntity): Promise<string> {
+        const attributes = <PlanetAttributes>planet.attributes;
+        return renderTemplate('modules/swn-importer/templates/planet.html', {
+            ...attributes,
+            name: planet.name
+        });
     }
 
     getTypeName(type: keyof SectorData): string | null {
@@ -160,11 +309,7 @@ export class Importer {
         return `${typeName} - ${entity.name}`;
     }
 
-    createFolders(sectorData: SectorData) {
-        return this.createSectorJournalFolder(sectorData).then(f => this.createSystemJournalFolders(sectorData, f))
-    }
-
-    createSystemJournalFolders(sectorData: SectorData, parentFolder: Folder | null): Promise<Folder | Folder[] | null> {
+    createSystemJournalFolders(sectorData: SectorData, parentFolder: Folder | null): Promise<Folder[]> {
         if (parentFolder) {
             const folders: Partial<Folder.Data>[] = [];
 
@@ -188,16 +333,15 @@ export class Importer {
                 });
             });
 
-            return Folder.create(folders);
+            return Folder.create(folders).then(f => f ? (f instanceof Folder ? [f] : f) : []);
         } else {
-            return Promise.resolve(null);
+            return Promise.resolve([]);
         }
     }
 
     createSectorJournalFolder(sectorData: SectorData): Promise<Folder | null> {
         const sector = sectorData.sector.entries()[0];
-        const randomNumber = Math.floor(Math.random() * 100);
-        const sectorName = `Sector - ${sector.value.name} ${randomNumber}`;
+        const sectorName = `Sector - ${sector.value.name} ${(new Date()).getTime()}`;
         return Folder.create({ name: sectorName, type: "JournalEntry", flags: { id: sector.key, type: 'sector' } });
     }
 
