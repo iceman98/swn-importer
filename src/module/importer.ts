@@ -74,9 +74,7 @@ export class Importer {
     createScene(sectorData: SectorData, journals): Promise<Scene | null> {
         const sector = sectorData.sector.entries()[0];
 
-        const notes: Note.Data[] = [];
-        notes.push(...this.createEntityNotes(sectorData, 'system', journals));
-        notes.push(...this.createEntityNotes(sectorData, 'blackHole', journals));
+        const notes: Note.Data[] = this.getEntityNotes(sectorData, journals);
 
         const sceneData: Partial<Scene.Data> = {
             active: true,
@@ -89,7 +87,7 @@ export class Importer {
             gridType: CONST.GRID_TYPES.HEXODDQ,
             gridUnits: "units",
             height: this.getSceneHeight(sector.value.rows),
-            img: "modules/swn-importer/images/starfield.png",
+            img: "modules/swn-importer/images/starField.png",
             name: `Sector ${sector.value.name} ${(new Date()).getTime()}`,
             padding: 0,
             notes: notes,
@@ -97,6 +95,27 @@ export class Importer {
         };
 
         return Scene.create(sceneData);
+    }
+
+    getEntityNotes(sectorData: SectorData, journals: JournalEntry[]): Note.Data[] {
+        const notes: Note.Data[] = [];
+
+        notes.push(...this.createEntityNotes(sectorData, 'system', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'blackHole', journals));
+
+        notes.push(...this.createEntityNotes(sectorData, 'asteroidBase', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'asteroidBelt', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'deepSpaceStation', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'gasGiantMine', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'moon', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'moonBase', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'orbitalRuin', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'planet', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'refuelingStation', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'researchBase', journals));
+        notes.push(...this.createEntityNotes(sectorData, 'spaceStation', journals));
+
+        return notes;
     }
 
     getSceneWidth(columns: number): number {
@@ -110,23 +129,25 @@ export class Importer {
     createEntityNotes(sectorData: SectorData, type: keyof SectorData, journals: JournalEntry[]): Note.Data[] {
         const entities = <Map<string, BaseEntity>>sectorData[type];
 
-        journals.map;
-
         const notes = entities.entries().map(e => {
-            const iconData: { x: number; y: number; } = this.getIconPosition(sectorData, type, e.value);
+            const iconData = this.getIconPosition(sectorData, type, e.value);
 
-            const note: any = {
-                entryId: this.getJournalEntry(journals, e.key),
-                x: iconData.x,
-                y: iconData.y,
-                icon: this.getEntityIcon(type),
-                iconSize: 32,
-                text: e.value.name,
-                //flags: { "swn-importer.id": e.key, "swn-importer.type": type }
-            };
+            if (iconData) {
+                const note: any = {
+                    entryId: this.getJournalEntry(journals, e.key),
+                    x: iconData.x,
+                    y: iconData.y,
+                    icon: this.getEntityIcon(type),
+                    iconSize: 32,
+                    text: e.value.name,
+                    //flags: { "swn-importer.id": e.key, "swn-importer.type": type }
+                };
 
-            return note;
-        });
+                return note;
+            } else {
+                return null;
+            }
+        }).filter(n => n != null);
 
         return notes;
     }
@@ -141,9 +162,31 @@ export class Importer {
             case 'system':
                 return "modules/swn-importer/images/sun.png";
             case 'blackHole':
-                return "modules/swn-importer/images/blackhole.png";
+                return "modules/swn-importer/images/blackHole.png";
+            case 'asteroidBase':
+                return "modules/swn-importer/images/asteroidBase.png";
+            case 'asteroidBelt':
+                return "modules/swn-importer/images/asteroidBelt.png";
+            case 'moon':
+                return "modules/swn-importer/images/moon.png";
+            case 'planet':
+                return "modules/swn-importer/images/planet.png";
+            case 'gasGiantMine':
+                return "modules/swn-importer/images/gasGiant.png";
+            case 'researchBase':
+                return "modules/swn-importer/images/researchBase.png";
+            case 'refuelingStation':
+                return "modules/swn-importer/images/refuelingStation.png";
+            case 'spaceStation':
+                return "modules/swn-importer/images/spaceStation.png";
+            case 'moonBase':
+                return "modules/swn-importer/images/moonBase.png";
+            case 'deepSpaceStation':
+                return "modules/swn-importer/images/deepSpaceStation.png";
+            case 'orbitalRuin':
+                return "modules/swn-importer/images/orbitalRuin.png";
             default:
-                return null;
+                return CONST.DEFAULT_NOTE_ICON;
         }
     }
 
@@ -154,11 +197,11 @@ export class Importer {
             case 'blackHole':
                 return { horizontal: 0, vertical: 0 };
             default:
-                return { horizontal: 0, vertical: 0 };
+                return { horizontal: 50, vertical: 0 };
         }
     }
 
-    getIconPosition(sectorData: SectorData, type: keyof SectorData, entity: BaseEntity): { x: number; y: number; } {
+    getIconPosition(sectorData: SectorData, type: keyof SectorData, entity: BaseEntity): { x: number; y: number; } | null {
         let row: number;
         let column: number;
 
@@ -169,8 +212,13 @@ export class Importer {
             column = positionedEntity.x - 1;
             row = positionedEntity.y - 1;
         } else {
-            row = 0;
-            column = 0;
+            const system = this.getContainingSystem(sectorData, entity);
+            if (system) {
+                column = system.x - 1;
+                row = system.y - 1;
+            } else {
+                return null;
+            }
         }
 
         const offset = this.getEntityOffset(type);
@@ -183,6 +231,17 @@ export class Importer {
             x: Math.floor(((3 / 4) * HEX_WIDTH * column) + HEX_RADIUS + offset.horizontal),
             y: Math.floor((HEX_HEIGHT * row) + HEX_VERTICAL_RADIUS + offset.vertical)
         };
+    }
+
+    getContainingSystem(sectorData: SectorData, entity: BaseEntity): PositionedEntity | null {
+        const systemId = this.getContainingSystemId(sectorData, entity);
+        if (systemId) {
+            const system = sectorData.system.get(systemId);
+            const blackHole = sectorData.blackHole.get(systemId);
+            return system || blackHole;
+        } else {
+            return null;
+        }
     }
 
     createJournals(sectorData: SectorData, systems: Folder[]): Promise<JournalEntry[]> {
