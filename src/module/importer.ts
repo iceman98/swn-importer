@@ -78,11 +78,11 @@ export class Importer {
 
         const sceneData: Partial<Scene.Data> = {
             active: true,
-            backgroundColor: "#000000",
+            backgroundColor: "#01162c",
             flags: { "swn-importer.id": sector.key, "swn-importer.type": 'sector' },
             grid: HEX_WIDTH,
-            gridAlpha: 0.6,
-            gridColor: "#aaaaaa",
+            gridAlpha: 0.3,
+            gridColor: "#99caff",
             gridDistance: 1,
             gridType: CONST.GRID_TYPES.HEXODDQ,
             gridUnits: "units",
