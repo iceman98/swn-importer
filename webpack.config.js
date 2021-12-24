@@ -9,7 +9,7 @@ const glob = require("glob");
 const allTemplates = () => {
     return glob
         .sync("**/*.html", { cwd: path.join(__dirname, "static/templates") })
-        .map((file) => `"modules/template/templates/${file}"`)
+        .map((file) => `"modules/swn-importer/templates/${file}"`)
         .join(", ");
 };
 

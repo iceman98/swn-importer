@@ -1,11 +1,12 @@
 import { TemplatePreloader } from "./module/helper/TemplatePreloader";
+import { Importer } from './module/importer';
 
 Hooks.once("init", async () => {
     console.log("=============================HMR============================")
 });
 
 Hooks.once("ready", async () => {
-    
+    new Importer().importFile('/modules/swn-importer/argus-psi.json');
 });
 
 
