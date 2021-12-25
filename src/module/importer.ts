@@ -148,18 +148,16 @@ export class Importer {
     getSystemNotes(system: PositionedEntity, journals: JournalEntry[], entities: BaseEntity[]): Note.Data[] {
         const notes: Note.Data[] = [];
 
-        console.log("Importer", system, entities);
-
-        const systemNote = this.createEntityNote(system, journals);
-        if (systemNote) {
-            notes.push(systemNote);
-        }
-
         for (let entityIndex = 0; entityIndex < entities.length; entityIndex++) {
             const note = this.createEntityNote(system, journals, entities[entityIndex], entities.length, entityIndex);
             if (note) {
                 notes.push(note);
             }
+        }
+
+        const systemNote = this.createEntityNote(system, journals);
+        if (systemNote) {
+            notes.push(systemNote);
         }
 
         return notes;
@@ -333,11 +331,10 @@ export class Importer {
                 icon: this.getEntityIcon(entity ? entity.type : parentEntity.type),
                 iconSize: 32,
                 text: entity ? entity.name : parentEntity.name,
-                fontSize: 32
+                fontSize: 32,
+                textAnchor: iconPosition.tooltipPosition
                 //flags: { "swn-importer.id": e.key, "swn-importer.type": type }
             };
-
-            console.log("Importer", note);
 
             return note;
         } else {
@@ -383,16 +380,30 @@ export class Importer {
         }
     }
 
-    getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): { x: number; y: number; } | null {
+    getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): { x: number; y: number; tooltipPosition: number} | null {
         const column = parentEntity.x - 1;
         const row = parentEntity.y - 1;
 
-        let offset: { horizontal: number, vertical: number };
+        let offset: { horizontal: number, vertical: number } = { horizontal: 0, vertical: 0 };
+        let tooltipPosition: number = CONST.TEXT_ANCHOR_POINTS.CENTER;
 
         if (entityCount != undefined && entityIndex != undefined) {
-            offset = this.getEntityOffset(entityCount, entityIndex);
-        } else {
-            offset = { horizontal: 0, vertical: 0 };
+            const step = (2 * Math.PI) / entityCount;
+            const angle = entityIndex * step;
+
+            if (angle <= (1 / 4) * Math.PI) {
+                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.RIGHT;
+            } else if (angle <= (3 / 4) * Math.PI) {
+                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.BOTTOM;
+            } else if (angle <= (5 / 4) * Math.PI) {
+                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.LEFT;
+            } else if (angle <= (7 / 4) * Math.PI) {
+                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.TOP;
+            } else {
+                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.RIGHT;
+            }
+
+            offset = this.getEntityOffset(angle);
         }
 
         if (column % 2 == 0) {
@@ -401,14 +412,12 @@ export class Importer {
 
         return {
             x: Math.floor(((3 / 4) * HEX_WIDTH * column) + HEX_RADIUS + offset.horizontal),
-            y: Math.floor((HEX_HEIGHT * row) + HEX_VERTICAL_RADIUS + offset.vertical)
+            y: Math.floor((HEX_HEIGHT * row) + HEX_VERTICAL_RADIUS + offset.vertical),
+            tooltipPosition
         };
     }
 
-    getEntityOffset(entityCount: number, entityIndex: number): { horizontal: number, vertical: number } {
-        const step = (2 * Math.PI) / entityCount;
-        const angle = entityIndex * step;
-
+    getEntityOffset(angle): { horizontal: number, vertical: number } {
         const x = Math.cos(angle) * ORBITING_DISTANCE;
         const y = Math.sin(angle) * ORBITING_DISTANCE;
 
