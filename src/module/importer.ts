@@ -10,11 +10,12 @@ const HEX_RADIUS = 100;
 const HEX_WIDTH = 2 * HEX_RADIUS;
 const HEX_HEIGHT = 2 * ((-1 * ((HEX_RADIUS / 2) ** 2 - HEX_RADIUS ** 2)) ** 0.5);
 const HEX_VERTICAL_RADIUS = HEX_HEIGHT / 2;
-const ORBITING_DISTANCE = 0.5 * HEX_RADIUS;
+const ORBITING_DISTANCE = 0.65 * HEX_RADIUS;
 
 export class Importer {
 
     constructor(private fileName: string) {
+        // TODO: remove
         game.folders?.forEach(f => f.delete());
         game.journal?.forEach(j => j.delete());
         game.scenes?.forEach(s => s.delete());
@@ -126,15 +127,6 @@ export class Importer {
 
         const groupedEntities = this.getGroupedEntities(sectorData);
 
-        // const entries = groupedEntities.entries();
-        // for (let i = 0; i < entries.length; i++) {
-        //     if (i === 0) {
-        //         const system = this.getSystemById(sectorData, entries[i].key);
-        //         if (system) {
-        //             notes.push(...this.getSystemNotes(system, journals, entries[i].value));
-        //         }
-        //     }
-        // }
         groupedEntities.forEach((k, v) => {
             const system = this.getSystemById(sectorData, k);
             if (system) {
@@ -274,12 +266,6 @@ export class Importer {
     getSortedEntityArray(entities: BaseEntity[]): BaseEntity[] {
         const result: BaseEntity[] = [];
 
-        entities.filter(ab => ab.type === 'asteroidBelt').forEach(ab => {
-            result.push(ab);
-            entities.filter(b => b.type === 'asteroidBase' && b.parent === ab.id).forEach(b => result.push(b));
-            entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === ab.id).forEach(rs => result.push(rs));
-        });
-
         entities.filter(p => p.type === 'planet').forEach(p => {
             result.push(p);
             entities.filter(m => m.type === 'moon' && m.parent === p.id).forEach(m => {
@@ -290,10 +276,16 @@ export class Importer {
                 entities.filter(rb => rb.type === 'researchBase' && rb.parent === m.id).forEach(rb => result.push(rb));
             });
             entities.filter(ggm => ggm.type === 'gasGiantMine' && ggm.parent === p.id).forEach(ggm => result.push(ggm));
-            entities.filter(or => or.type === 'orbitalRuin' && or.parent === p.id).forEach(or => result.push(or));
             entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === p.id).forEach(rs => result.push(rs));
             entities.filter(rb => rb.type === 'researchBase' && rb.parent === p.id).forEach(rb => result.push(rb));
             entities.filter(ss => ss.type === 'spaceStation' && ss.parent === p.id).forEach(ss => result.push(ss));
+            entities.filter(or => or.type === 'orbitalRuin' && or.parent === p.id).forEach(or => result.push(or));
+        });
+
+        entities.filter(ab => ab.type === 'asteroidBelt').forEach(ab => {
+            result.push(ab);
+            entities.filter(b => b.type === 'asteroidBase' && b.parent === ab.id).forEach(b => result.push(b));
+            entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === ab.id).forEach(rs => result.push(rs));
         });
 
         entities.filter(rs => rs.type === 'refuelingStation' && rs.parentEntity === 'system').forEach(rs => result.push(rs));
