@@ -16,47 +16,51 @@ export class Importer {
 
     constructor(private fileName: string) {
         // TODO: remove
-        game.folders?.forEach(f => f.delete());
-        game.journal?.forEach(j => j.delete());
-        game.scenes?.forEach(s => s.delete());
+        if (game.user?.isGM) {
+            game.folders?.forEach(f => f.delete());
+            game.journal?.forEach(j => j.delete());
+            game.scenes?.forEach(s => s.delete());
+        }
     }
 
     importFile() {
-        fetch(this.fileName).then(str => str.json()).then(d => {
-            const sectorData: SectorData = {
-                asteroidBase: new Map(d.asteroidBase),
-                asteroidBelt: new Map(d.asteroidBelt),
-                blackHole: new Map(d.blackHole),
-                deepSpaceStation: new Map(d.deepSpaceStation),
-                gasGiantMine: new Map(d.gasGiantMine),
-                moon: new Map(d.moon),
-                moonBase: new Map(d.moonBase),
-                note: null,
-                orbitalRuin: new Map(d.orbitalRuin),
-                planet: new Map(d.planet),
-                refuelingStation: new Map(d.refuelingStation),
-                researchBase: new Map(d.researchBase),
-                sector: new Map(d.sector),
-                spaceStation: new Map(d.spaceStation),
-                system: new Map(d.system)
-            };
+        if (game.user?.isGM) {
+            fetch(this.fileName).then(str => str.json()).then(d => {
+                const sectorData: SectorData = {
+                    asteroidBase: new Map(d.asteroidBase),
+                    asteroidBelt: new Map(d.asteroidBelt),
+                    blackHole: new Map(d.blackHole),
+                    deepSpaceStation: new Map(d.deepSpaceStation),
+                    gasGiantMine: new Map(d.gasGiantMine),
+                    moon: new Map(d.moon),
+                    moonBase: new Map(d.moonBase),
+                    note: null,
+                    orbitalRuin: new Map(d.orbitalRuin),
+                    planet: new Map(d.planet),
+                    refuelingStation: new Map(d.refuelingStation),
+                    researchBase: new Map(d.researchBase),
+                    sector: new Map(d.sector),
+                    spaceStation: new Map(d.spaceStation),
+                    system: new Map(d.system)
+                };
 
-            this.preprocessEntity(sectorData, 'asteroidBase');
-            this.preprocessEntity(sectorData, 'asteroidBelt');
-            this.preprocessEntity(sectorData, 'blackHole');
-            this.preprocessEntity(sectorData, 'deepSpaceStation');
-            this.preprocessEntity(sectorData, 'gasGiantMine');
-            this.preprocessEntity(sectorData, 'moon');
-            this.preprocessEntity(sectorData, 'moonBase');
-            this.preprocessEntity(sectorData, 'orbitalRuin');
-            this.preprocessEntity(sectorData, 'planet');
-            this.preprocessEntity(sectorData, 'refuelingStation');
-            this.preprocessEntity(sectorData, 'researchBase');
-            this.preprocessEntity(sectorData, 'spaceStation');
-            this.preprocessEntity(sectorData, 'system');
+                this.preprocessEntity(sectorData, 'asteroidBase');
+                this.preprocessEntity(sectorData, 'asteroidBelt');
+                this.preprocessEntity(sectorData, 'blackHole');
+                this.preprocessEntity(sectorData, 'deepSpaceStation');
+                this.preprocessEntity(sectorData, 'gasGiantMine');
+                this.preprocessEntity(sectorData, 'moon');
+                this.preprocessEntity(sectorData, 'moonBase');
+                this.preprocessEntity(sectorData, 'orbitalRuin');
+                this.preprocessEntity(sectorData, 'planet');
+                this.preprocessEntity(sectorData, 'refuelingStation');
+                this.preprocessEntity(sectorData, 'researchBase');
+                this.preprocessEntity(sectorData, 'spaceStation');
+                this.preprocessEntity(sectorData, 'system');
 
-            this.processSector(sectorData);
-        });
+                this.processSector(sectorData);
+            });
+        }
     }
 
     preprocessEntity(sectorData: SectorData, type: keyof SectorData) {
@@ -324,7 +328,8 @@ export class Importer {
                 iconSize: 32,
                 text: entity ? entity.name : parentEntity.name,
                 fontSize: 32,
-                textAnchor: iconPosition.tooltipPosition
+                textAnchor: iconPosition.tooltipPosition,
+                iconTint: this.getIconTint(entity ? entity.type : parentEntity.type)
                 //flags: { "swn-importer.id": e.key, "swn-importer.type": type }
             };
 
@@ -332,6 +337,68 @@ export class Importer {
         } else {
             return null;
         }
+    }
+
+    getIconTint(type: keyof SectorData): string {
+        switch (type) {
+            // case 'system':
+            //     return this.getRandomColor("#fff4ae", 128);
+            // case 'blackHole':
+            //     return "modules/swn-importer/images/blackHole.png";
+            // case 'asteroidBase':
+            //     return "modules/swn-importer/images/asteroidBase.png";
+            // case 'asteroidBelt':
+            //     return "modules/swn-importer/images/asteroidBelt.png";
+            // case 'moon':
+            //     return "modules/swn-importer/images/moon.png";
+            // case 'planet':
+            //     return this.getRandomColor("#4168fb", 128);
+            // case 'gasGiantMine':
+            //     return "modules/swn-importer/images/gasGiant.png";
+            // case 'researchBase':
+            //     return "modules/swn-importer/images/researchBase.png";
+            // case 'refuelingStation':
+            //     return "modules/swn-importer/images/refuelingStation.png";
+            // case 'spaceStation':
+            //     return "modules/swn-importer/images/spaceStation.png";
+            // case 'moonBase':
+            //     return "modules/swn-importer/images/moonBase.png";
+            // case 'deepSpaceStation':
+            //     return "modules/swn-importer/images/deepSpaceStation.png";
+            // case 'orbitalRuin':
+            //     return "modules/swn-importer/images/orbitalRuin.png";
+            default:
+                return "#ffffff";
+        }
+    }
+
+    getRandomColor(baseColor: string, variation: number): string {
+        const bytes = this.hexToBytes(baseColor.substr(1, 6));
+        for (let i = 0; i < 3; i++) {
+            const offset = Math.floor(Math.random() * variation) - (variation / 2);
+            bytes[i] = bytes[i] + offset;
+            bytes[i] = Math.min(bytes[i], 255);
+            bytes[i] = Math.max(bytes[i], 0);
+        }
+        return "#" + this.bytesToHex(bytes);
+    }
+
+    hexToBytes(hex: string): number[] {
+        const bytes: number[] = [];
+        for (let c = 0; c < hex.length; c += 2) {
+            bytes.push(parseInt(hex.substr(c, 2), 16));
+        }
+        return bytes;
+    }
+
+    bytesToHex(bytes: number[]): string {
+        const hex: string[] = [];
+        for (let i = 0; i < bytes.length; i++) {
+            const current: number = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
+            hex.push((current >>> 4).toString(16));
+            hex.push((current & 0xF).toString(16));
+        }
+        return hex.join("");
     }
 
     getJournalEntry(journals: JournalEntry[], key: string): string | null {
@@ -372,7 +439,7 @@ export class Importer {
         }
     }
 
-    getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): { x: number; y: number; tooltipPosition: number} | null {
+    getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): { x: number; y: number; tooltipPosition: number } | null {
         const column = parentEntity.x - 1;
         const row = parentEntity.y - 1;
 
