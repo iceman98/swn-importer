@@ -270,26 +270,27 @@ export class Importer {
     getSortedEntityArray(entities: BaseEntity[]): BaseEntity[] {
         const result: BaseEntity[] = [];
 
-        entities.filter(p => p.type === 'planet').forEach(p => {
+        entities.filter(p => p.type === 'planet' && p.parentEntity === 'system').forEach(p => {
             result.push(p);
             entities.filter(m => m.type === 'moon' && m.parent === p.id).forEach(m => {
                 result.push(m);
                 entities.filter(mb => mb.type === 'moonBase' && mb.parent === m.id).forEach(mb => result.push(mb));
+                entities.filter(rb => rb.type === 'researchBase' && rb.parent === m.id).forEach(rb => result.push(rb));
                 entities.filter(or => or.type === 'orbitalRuin' && or.parent === m.id).forEach(or => result.push(or));
                 entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === m.id).forEach(rs => result.push(rs));
-                entities.filter(rb => rb.type === 'researchBase' && rb.parent === m.id).forEach(rb => result.push(rb));
             });
+            entities.filter(rb => rb.type === 'researchBase' && rb.parent === p.id).forEach(rb => result.push(rb));
             entities.filter(ggm => ggm.type === 'gasGiantMine' && ggm.parent === p.id).forEach(ggm => result.push(ggm));
             entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === p.id).forEach(rs => result.push(rs));
-            entities.filter(rb => rb.type === 'researchBase' && rb.parent === p.id).forEach(rb => result.push(rb));
             entities.filter(ss => ss.type === 'spaceStation' && ss.parent === p.id).forEach(ss => result.push(ss));
             entities.filter(or => or.type === 'orbitalRuin' && or.parent === p.id).forEach(or => result.push(or));
         });
 
-        entities.filter(ab => ab.type === 'asteroidBelt').forEach(ab => {
+        entities.filter(ab => ab.type === 'asteroidBelt' && ab.parentEntity === 'system').forEach(ab => {
             result.push(ab);
             entities.filter(b => b.type === 'asteroidBase' && b.parent === ab.id).forEach(b => result.push(b));
             entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === ab.id).forEach(rs => result.push(rs));
+            entities.filter(ss => ss.type === 'spaceStation' && ss.parent === ab.id).forEach(ss => result.push(ss));
         });
 
         entities.filter(rs => rs.type === 'refuelingStation' && rs.parentEntity === 'system').forEach(rs => result.push(rs));
@@ -302,6 +303,7 @@ export class Importer {
         entities.filter(dss => dss.type === 'deepSpaceStation' && dss.parentEntity === 'blackHole').forEach(dss => result.push(dss));
 
         if (result.length != entities.length) {
+            console.log(entities, result);
             throw new Error("Some entity is not linked with its parent");
         }
 

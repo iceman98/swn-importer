@@ -6,7 +6,7 @@ Hooks.once("init", async () => {
 });
 
 Hooks.once("ready", async () => {
-    new Importer('/modules/swn-importer/argus-psi.json').importFile();
+    new Importer('/modules/swn-importer/acheron-rho.json').importFile();
 });
 
 
