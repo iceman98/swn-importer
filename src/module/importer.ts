@@ -114,7 +114,7 @@ export class Importer {
             img: "modules/swn-importer/images/starField.png",
             name: `Sector ${sector.value.name}`,
             padding: 0,
-            notes: notes,
+            notes,
             width: this.getSceneWidth(sector.value.columns)
         };
 
@@ -126,6 +126,15 @@ export class Importer {
 
         const groupedEntities = this.getGroupedEntities(sectorData);
 
+        // const entries = groupedEntities.entries();
+        // for (let i = 0; i < entries.length; i++) {
+        //     if (i === 0) {
+        //         const system = this.getSystemById(sectorData, entries[i].key);
+        //         if (system) {
+        //             notes.push(...this.getSystemNotes(system, journals, entries[i].value));
+        //         }
+        //     }
+        // }
         groupedEntities.forEach((k, v) => {
             const system = this.getSystemById(sectorData, k);
             if (system) {
@@ -324,6 +333,7 @@ export class Importer {
                 icon: this.getEntityIcon(entity ? entity.type : parentEntity.type),
                 iconSize: 32,
                 text: entity ? entity.name : parentEntity.name,
+                fontSize: 32
                 //flags: { "swn-importer.id": e.key, "swn-importer.type": type }
             };
 
@@ -375,11 +385,11 @@ export class Importer {
 
     getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): { x: number; y: number; } | null {
         const column = parentEntity.x - 1;
-        const row = parentEntity.x - 1;
+        const row = parentEntity.y - 1;
 
         let offset: { horizontal: number, vertical: number };
 
-        if (entityCount && entityIndex) {
+        if (entityCount != undefined && entityIndex != undefined) {
             offset = this.getEntityOffset(entityCount, entityIndex);
         } else {
             offset = { horizontal: 0, vertical: 0 };
