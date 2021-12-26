@@ -1,4 +1,4 @@
-export interface IconOffset {
-    horizontal: number;
-    vertical: number;
+export interface Coordinates {
+    x: number;
+    y: number;
 }

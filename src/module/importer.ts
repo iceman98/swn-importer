@@ -8,7 +8,7 @@ import { ImportDialog } from './import-dialog';
 import { Options } from './model/options';
 import { ImportResult } from './model/import-result';
 import { IconPosition } from './model/icon-position';
-import { IconOffset } from './model/icon-offset';
+import { Coordinates } from './model/icon-offset';
 import { Utils } from './utils';
 import { Sector } from './model/sector';
 
@@ -16,7 +16,7 @@ const HEX_RADIUS = 100;
 const HEX_WIDTH = 2 * HEX_RADIUS;
 const HEX_HEIGHT = 2 * ((-1 * ((HEX_RADIUS / 2) ** 2 - HEX_RADIUS ** 2)) ** 0.5);
 const HEX_VERTICAL_RADIUS = HEX_HEIGHT / 2;
-const ORBITING_DISTANCE = 0.65 * HEX_RADIUS;
+const ORBITING_DISTANCE = 0.55 * HEX_RADIUS;
 
 export class Importer {
 
@@ -137,10 +137,12 @@ export class Importer {
         const sector = sectorData.sector.entries()[0].value;
 
         const notes: Note.Data[] = this.getSectorNotes(sectorData, journals);
+        const drawings: Drawing.Data[] = this.getSectorLabels(sectorData);
 
         const sceneData: Partial<Scene.Data> = {
             active: true,
             backgroundColor: "#01162c",
+            drawings,
             flags: Utils.getEntityFlags(sector),
             grid: HEX_WIDTH,
             gridAlpha: 0.3,
@@ -157,6 +159,27 @@ export class Importer {
         };
 
         return Scene.create(sceneData);
+    }
+
+    getSectorLabels(sectorData: SectorData): Drawing.Data[] {
+        const labels: Drawing.Data[] = [];
+        const sector = sectorData.sector.values()[0];
+
+        for (let row = 0; row < sector.rows; row++) {
+            for (let column = 0; column < sector.columns; column++) {
+                const coordinates = this.getHexCenterPosition(column, row);
+
+                const label: any = {
+                    x: coordinates.x,
+                    y: Math.floor(coordinates.y + (9 / 10) * HEX_VERTICAL_RADIUS),
+                    text: Utils.getSectorCoordinates(column, row),
+                    fontSize: 16
+                };
+                labels.push(label);
+            }
+        }
+
+        return labels;
     }
 
     getSectorNotes(sectorData: SectorData, journals: JournalEntry[]): Note.Data[] {
@@ -387,10 +410,9 @@ export class Importer {
     }
 
     getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): IconPosition | null {
-        const column = parentEntity.x - 1;
-        const row = parentEntity.y - 1;
+        const center = this.getHexCenterPosition(parentEntity.x - 1, parentEntity.y - 1);
 
-        let offset: IconOffset = { horizontal: 0, vertical: 0 };
+        let offset: Coordinates = { x: 0, y: 0 };
         let tooltipPosition: number = CONST.TEXT_ANCHOR_POINTS.CENTER;
 
         if (entityCount != undefined && entityIndex != undefined) {
@@ -412,22 +434,31 @@ export class Importer {
             offset = this.getEntityOffset(angle);
         }
 
-        if (column % 2 === 0) {
-            offset.vertical += HEX_VERTICAL_RADIUS;
-        }
-
         return {
-            x: Math.floor(((3 / 4) * HEX_WIDTH * column) + HEX_RADIUS + offset.horizontal),
-            y: Math.floor((HEX_HEIGHT * row) + HEX_VERTICAL_RADIUS + offset.vertical),
+            x: Math.floor(center.x + offset.x),
+            y: Math.floor(center.y + offset.y),
             tooltipPosition
         };
     }
 
-    getEntityOffset(angle: number): IconOffset {
+    getHexCenterPosition(column: number, row: number): Coordinates {
+        let verticalOffset = 0;
+
+        if (column % 2 === 0) {
+            verticalOffset = HEX_VERTICAL_RADIUS;
+        }
+
+        return {
+            x: Math.floor(((3 / 4) * HEX_WIDTH * column) + HEX_RADIUS),
+            y: Math.floor((HEX_HEIGHT * row) + HEX_VERTICAL_RADIUS + verticalOffset)
+        }
+    }
+
+    getEntityOffset(angle: number): Coordinates {
         const x = Math.cos(angle) * ORBITING_DISTANCE;
         const y = Math.sin(angle) * ORBITING_DISTANCE;
 
-        return { horizontal: x, vertical: y };
+        return { x: x, y: y };
     }
 
     getContainingSystem(sectorData: SectorData, entity: BaseEntity): PositionedEntity | null {
