@@ -9,8 +9,9 @@ import { Options } from './model/options';
 import { ImportResult } from './model/import-result';
 import { IconPosition } from './model/icon-position';
 import { IconOffset } from './model/icon-offset';
+import { Utils } from './utils';
+import { Sector } from './model/sector';
 
-const MODULE_NAME = 'swn-importer';
 const HEX_RADIUS = 100;
 const HEX_WIDTH = 2 * HEX_RADIUS;
 const HEX_HEIGHT = 2 * ((-1 * ((HEX_RADIUS / 2) ** 2 - HEX_RADIUS ** 2)) ** 0.5);
@@ -34,8 +35,13 @@ export class Importer {
     }
 
     initUI(html: JQuery) {
-        html.find('.header-actions').append("<button id='swn-import-button' title='Import a sector from Sectors Without Number'><i class='fas fa-cloud-download-alt'></i> SWN Import</button>");
-        html.on('click', '#swn-import-button', _ => this.openImportDialog());
+        if (game.user?.isGM) {
+            const content = `<button id='swn-import-button' title='${Utils.getLabel("IMPORT-BUTTON-TOOLTIP")}'>
+                <i class='fas fa-cloud-download-alt'></i>
+                ${Utils.getLabel("IMPORT-BUTTON-NAME")}</button>`;
+            html.find('.header-actions').append(content);
+            html.on('click', '#swn-import-button', _ => this.openImportDialog());
+        }
     }
 
     openImportDialog(): void {
@@ -80,17 +86,18 @@ export class Importer {
                     this.preprocessEntity(sectorData, 'researchBase');
                     this.preprocessEntity(sectorData, 'spaceStation');
                     this.preprocessEntity(sectorData, 'system');
+                    this.preprocessEntity(sectorData, 'sector');
 
                     return this.processSector(sectorData);
                 })
                 .then(r => {
                     new Dialog({
-                        title: "Import Completed",
-                        content: `The sector ${r.sectorData?.sector.values()[0].name} has completed successfully. ${r.entityJournals?.length} journal entries where created.`,
+                        title: Utils.getLabel("RESULT-DIALOG-TITLE"),
+                        content: Utils.formatLabel("RESULT-DIALOG-CONTENT", { sectorName: r.sectorData?.sector.values()[0].name, journals: r.entityJournals?.length }),
                         buttons: {
                             ok: {
                                 icon: '<i class="fas fa-check"></i>',
-                                label: "Accept"
+                                label: Utils.getLabel("ACCEPT-BUTTON")
                             }
                         },
                         default: "ok"
@@ -100,7 +107,7 @@ export class Importer {
     }
 
     preprocessEntity(sectorData: SectorData, type: keyof SectorData) {
-        const entities = (<Map<string, BaseEntity>>sectorData[type]).entries();
+        const entities = (<Map<string, BaseEntity | Sector>>sectorData[type]).entries();
         entities.forEach(e => {
             e.value.id = e.key;
             e.value.type = type;
@@ -134,26 +141,26 @@ export class Importer {
     }
 
     createScene(sectorData: SectorData, journals): Promise<Scene | null> {
-        const sector = sectorData.sector.entries()[0];
+        const sector = sectorData.sector.entries()[0].value;
 
         const notes: Note.Data[] = this.getSectorNotes(sectorData, journals);
 
         const sceneData: Partial<Scene.Data> = {
             active: true,
             backgroundColor: "#01162c",
-            flags: { "swn-importer.id": sector.key, "swn-importer.type": 'sector' },
+            flags: Utils.getEntityFlags(sector),
             grid: HEX_WIDTH,
             gridAlpha: 0.3,
             gridColor: "#99caff",
             gridDistance: 1,
             gridType: CONST.GRID_TYPES.HEXODDQ,
-            gridUnits: "units",
-            height: this.getSceneHeight(sector.value.rows),
+            gridUnits: Utils.getLabel("HEX-UNIT-NAME"),
+            height: this.getSceneHeight(sector.rows),
             img: "modules/swn-importer/images/starField.png",
-            name: `Sector ${sector.value.name}`,
+            name: Utils.formatLabel("SCENE-NAME", { name: sector.name }),
             padding: 0,
             notes,
-            width: this.getSceneWidth(sector.value.columns)
+            width: this.getSceneWidth(sector.columns)
         };
 
         return Scene.create(sceneData);
@@ -408,36 +415,18 @@ export class Importer {
     }
 
     getRandomColor(baseColor: string, variation: number): string {
-        const bytes = this.hexToBytes(baseColor.substr(1, 6));
+        const bytes = hexToRGB(colorStringToHex(baseColor));
         for (let i = 0; i < 3; i++) {
             const offset = Math.floor(Math.random() * variation) - (variation / 2);
             bytes[i] = bytes[i] + offset;
             bytes[i] = Math.min(bytes[i], 255);
             bytes[i] = Math.max(bytes[i], 0);
         }
-        return "#" + this.bytesToHex(bytes);
-    }
-
-    hexToBytes(hex: string): number[] {
-        const bytes: number[] = [];
-        for (let c = 0; c < hex.length; c += 2) {
-            bytes.push(parseInt(hex.substr(c, 2), 16));
-        }
-        return bytes;
-    }
-
-    bytesToHex(bytes: number[]): string {
-        const hex: string[] = [];
-        for (let i = 0; i < bytes.length; i++) {
-            const current: number = bytes[i] < 0 ? bytes[i] + 256 : bytes[i];
-            hex.push((current >>> 4).toString(16));
-            hex.push((current & 0xF).toString(16));
-        }
-        return hex.join("");
+        return hexToRGBAString(rgbToHex(bytes));
     }
 
     getJournalEntry(journals: JournalEntry[], key: string): string | null {
-        const journal = journals.filter(j => j.getFlag(MODULE_NAME, "id") === key);
+        const journal = Utils.filterByTagId(journals, key);
         return journal.length ? journal[0].id : null;
     }
 
@@ -500,7 +489,7 @@ export class Importer {
             offset = this.getEntityOffset(angle);
         }
 
-        if (column % 2 == 0) {
+        if (column % 2 === 0) {
             offset.vertical += HEX_VERTICAL_RADIUS;
         }
 
@@ -549,22 +538,22 @@ export class Importer {
             jaa.forEach(ja => {
                 ja.forEach(j => journals.push(j));
             });
-            return JournalEntry.create(journals).then(js => js ? (js instanceof JournalEntry ? [js] : js) : []);
+            return JournalEntry.create(journals).then(js => Utils.getAsList(js));
         });
     }
 
     createEntityJournals(sectorData: SectorData, type: keyof SectorData, systemFolders: Folder[]): Promise<Partial<JournalEntry.Data>[]> {
         const entities = <Map<string, BaseEntity>>sectorData[type];
 
-        const promises = entities.entries().map(e => {
+        const promises = entities.values().map(e => {
             return new Promise<Partial<JournalEntry.Data>>(accept => {
-                this.getJournalContent(e.value, type).then(c => {
-                    const journal = {
+                this.getJournalContent(e, type).then(c => {
+                    const journal: Partial<JournalEntry.Data> = {
                         type: 'JournalEntry',
-                        name: this.getJournalName(e.value, type),
-                        folder: this.getContainingSystemFolder(sectorData, systemFolders, e.value),
+                        name: this.getJournalName(e, type),
+                        folder: this.getContainingSystemFolder(sectorData, systemFolders, e),
                         content: c,
-                        flags: { "swn-importer.id": e.key, "swn-importer.type": type }
+                        flags: Utils.getEntityFlags(e),
                     };
                     accept(journal);
                 });
@@ -577,7 +566,7 @@ export class Importer {
     getContainingSystemFolder(sectorData: SectorData, systemFolders: Folder[], entity: BaseEntity): string | undefined {
         const systemId = this.getContainingSystemId(sectorData, entity);
         if (systemId) {
-            const folder = systemFolders.filter(f => f.getFlag(MODULE_NAME, 'id') === systemId);
+            const folder = Utils.filterByTagId(systemFolders, systemId);
             if (folder.length) {
                 return folder[0].id;
             } else {
@@ -616,33 +605,33 @@ export class Importer {
     getTypeName(type: keyof SectorData): string | null {
         switch (type) {
             case 'asteroidBase':
-                return "Asteroid Base";
+                return Utils.getLabel("ASTEROID-BASE");
             case 'asteroidBelt':
-                return "Asteroid Belt";
+                return Utils.getLabel("ASTEROID-BELT");
             case 'blackHole':
-                return "Black Hole";
+                return Utils.getLabel("BLACK-HOLE");
             case 'deepSpaceStation':
-                return "Deep Space Station";
+                return Utils.getLabel("DEEP-SPACE-STATION");
             case 'gasGiantMine':
-                return "Gas Giant Mine";
+                return Utils.getLabel("GAS-GIANT-MINE");
             case 'moon':
-                return "Moon";
+                return Utils.getLabel("MOON");
             case 'moonBase':
-                return "Moon Base";
+                return Utils.getLabel("MOON-BASE");
             case 'orbitalRuin':
-                return "Orbital Ruin";
+                return Utils.getLabel("ORBITAL-RUIN");
             case 'planet':
-                return "Planet";
+                return Utils.getLabel("PLANET");
             case 'refuelingStation':
-                return "Refueling Station";
+                return Utils.getLabel("REFUELING-STATION");
             case 'researchBase':
-                return "Research Base";
+                return Utils.getLabel("RESEARCH-BASE");
             case 'sector':
-                return "Sector";
+                return Utils.getLabel("SECTOR");
             case 'spaceStation':
-                return "Space Station";
+                return Utils.getLabel("SPACE-STATION");
             case 'system':
-                return "System";
+                return Utils.getLabel("SYSTEM");
             default:
                 return null;
         }
@@ -657,45 +646,45 @@ export class Importer {
         if (parentFolder) {
             const folders: Partial<Folder.Data>[] = [];
 
-            sectorData.system.forEach((k, v) => {
-                const systemName = `System - ${v.name}`;
+            sectorData.system.forEach((_, v) => {
+                const systemName = Utils.formatLabel("SYSTEM-FOLDER-NAME", { name: v.name });
                 folders.push({
                     name: systemName,
                     type: "JournalEntry",
                     parent: parentFolder,
-                    flags: { "swn-importer.id": k, "swn-importer.type": "system" }
+                    flags: Utils.getEntityFlags(v),
                 });
             });
 
-            sectorData.blackHole.forEach((k, v) => {
-                const systemName = `Black Hole - ${v.name}`;
+            sectorData.blackHole.forEach((_, v) => {
+                const systemName = Utils.formatLabel("BLACK-HOLE-FOLDER-NAME", { name: v.name });
                 folders.push({
                     name: systemName,
                     type: "JournalEntry",
                     parent: parentFolder,
-                    flags: { "swn-importer.id": k, "swn-importer.type": "blackHole" }
+                    flags: Utils.getEntityFlags(v),
                 });
             });
 
-            return Folder.create(folders).then(f => f ? (f instanceof Folder ? [f] : f) : []);
+            return Folder.create(folders).then(f => Utils.getAsList(f));
         } else {
             return Promise.resolve([]);
         }
     }
 
     createSectorJournalFolder(sectorData: SectorData): Promise<Folder | null> {
-        const sector = sectorData.sector.entries()[0];
-        const sectorName = `Sector - ${sector.value.name}`;
+        const sector = sectorData.sector.entries()[0].value;
+        const sectorName = Utils.formatLabel("SECTOR-FOLDER-NAME", { name: sector.name });
         return Folder.create({
             name: sectorName,
             type: "JournalEntry",
-            flags: { id: sector.key, type: 'sector' }
+            flags: Utils.getEntityFlags(sector),
         });
     }
 
     getContainingSystemId(sectorData: SectorData, entity: BaseEntity): string | null {
         if (entity.parentEntity) {
-            if (entity.parentEntity == 'system' || entity.parentEntity == 'blackHole') {
+            if (entity.parentEntity === 'system' || entity.parentEntity === 'blackHole') {
                 return entity.parent;
             } else {
                 const parent = (<Map<string, BaseEntity>>sectorData[entity.parentEntity]).get(entity.parent);

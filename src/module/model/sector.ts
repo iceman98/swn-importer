@@ -1,4 +1,7 @@
+import { SectorData } from './sector-data';
+
 export interface Sector {
+    id: string;
     columns: number;
     created: string;
     creator: string;
@@ -8,4 +11,5 @@ export interface Sector {
     rows: number;
     updated: string;
     attributes: any;
+    type: keyof SectorData;
 }
