@@ -1,5 +1,7 @@
 import { BaseEntity } from './model/base-entity';
 import { Sector } from './model/sector';
+import { SectorData } from './model/sector-data';
+import { Map } from './model/map';
 
 export class Utils {
 
@@ -10,7 +12,7 @@ export class Utils {
         return game.i18n.localize(this.LOCALIZATION_NAMESPACE + "." + name);
     }
 
-    static formatLabel(name: string, data: { [k: string]: string | number | undefined }): string {
+    static formatLabel(name: string, data: { [k: string]: string | number | null | undefined }): string {
         return game.i18n.format(this.LOCALIZATION_NAMESPACE + "." + name, data);
     }
 
@@ -35,5 +37,24 @@ export class Utils {
 
     static filterByTagId(entities: Entity[], id: string): Entity[] {
         return entities.filter(e => e.getFlag(this.MODULE_ID, "id") === id);
+    }
+
+    static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic', consumer: (type: keyof SectorData, entities: Map<string, BaseEntity>) => void) {
+        const entities: (keyof SectorData)[] = types === 'all' ?
+            ['asteroidBase', 'asteroidBelt', 'blackHole', 'deepSpaceStation', 'gasGiantMine', 'moon', 'moonBase', 'orbitalRuin', 'planet', 'refuelingStation', 'researchBase', 'sector', 'spaceStation', 'system'] :
+            ['asteroidBase', 'asteroidBelt', 'deepSpaceStation', 'gasGiantMine', 'moon', 'moonBase', 'orbitalRuin', 'planet', 'refuelingStation', 'researchBase', 'spaceStation'];
+
+        entities.forEach(type => {
+            const map = <Map<string, BaseEntity>>sectorData[type];
+            consumer(type, map);
+        });
+    }
+
+    static forEachEntity(sectorData: SectorData, types: 'all' | 'only-basic', consumer: (key: string, entity: BaseEntity, type: keyof SectorData) => void) {
+        this.forEachEntityType(sectorData, types, (type, map) => {
+            map.entries().forEach(e => {
+                consumer(e.key, e.value, type);
+            });
+        });
     }
 }

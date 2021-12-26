@@ -1,15 +1,9 @@
-import { SectorData } from './sector-data';
+import { BaseEntity } from './base-entity';
 
-export interface Sector {
-    id: string;
+export interface Sector extends BaseEntity {
     columns: number;
-    created: string;
-    creator: string;
     layers: Map<string, boolean>;
     mapLocked: boolean;
-    name: string;
     rows: number;
-    updated: string;
     attributes: any;
-    type: keyof SectorData;
 }
