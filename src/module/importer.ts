@@ -7,6 +7,8 @@ import { PositionedEntity } from './model/positioned-entity';
 import { ImportDialog } from './import-dialog';
 import { Options } from './model/options';
 import { ImportResult } from './model/import-result';
+import { IconPosition } from './model/icon-position';
+import { IconOffset } from './model/icon-offset';
 
 const MODULE_NAME = 'swn-importer';
 const HEX_RADIUS = 100;
@@ -20,12 +22,15 @@ export class Importer {
     private dialog: ImportDialog;
 
     constructor() {
-        // if (game.user?.isGM) {
-        //     game.folders?.forEach(f => f.delete());
-        //     game.journal?.forEach(j => j.delete());
-        //     game.scenes?.forEach(s => s.delete());
-        // }
         this.dialog = new ImportDialog(this);
+    }
+
+    removeExistingData() {
+        if (game.user?.isGM) {
+            game.folders?.forEach(f => f.delete());
+            game.journal?.forEach(j => j.delete());
+            game.scenes?.forEach(s => s.delete());
+        }
     }
 
     initUI(html: JQuery) {
@@ -469,11 +474,11 @@ export class Importer {
         }
     }
 
-    getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): { x: number; y: number; tooltipPosition: number } | null {
+    getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): IconPosition | null {
         const column = parentEntity.x - 1;
         const row = parentEntity.y - 1;
 
-        let offset: { horizontal: number, vertical: number } = { horizontal: 0, vertical: 0 };
+        let offset: IconOffset = { horizontal: 0, vertical: 0 };
         let tooltipPosition: number = CONST.TEXT_ANCHOR_POINTS.CENTER;
 
         if (entityCount != undefined && entityIndex != undefined) {
@@ -506,7 +511,7 @@ export class Importer {
         };
     }
 
-    getEntityOffset(angle): { horizontal: number, vertical: number } {
+    getEntityOffset(angle: number): IconOffset {
         const x = Math.cos(angle) * ORBITING_DISTANCE;
         const y = Math.sin(angle) * ORBITING_DISTANCE;
 
@@ -681,7 +686,11 @@ export class Importer {
     createSectorJournalFolder(sectorData: SectorData): Promise<Folder | null> {
         const sector = sectorData.sector.entries()[0];
         const sectorName = `Sector - ${sector.value.name}`;
-        return Folder.create({ name: sectorName, type: "JournalEntry", flags: { id: sector.key, type: 'sector' } });
+        return Folder.create({
+            name: sectorName,
+            type: "JournalEntry",
+            flags: { id: sector.key, type: 'sector' }
+        });
     }
 
     getContainingSystemId(sectorData: SectorData, entity: BaseEntity): string | null {
