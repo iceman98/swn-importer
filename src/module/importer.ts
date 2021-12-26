@@ -151,7 +151,7 @@ export class Importer {
             gridType: CONST.GRID_TYPES.HEXODDQ,
             gridUnits: Utils.getLabel("HEX-UNIT-NAME"),
             height: this.getSceneHeight(sector.rows),
-            img: "modules/swn-importer/images/starField.png",
+            img: Utils.getImagePath("starField.png"),
             name: Utils.formatLabel("SCENE-NAME", { name: sector.name }),
             padding: 0,
             notes,
@@ -376,37 +376,8 @@ export class Importer {
         return journal.length ? journal[0].id : null;
     }
 
-    getEntityIcon(type: keyof SectorData): string | null {
-        switch (type) {
-            case 'system':
-                return "modules/swn-importer/images/sun.png";
-            case 'blackHole':
-                return "modules/swn-importer/images/blackHole.png";
-            case 'asteroidBase':
-                return "modules/swn-importer/images/asteroidBase.png";
-            case 'asteroidBelt':
-                return "modules/swn-importer/images/asteroidBelt.png";
-            case 'moon':
-                return "modules/swn-importer/images/moon.png";
-            case 'planet':
-                return "modules/swn-importer/images/planet.png";
-            case 'gasGiantMine':
-                return "modules/swn-importer/images/gasGiant.png";
-            case 'researchBase':
-                return "modules/swn-importer/images/researchBase.png";
-            case 'refuelingStation':
-                return "modules/swn-importer/images/refuelingStation.png";
-            case 'spaceStation':
-                return "modules/swn-importer/images/spaceStation.png";
-            case 'moonBase':
-                return "modules/swn-importer/images/moonBase.png";
-            case 'deepSpaceStation':
-                return "modules/swn-importer/images/deepSpaceStation.png";
-            case 'orbitalRuin':
-                return "modules/swn-importer/images/orbitalRuin.png";
-            default:
-                return CONST.DEFAULT_NOTE_ICON;
-        }
+    getEntityIcon(type: keyof SectorData): string {
+        return Utils.getImagePath(type + ".png");
     }
 
     getIconPosition(parentEntity: PositionedEntity, entityCount?: number, entityIndex?: number): IconPosition | null {

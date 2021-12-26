@@ -73,4 +73,8 @@ export class Utils {
         const yt = row < 10 ? "0" + row : row.toString();
         return xt + yt;
     }
+
+    static getImagePath(name: string): string {
+        return `modules/${this.MODULE_ID}/images/${name}`;
+    }
 }
