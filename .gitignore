@@ -15,7 +15,6 @@ docs/
 node_modules/
 bin/
 obj/
-dist/
 
 # If you add foundry.js for autocomplete
 foundry.js

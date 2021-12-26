@@ -1,0 +1,29 @@
+<div>
+    <h1>{{name}}</h1>
+
+    <span>{{name}} is an {{type}}</span>
+
+    <div style="display:table">
+        {{#occupation}}
+        <div style="display:table-row">
+            <div style="display:table-cell">
+                <span style="font-weight: bold">Occupation</span>
+            </div>
+            <div style="display:table-cell">
+                <span>{{.}}</span>
+            </div>
+        </div>
+        {{/occupation}}
+
+        {{#situation}}
+        <div style="display:table-row">
+            <div style="display:table-cell">
+                <span style="font-weight: bold">Situation</span>
+            </div>
+            <div style="display:table-cell">
+                <span>{{.}}</span>
+            </div>
+        </div>
+        {{/situation}}
+    </div>
+</div>
