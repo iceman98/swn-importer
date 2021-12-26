@@ -110,6 +110,7 @@ export class Importer {
         return Promise.resolve(sectorData)
             .then(d => {
                 holder.sectorData = d;
+                holder.groupedEntities = this.getGroupedEntities(sectorData);
                 return this.createSectorJournalFolder(d)
             })
             .then(f => {
@@ -126,16 +127,140 @@ export class Importer {
             })
             .then(s => {
                 holder.scene = s;
-                return this.updateJournalContent(<JournalEntry[]>holder.entityJournals);
+                return this.updateJournalContent(<SectorData>holder.sectorData, <Map<string, BaseEntity[]>>holder.groupedEntities, <JournalEntry[]>holder.entityJournals);
             })
             .then(_ => {
                 return Promise.resolve(holder);
             });
     }
 
-    updateJournalContent(journals: JournalEntry[]): Promise<void> {
-        journals;
-        return Promise.resolve();
+    updateJournalContent(sectorData: SectorData, groupedEntities: Map<string, BaseEntity[]>, journals: JournalEntry[]): Promise<JournalEntry[]> {
+        const promises: (Promise<Partial<JournalEntry.Data>> | null)[] = [];
+
+        groupedEntities.forEach((entityGroup, parentEntityId, __) => {
+            entityGroup.forEach(entity => {
+                promises.push(this.getJournalUpdate(groupedEntities, parentEntityId, entity.id, journals));
+            });
+        });
+
+        promises.push(this.getSectorJournalUpdate(sectorData, journals));
+
+        return Promise.all(promises.filter(p => p != null)).then(jl => (<any>JournalEntry).updateDocuments(jl));
+    }
+
+    getSectorJournalUpdate(sectorData: SectorData, journals: JournalEntry[]): Promise<Partial<JournalEntry.Data>> | null {
+        const systems: PositionedEntity[] = [];
+        Utils.forEachEntity(sectorData, 'only-systems', (_, system, __) => {
+            systems.push(<PositionedEntity>system);
+        })
+
+        const sector = sectorData.sector.values().next().value;
+
+        const template = this.getEntityTemplate('sector');
+        const templateData = this.getEntityTemplateData(systems, sector, sector, journals);
+
+        const entityJournalList = Utils.filterByTagId(journals, sector.id);
+        if (entityJournalList.length) {
+            const entityJournal = entityJournalList[0];
+            return renderTemplate(template, templateData)
+                .then(content => {
+                    const changedData: Partial<JournalEntry.Data> = {
+                        _id: entityJournal.id,
+                        content
+                    };
+                    return changedData;
+                });
+        }
+
+        return null;
+    }
+
+    getJournalUpdate(groupedEntities: Map<string, BaseEntity[]>, groupId: string, entityId: string, journals: JournalEntry[]): Promise<Partial<JournalEntry.Data>> | null {
+        const entityGroup = groupedEntities.get(groupId);
+
+        if (entityGroup != undefined) {
+            const entityList = entityGroup.filter(e => e.id === entityId);
+            if (entityList.length) {
+                const entity = entityList[0];
+                const entityJournalList = Utils.filterByTagId(journals, entity.id);
+                if (entityJournalList.length) {
+                    const entityJournal = entityJournalList[0];
+                    const systemEntityList = entityGroup.filter(e => e.id === groupId);
+                    if (systemEntityList.length) {
+                        const systemEntity = systemEntityList[0];
+                        const promise = this.getJournalContent(entityGroup, <PositionedEntity>systemEntity, entity, journals)
+                            .then(content => {
+                                const changedData: Partial<JournalEntry.Data> = {
+                                    _id: entityJournal.id,
+                                    content
+                                };
+                                return changedData;
+                            });
+
+                        return promise;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    getJournalContent(groupEntities: BaseEntity[], systemEntity: PositionedEntity, entity: BaseEntity, journals: JournalEntry[]): Promise<string> {
+        const template = this.getEntityTemplate(entity.type);
+        const templateData = this.getEntityTemplateData(groupEntities, systemEntity, entity, journals);
+        return renderTemplate(template, templateData);
+    }
+
+    getEntityTemplateData(groupEntities: BaseEntity[], systemEntity: PositionedEntity, entity: BaseEntity, journals: JournalEntry[]): { [k: string]: any } {
+        const childEntities = groupEntities.filter(e => e.parent === entity.id).map(e => {
+            const childData: any = {
+                name: e.name,
+                type: this.getTypeName(e.type),
+                orbiting: false,
+                link: this.getJournalLink(journals, e.id)
+            }
+            if ('x' in e) {
+                const system = <PositionedEntity>e;
+                childData.position = Utils.getSectorCoordinates(system.x - 1, system.y - 1);
+            }
+            return childData;
+        });
+
+        const data = {
+            ...entity,
+            type: this.getTypeName(entity.type),
+            orbiting: !(entity.type === 'moonBase' || entity.type === 'researchBase'),
+            parentIsEntity: !(entity.parentEntity === 'system' || entity.parentEntity === 'blackHole'),
+            parentLink: this.getJournalLink(journals, entity.parent),
+            parentType: this.getTypeName(entity.parentEntity),
+            systemLink: this.getJournalLink(journals, systemEntity.id),
+            systemType: this.getTypeName(systemEntity.type),
+            sunType: entity.parentEntity === 'system' ? "SUN" : "BLACK HOLE",
+            sunName: systemEntity.name,
+            children: childEntities
+        };
+
+        return data;
+    }
+
+    getJournalLink(journals: JournalEntry[], entityId: string): string | null {
+        const entityJournalList = Utils.filterByTagId(journals, entityId);
+        if (entityJournalList.length) {
+            return entityJournalList[0].link;
+        } else {
+            return null;
+        }
+    }
+
+    getEntityTemplate(type: keyof SectorData): string {
+        if (type === 'sector') {
+            return Utils.getTemplatePath("sector.html");
+        } else if (type === 'system' || type === 'blackHole') {
+            return Utils.getTemplatePath("sun.html");
+        } else {
+            return Utils.getTemplatePath("entity.html");
+        }
     }
 
     createScene(sectorData: SectorData, journals): Promise<Scene | null> {
@@ -205,8 +330,9 @@ export class Importer {
     getSystemNotes(system: PositionedEntity, journals: JournalEntry[], entities: BaseEntity[]): Note.Data[] {
         const notes: Note.Data[] = [];
 
-        for (let entityIndex = 0; entityIndex < entities.length; entityIndex++) {
-            const note = this.createEntityNote(system, journals, entities[entityIndex], entities.length, entityIndex);
+        const filteredEntities = entities.filter(e => e != system);
+        for (let entityIndex = 0; entityIndex < filteredEntities.length; entityIndex++) {
+            const note = this.createEntityNote(system, journals, filteredEntities[entityIndex], filteredEntities.length, entityIndex);
             if (note) {
                 notes.push(note);
             }
@@ -235,12 +361,12 @@ export class Importer {
     getGroupedEntities(sectorData: SectorData): Map<string, BaseEntity[]> {
         const sectorMap = new Map<string, BaseEntity[]>();
 
-        sectorData.system.forEach((_, k, __) => {
-            sectorMap.set(k, []);
+        sectorData.system.forEach((v, k, __) => {
+            sectorMap.set(k, [v]);
         });
 
-        sectorData.blackHole.forEach((_, k, __) => {
-            sectorMap.set(k, []);
+        sectorData.blackHole.forEach((v, k, __) => {
+            sectorMap.set(k, [v]);
         });
 
         Utils.forEachEntity(sectorData, 'only-basic', (_, entity, __) => {
@@ -260,6 +386,9 @@ export class Importer {
 
     getSortedEntityArray(entities: BaseEntity[]): BaseEntity[] {
         const result: BaseEntity[] = [];
+
+        entities.filter(s => s.type === 'system' && s.parentEntity === 'sector').forEach(s => result.push(s));
+        entities.filter(bh => bh.type === 'blackHole' && bh.parentEntity === 'sector').forEach(bh => result.push(bh));
 
         entities.filter(p => p.type === 'planet' && p.parentEntity === 'system').forEach(p => {
             result.push(p);
@@ -487,31 +616,6 @@ export class Importer {
             }
         }
     }
-
-    // getJournalContent(entity: BaseEntity): Promise<string> {
-    //     if (entity.type === 'planet') {
-    //         return this.getPlanetJournalContent(entity);
-    //     } else {
-    //         return this.getEntityJournalContent(entity, entity.type);
-    //     }
-    // }
-
-    // getEntityJournalContent(entity: BaseEntity, type: keyof SectorData): Promise<string> {
-    //     const attributes = <Attributes>entity.attributes;
-    //     return renderTemplate(Utils.getTemplatePath("entity.html"), {
-    //         ...attributes,
-    //         name: entity.name,
-    //         type: this.getTypeName(type)
-    //     });
-    // }
-
-    // getPlanetJournalContent(planet: BaseEntity): Promise<string> {
-    //     const attributes = <PlanetAttributes>planet.attributes;
-    //     return renderTemplate(Utils.getTemplatePath("planet.html"), {
-    //         ...attributes,
-    //         name: planet.name
-    //     });
-    // }
 
     getTypeName(type: keyof SectorData): string | null {
         switch (type) {
