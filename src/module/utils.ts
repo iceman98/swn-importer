@@ -1,7 +1,6 @@
 import { BaseEntity } from './model/base-entity';
 import { Sector } from './model/sector';
 import { SectorData } from './model/sector-data';
-import { Map } from './model/map';
 
 export class Utils {
 
@@ -62,8 +61,8 @@ export class Utils {
 
     static forEachEntity(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (key: string, entity: BaseEntity, type: keyof SectorData) => void) {
         this.forEachEntityType(sectorData, types, (type, map) => {
-            map.entries().forEach(e => {
-                consumer(e.key, e.value, type);
+            map.forEach((v, k, _) => {
+                consumer(k, v, type);
             });
         });
     }
@@ -77,4 +76,13 @@ export class Utils {
     static getImagePath(name: string): string {
         return `modules/${this.MODULE_ID}/images/${name}`;
     }
+
+    static getMapValues<K, V>(map: Map<K, V>): V[] {
+        const values: V[] = [];
+        map.forEach((v, _, __) => {
+            values.push(v);
+        });
+        return values;
+    }
+
 }

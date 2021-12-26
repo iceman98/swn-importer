@@ -1,7 +1,6 @@
 import { BaseEntity } from './base-entity';
 import { PositionedEntity } from './positioned-entity';
 import { Sector } from './sector';
-import { Map } from './map';
 
 export interface SectorData {
     asteroidBase: Map<string, BaseEntity>;

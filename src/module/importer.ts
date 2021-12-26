@@ -1,6 +1,5 @@
 import { SectorData } from './model/sector-data';
 import { BaseEntity } from './model/base-entity';
-import { Map } from './model/map';
 import { PlanetAttributes } from './model/planet-attributes';
 import { Attributes } from './model/attributes';
 import { PositionedEntity } from './model/positioned-entity';
@@ -59,21 +58,21 @@ export class Importer {
                 .then(str => str.json())
                 .then(d => {
                     const sectorData: SectorData = {
-                        asteroidBase: new Map(d.asteroidBase),
-                        asteroidBelt: new Map(d.asteroidBelt),
-                        blackHole: new Map(d.blackHole),
-                        deepSpaceStation: new Map(d.deepSpaceStation),
-                        gasGiantMine: new Map(d.gasGiantMine),
-                        moon: new Map(d.moon),
-                        moonBase: new Map(d.moonBase),
+                        asteroidBase: new Map(Object.entries(d.asteroidBase)),
+                        asteroidBelt: new Map(Object.entries(d.asteroidBelt)),
+                        blackHole: new Map(Object.entries(d.blackHole)),
+                        deepSpaceStation: new Map(Object.entries(d.deepSpaceStation)),
+                        gasGiantMine: new Map(Object.entries(d.gasGiantMine)),
+                        moon: new Map(Object.entries(d.moon)),
+                        moonBase: new Map(Object.entries(d.moonBase)),
                         note: null,
-                        orbitalRuin: new Map(d.orbitalRuin),
-                        planet: new Map(d.planet),
-                        refuelingStation: new Map(d.refuelingStation),
-                        researchBase: new Map(d.researchBase),
-                        sector: new Map(d.sector),
-                        spaceStation: new Map(d.spaceStation),
-                        system: new Map(d.system)
+                        orbitalRuin: new Map(Object.entries(d.orbitalRuin)),
+                        planet: new Map(Object.entries(d.planet)),
+                        refuelingStation: new Map(Object.entries(d.refuelingStation)),
+                        researchBase: new Map(Object.entries(d.researchBase)),
+                        sector: new Map(Object.entries(d.sector)),
+                        spaceStation: new Map(Object.entries(d.spaceStation)),
+                        system: new Map(Object.entries(d.system))
                     };
 
                     Utils.forEachEntity(sectorData, 'all', (key, value, type) => {
@@ -86,7 +85,7 @@ export class Importer {
                 .then(r => {
                     new Dialog({
                         title: Utils.getLabel("RESULT-DIALOG-TITLE"),
-                        content: Utils.formatLabel("RESULT-DIALOG-CONTENT", { sectorName: r.sectorData?.sector.values()[0].name, journals: r.entityJournals?.length }),
+                        content: Utils.formatLabel("RESULT-DIALOG-CONTENT", { sectorName: r.sectorData?.sector.values().next().value.name, journals: r.entityJournals?.length }),
                         buttons: {
                             ok: {
                                 icon: '<i class="fas fa-check"></i>',
@@ -100,10 +99,10 @@ export class Importer {
     }
 
     preprocessEntity(sectorData: SectorData, type: keyof SectorData) {
-        const entities = (<Map<string, BaseEntity | Sector>>sectorData[type]).entries();
-        entities.forEach(e => {
-            e.value.id = e.key;
-            e.value.type = type;
+        const entities = (<Map<string, BaseEntity | Sector>>sectorData[type]);
+        entities.forEach((entity, key, _) => {
+            entity.id = key;
+            entity.type = type;
         });
     }
 
@@ -134,7 +133,7 @@ export class Importer {
     }
 
     createScene(sectorData: SectorData, journals): Promise<Scene | null> {
-        const sector = sectorData.sector.entries()[0].value;
+        const sector = sectorData.sector.values().next().value;
 
         const notes: Note.Data[] = this.getSectorNotes(sectorData, journals);
         const drawings: Drawing.Data[] = this.getSectorLabels(sectorData);
@@ -163,7 +162,7 @@ export class Importer {
 
     getSectorLabels(sectorData: SectorData): Drawing.Data[] {
         const labels: Drawing.Data[] = [];
-        const sector = sectorData.sector.values()[0];
+        const sector = sectorData.sector.values().next().value;
 
         for (let row = 0; row < sector.rows; row++) {
             for (let column = 0; column < sector.columns; column++) {
@@ -187,7 +186,7 @@ export class Importer {
 
         const groupedEntities = this.getGroupedEntities(sectorData);
 
-        groupedEntities.forEach((k, v) => {
+        groupedEntities.forEach((v, k, _) => {
             const system = this.getSystemById(sectorData, k);
             if (system) {
                 notes.push(...this.getSystemNotes(system, journals, v));
@@ -228,26 +227,26 @@ export class Importer {
     }
 
     getGroupedEntities(sectorData: SectorData): Map<string, BaseEntity[]> {
-        const sectorMap = new Map<string, BaseEntity[]>({});
+        const sectorMap = new Map<string, BaseEntity[]>();
 
-        sectorData.system.forEach((k, _) => {
-            sectorMap.put(k, []);
+        sectorData.system.forEach((_, k, __) => {
+            sectorMap.set(k, []);
         });
 
-        sectorData.blackHole.forEach((k, _) => {
-            sectorMap.put(k, []);
+        sectorData.blackHole.forEach((_, k, __) => {
+            sectorMap.set(k, []);
         });
 
         Utils.forEachEntity(sectorData, 'only-basic', (_, entity, __) => {
             const systemId = this.getContainingSystemId(sectorData, entity);
             if (systemId) {
-                sectorMap.get(systemId).push(entity);
+                sectorMap.get(systemId)?.push(entity);
             }
         });
 
-        const result = new Map<string, BaseEntity[]>({});
-        sectorMap.forEach((k, v) => {
-            result.put(k, this.getSortedEntityArray(v));
+        const result = new Map<string, BaseEntity[]>();
+        sectorMap.forEach((v, k, _) => {
+            result.set(k, this.getSortedEntityArray(v));
         });
 
         return result;
@@ -437,7 +436,7 @@ export class Importer {
         if (systemId) {
             const system = sectorData.system.get(systemId);
             const blackHole = sectorData.blackHole.get(systemId);
-            return system || blackHole;
+            return system || blackHole || null;
         } else {
             return null;
         }
@@ -446,8 +445,8 @@ export class Importer {
     createJournals(sectorData: SectorData, systemFolders: Folder[]): Promise<JournalEntry[]> {
         const promises: Promise<Partial<JournalEntry.Data>[]>[] = [];
 
-        Utils.forEachEntityType(sectorData, 'only-basic', (_, e) => {
-            promises.push(this.createEntityJournals(sectorData, e.values(), systemFolders));
+        Utils.forEachEntityType(sectorData, 'only-basic', (_, entities) => {
+            promises.push(this.createEntityJournals(sectorData, Utils.getMapValues(entities), systemFolders));
         });
 
         return Promise.all(promises).then(jaa => {
@@ -561,7 +560,7 @@ export class Importer {
         if (parentFolder) {
             const folders: Partial<Folder.Data>[] = [];
 
-            sectorData.system.forEach((_, v) => {
+            sectorData.system.forEach((v, _, __) => {
                 const systemName = Utils.formatLabel("SYSTEM-FOLDER-NAME", { name: v.name });
                 folders.push({
                     name: systemName,
@@ -571,7 +570,7 @@ export class Importer {
                 });
             });
 
-            sectorData.blackHole.forEach((_, v) => {
+            sectorData.blackHole.forEach((v, _, __) => {
                 const systemName = Utils.formatLabel("BLACK-HOLE-FOLDER-NAME", { name: v.name });
                 folders.push({
                     name: systemName,
@@ -588,7 +587,7 @@ export class Importer {
     }
 
     createSectorJournalFolder(sectorData: SectorData): Promise<Folder | null> {
-        const sector = sectorData.sector.entries()[0].value;
+        const sector = sectorData.sector.values().next().value;
         const sectorName = Utils.formatLabel("SECTOR-FOLDER-NAME", { name: sector.name });
         return Folder.create({
             name: sectorName,
@@ -603,7 +602,11 @@ export class Importer {
                 return entity.parent;
             } else {
                 const parent = (<Map<string, BaseEntity>>sectorData[entity.parentEntity]).get(entity.parent);
-                return this.getContainingSystemId(sectorData, parent);
+                if (parent) {
+                    return this.getContainingSystemId(sectorData, parent);
+                } else {
+                    return null;
+                }
             }
         } else {
             return null;
