@@ -1,3 +1,34 @@
 {
-  "MODULE.hello": "hello"
+  "SWN-IMPORTER": {
+    "IMPORT-BUTTON-NAME": "SWN Import",
+    "IMPORT-BUTTON-TOOLTIP": "Import a sector from Sectors Without Number",
+
+    "RESULT-DIALOG-TITLE": "Import Completed",
+    "RESULT-DIALOG-CONTENT": "The sector {sectorName} has completed successfully. {journals} journal entries where created.",
+    "ACCEPT-BUTTON": "Accept",
+
+    "SCENE-NAME": "Sector {name}",
+    "SYSTEM-FOLDER-NAME": "System - {name}",
+    "SECTOR-FOLDER-NAME": "Sector - {name}",
+    "BLACK-HOLE-FOLDER-NAME": "Black Hole - {name}",
+
+    "ENTITY-JOURNAL-NAME": "{type} - {name}",
+
+    "HEX-UNIT-NAME": "units",
+
+    "ASTEROID-BASE": "Asteroid Base",
+    "ASTEROID-BELT": "Asteroid Belt",
+    "BLACK-HOLE": "Black Hole",
+    "DEEP-SPACE-STATION": "Deep-space Station",
+    "GAS-GIANT-MINE": "Gas-giant Mine",
+    "MOON": "Moon",
+    "MOON-BASE": "Moon Base",
+    "ORBITAL-RUIN": "Orbital Ruin",
+    "PLANET": "Planet",
+    "REFUELING-STATION": "Refueling Station",
+    "RESEARCH-BASE": "Research Base",
+    "SECTOR": "Sector",
+    "SPACE-STATION": "Space Station",
+    "SYSTEM": "System"
+  }
 }

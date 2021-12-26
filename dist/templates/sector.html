@@ -1,0 +1,17 @@
+<div>
+    <h2>General</h2>
+    <p>
+        {{name}} is a {{type}} in {{parentLink}}
+    </p>
+
+    <section class="secret">
+        {{#if children}}
+        <h2>Points of interest</h2>
+        <ul>
+            {{#children}}
+            <li>{{link}} at {{position}}</li>
+            {{/children}}
+        </ul>
+        {{/if}}
+    </section>
+</div>
