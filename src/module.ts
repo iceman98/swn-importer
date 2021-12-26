@@ -4,15 +4,13 @@ import { Importer } from './module/importer';
 let swnImporter: Importer;
 
 Hooks.once("init", async () => {
-    console.log("=============================HMR============================")
-    // CONFIG.debug.hooks = true;
     swnImporter = new Importer();
 });
 
 Hooks.once("ready", async () => {
+    // swnImporter.removeExistingData();
     // swnImporter.importFile('/modules/swn-importer/acheron-rho.json', {});
     // swnImporter.openImportDialog();
-    // swnImporter.removeExistingData();
 });
 
 Hooks.on("renderSceneDirectory", function (_, html: JQuery) {
