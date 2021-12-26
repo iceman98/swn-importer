@@ -1,7 +1,5 @@
 import { SectorData } from './model/sector-data';
 import { BaseEntity } from './model/base-entity';
-import { PlanetAttributes } from './model/planet-attributes';
-import { Attributes } from './model/attributes';
 import { PositionedEntity } from './model/positioned-entity';
 import { ImportDialog } from './import-dialog';
 import { Options } from './model/options';
@@ -120,7 +118,7 @@ export class Importer {
             })
             .then(sf => {
                 holder.systemJournalFolders = sf;
-                return this.createJournals(sectorData, sf);
+                return this.createJournals(sectorData, <Folder>holder.sectorJournalFolder, sf);
             })
             .then(js => {
                 holder.entityJournals = js;
@@ -128,8 +126,16 @@ export class Importer {
             })
             .then(s => {
                 holder.scene = s;
+                return this.updateJournalContent(<JournalEntry[]>holder.entityJournals);
+            })
+            .then(_ => {
                 return Promise.resolve(holder);
             });
+    }
+
+    updateJournalContent(journals: JournalEntry[]): Promise<void> {
+        journals;
+        return Promise.resolve();
     }
 
     createScene(sectorData: SectorData, journals): Promise<Scene | null> {
@@ -308,7 +314,7 @@ export class Importer {
 
         if (iconPosition) {
             const note: any = {
-                entryId: entity ? this.getJournalEntry(journals, entity.id) : null,
+                entryId: this.getJournalEntry(journals, entity ? entity.id : parentEntity.id),
                 x: iconPosition.x,
                 y: iconPosition.y,
                 icon: this.getEntityIcon(entity ? entity.type : parentEntity.type),
@@ -317,7 +323,6 @@ export class Importer {
                 fontSize: 32,
                 textAnchor: iconPosition.tooltipPosition,
                 iconTint: this.getIconTint(entity ? entity.type : parentEntity.type)
-                //flags: { "swn-importer.id": e.key, "swn-importer.type": type }
             };
 
             return note;
@@ -442,79 +447,71 @@ export class Importer {
         }
     }
 
-    createJournals(sectorData: SectorData, systemFolders: Folder[]): Promise<JournalEntry[]> {
-        const promises: Promise<Partial<JournalEntry.Data>[]>[] = [];
+    createJournals(sectorData: SectorData, sectorFolder: Folder, systemFolders: Folder[]): Promise<JournalEntry[]> {
+        const journals: Partial<JournalEntry.Data>[] = [];
 
-        Utils.forEachEntityType(sectorData, 'only-basic', (_, entities) => {
-            promises.push(this.createEntityJournals(sectorData, Utils.getMapValues(entities), systemFolders));
+        Utils.forEachEntityType(sectorData, 'all', (_, entities) => {
+            journals.push(...this.createEntityJournals(sectorData, Utils.getMapValues(entities), sectorFolder, systemFolders));
         });
 
-        return Promise.all(promises).then(jaa => {
-            const journals: Partial<JournalEntry.Data>[] = [];
-            jaa.forEach(ja => {
-                ja.forEach(j => journals.push(j));
-            });
-            return JournalEntry.create(journals).then(js => Utils.getAsList(js));
+        return JournalEntry.create(journals).then(js => Utils.getAsList(js));
+    }
+
+    createEntityJournals(sectorData: SectorData, entities: BaseEntity[], sectorFolder: Folder, systemFolders: Folder[]): Partial<JournalEntry.Data>[] {
+        return entities.map(e => {
+            const journal: Partial<JournalEntry.Data> = {
+                type: 'JournalEntry',
+                name: this.getJournalName(e),
+                folder: this.getContainingSystemFolder(sectorData, sectorFolder, systemFolders, e),
+                content: "Placeholder content for " + e.name,
+                flags: Utils.getEntityFlags(e),
+            };
+            return journal;
         });
     }
 
-    createEntityJournals(sectorData: SectorData, entities: BaseEntity[], systemFolders: Folder[]): Promise<Partial<JournalEntry.Data>[]> {
-        const promises = entities.map(e => {
-            return new Promise<Partial<JournalEntry.Data>>(accept => {
-                this.getJournalContent(e).then(c => {
-                    const journal: Partial<JournalEntry.Data> = {
-                        type: 'JournalEntry',
-                        name: this.getJournalName(e),
-                        folder: this.getContainingSystemFolder(sectorData, systemFolders, e),
-                        content: c,
-                        flags: Utils.getEntityFlags(e),
-                    };
-                    accept(journal);
-                });
-            });
-        });
-
-        return Promise.all(promises);
-    }
-
-    getContainingSystemFolder(sectorData: SectorData, systemFolders: Folder[], entity: BaseEntity): string | undefined {
-        const systemId = this.getContainingSystemId(sectorData, entity);
-        if (systemId) {
-            const folder = Utils.filterByTagId(systemFolders, systemId);
-            if (folder.length) {
-                return folder[0].id;
+    getContainingSystemFolder(sectorData: SectorData, sectorFolder: Folder, systemFolders: Folder[], entity: BaseEntity): string | undefined {
+        if (entity.type === 'sector') {
+            return sectorFolder.id;
+        } else {
+            const systemId = this.getContainingSystemId(sectorData, entity);
+            if (systemId) {
+                const folder = Utils.filterByTagId(systemFolders, systemId);
+                if (folder.length) {
+                    return folder[0].id;
+                } else {
+                    return undefined;
+                }
             } else {
                 return undefined;
             }
-        } else {
-            return undefined;
         }
     }
 
-    getJournalContent(entity: BaseEntity): Promise<string> {
-        if ('atmosphere' in entity.attributes) {
-            return this.getPlanetJournalContent(entity);
-        } else {
-            return this.getEntityJournalContent(entity, entity.type);
-        }
-    }
+    // getJournalContent(entity: BaseEntity): Promise<string> {
+    //     if (entity.type === 'planet') {
+    //         return this.getPlanetJournalContent(entity);
+    //     } else {
+    //         return this.getEntityJournalContent(entity, entity.type);
+    //     }
+    // }
 
-    getEntityJournalContent(entity: BaseEntity, type: keyof SectorData): Promise<string> {
-        const attributes = <Attributes>entity.attributes;
-        return renderTemplate('modules/swn-importer/templates/entity.html', {
-            ...attributes,
-            name: entity.name,
-            type: this.getTypeName(type)
-        });
-    }
+    // getEntityJournalContent(entity: BaseEntity, type: keyof SectorData): Promise<string> {
+    //     const attributes = <Attributes>entity.attributes;
+    //     return renderTemplate(Utils.getTemplatePath("entity.html"), {
+    //         ...attributes,
+    //         name: entity.name,
+    //         type: this.getTypeName(type)
+    //     });
+    // }
 
-    getPlanetJournalContent(planet: BaseEntity): Promise<string> {
-        const attributes = <PlanetAttributes>planet.attributes;
-        return renderTemplate('modules/swn-importer/templates/planet.html', {
-            ...attributes,
-            name: planet.name
-        });
-    }
+    // getPlanetJournalContent(planet: BaseEntity): Promise<string> {
+    //     const attributes = <PlanetAttributes>planet.attributes;
+    //     return renderTemplate(Utils.getTemplatePath("planet.html"), {
+    //         ...attributes,
+    //         name: planet.name
+    //     });
+    // }
 
     getTypeName(type: keyof SectorData): string | null {
         switch (type) {
@@ -598,7 +595,9 @@ export class Importer {
 
     getContainingSystemId(sectorData: SectorData, entity: BaseEntity): string | null {
         if (entity.parentEntity) {
-            if (entity.parentEntity === 'system' || entity.parentEntity === 'blackHole') {
+            if (entity.parentEntity === 'sector') {
+                return entity.id;
+            } else if (entity.parentEntity === 'system' || entity.parentEntity === 'blackHole') {
                 return entity.parent;
             } else {
                 const parent = (<Map<string, BaseEntity>>sectorData[entity.parentEntity]).get(entity.parent);

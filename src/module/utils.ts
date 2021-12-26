@@ -77,6 +77,10 @@ export class Utils {
         return `modules/${this.MODULE_ID}/images/${name}`;
     }
 
+    static getTemplatePath(name: string): string {
+        return `modules/${this.MODULE_ID}/templates/${name}`;
+    }
+
     static getMapValues<K, V>(map: Map<K, V>): V[] {
         const values: V[] = [];
         map.forEach((v, _, __) => {
