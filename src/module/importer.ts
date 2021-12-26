@@ -4,6 +4,9 @@ import { Map } from './model/map';
 import { PlanetAttributes } from './model/planet-attributes';
 import { Attributes } from './model/attributes';
 import { PositionedEntity } from './model/positioned-entity';
+import { ImportDialog } from './import-dialog';
+import { Options } from './model/options';
+import { ImportResult } from './model/import-result';
 
 const MODULE_NAME = 'swn-importer';
 const HEX_RADIUS = 100;
@@ -14,52 +17,80 @@ const ORBITING_DISTANCE = 0.65 * HEX_RADIUS;
 
 export class Importer {
 
-    constructor(private fileName: string) {
-        // TODO: remove
-        if (game.user?.isGM) {
-            game.folders?.forEach(f => f.delete());
-            game.journal?.forEach(j => j.delete());
-            game.scenes?.forEach(s => s.delete());
-        }
+    private dialog: ImportDialog;
+
+    constructor() {
+        // if (game.user?.isGM) {
+        //     game.folders?.forEach(f => f.delete());
+        //     game.journal?.forEach(j => j.delete());
+        //     game.scenes?.forEach(s => s.delete());
+        // }
+        this.dialog = new ImportDialog(this);
     }
 
-    importFile() {
+    initUI(html: JQuery) {
+        html.find('.header-actions').append("<button id='swn-import-button' title='Import a sector from Sectors Without Number'><i class='fas fa-cloud-download-alt'></i> SWN Import</button>");
+        html.on('click', '#swn-import-button', _ => this.openImportDialog());
+    }
+
+    openImportDialog(): void {
+        this.dialog.render(true);
+    }
+
+    importFile(fileName: string, options: Options) {
+        options;
+
         if (game.user?.isGM) {
-            fetch(this.fileName).then(str => str.json()).then(d => {
-                const sectorData: SectorData = {
-                    asteroidBase: new Map(d.asteroidBase),
-                    asteroidBelt: new Map(d.asteroidBelt),
-                    blackHole: new Map(d.blackHole),
-                    deepSpaceStation: new Map(d.deepSpaceStation),
-                    gasGiantMine: new Map(d.gasGiantMine),
-                    moon: new Map(d.moon),
-                    moonBase: new Map(d.moonBase),
-                    note: null,
-                    orbitalRuin: new Map(d.orbitalRuin),
-                    planet: new Map(d.planet),
-                    refuelingStation: new Map(d.refuelingStation),
-                    researchBase: new Map(d.researchBase),
-                    sector: new Map(d.sector),
-                    spaceStation: new Map(d.spaceStation),
-                    system: new Map(d.system)
-                };
+            fetch(fileName)
+                .then(str => str.json())
+                .then(d => {
+                    const sectorData: SectorData = {
+                        asteroidBase: new Map(d.asteroidBase),
+                        asteroidBelt: new Map(d.asteroidBelt),
+                        blackHole: new Map(d.blackHole),
+                        deepSpaceStation: new Map(d.deepSpaceStation),
+                        gasGiantMine: new Map(d.gasGiantMine),
+                        moon: new Map(d.moon),
+                        moonBase: new Map(d.moonBase),
+                        note: null,
+                        orbitalRuin: new Map(d.orbitalRuin),
+                        planet: new Map(d.planet),
+                        refuelingStation: new Map(d.refuelingStation),
+                        researchBase: new Map(d.researchBase),
+                        sector: new Map(d.sector),
+                        spaceStation: new Map(d.spaceStation),
+                        system: new Map(d.system)
+                    };
 
-                this.preprocessEntity(sectorData, 'asteroidBase');
-                this.preprocessEntity(sectorData, 'asteroidBelt');
-                this.preprocessEntity(sectorData, 'blackHole');
-                this.preprocessEntity(sectorData, 'deepSpaceStation');
-                this.preprocessEntity(sectorData, 'gasGiantMine');
-                this.preprocessEntity(sectorData, 'moon');
-                this.preprocessEntity(sectorData, 'moonBase');
-                this.preprocessEntity(sectorData, 'orbitalRuin');
-                this.preprocessEntity(sectorData, 'planet');
-                this.preprocessEntity(sectorData, 'refuelingStation');
-                this.preprocessEntity(sectorData, 'researchBase');
-                this.preprocessEntity(sectorData, 'spaceStation');
-                this.preprocessEntity(sectorData, 'system');
+                    this.preprocessEntity(sectorData, 'asteroidBase');
+                    this.preprocessEntity(sectorData, 'asteroidBelt');
+                    this.preprocessEntity(sectorData, 'blackHole');
+                    this.preprocessEntity(sectorData, 'deepSpaceStation');
+                    this.preprocessEntity(sectorData, 'gasGiantMine');
+                    this.preprocessEntity(sectorData, 'moon');
+                    this.preprocessEntity(sectorData, 'moonBase');
+                    this.preprocessEntity(sectorData, 'orbitalRuin');
+                    this.preprocessEntity(sectorData, 'planet');
+                    this.preprocessEntity(sectorData, 'refuelingStation');
+                    this.preprocessEntity(sectorData, 'researchBase');
+                    this.preprocessEntity(sectorData, 'spaceStation');
+                    this.preprocessEntity(sectorData, 'system');
 
-                this.processSector(sectorData);
-            });
+                    return this.processSector(sectorData);
+                })
+                .then(r => {
+                    new Dialog({
+                        title: "Import Completed",
+                        content: `The sector ${r.sectorData?.sector.values()[0].name} has completed successfully. ${r.entityJournals?.length} journal entries where created.`,
+                        buttons: {
+                            ok: {
+                                icon: '<i class="fas fa-check"></i>',
+                                label: "Accept"
+                            }
+                        },
+                        default: "ok"
+                    }).render(true);
+                });
         }
     }
 
@@ -71,16 +102,12 @@ export class Importer {
         });
     }
 
-    processSector(sectorData: SectorData) {
-        const holder: {
-            sectorJournalFolder?: Folder | null,
-            systemJournalFolders?: Folder[],
-            entityJournals?: JournalEntry[],
-            scene?: Scene | null
-        } = {};
+    processSector(sectorData: SectorData): Promise<ImportResult> {
+        const holder: ImportResult = {};
 
-        Promise.resolve(sectorData)
+        return Promise.resolve(sectorData)
             .then(d => {
+                holder.sectorData = d;
                 return this.createSectorJournalFolder(d)
             })
             .then(f => {
@@ -97,6 +124,7 @@ export class Importer {
             })
             .then(s => {
                 holder.scene = s;
+                return Promise.resolve(holder);
             });
     }
 
