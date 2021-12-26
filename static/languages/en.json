@@ -12,6 +12,8 @@
     "SECTOR-FOLDER-NAME": "Sector - {name}",
     "BLACK-HOLE-FOLDER-NAME": "Black Hole - {name}",
 
+    "ENTITY-JOURNAL-NAME": "{type} - {name}",
+
     "HEX-UNIT-NAME": "units",
 
     "ASTEROID-BASE": "Asteroid Base",
