@@ -1,21 +1,21 @@
-<div class="flexcol">
-    <section>
-        <h2>File</h2>
-        <p>Upload the sector file</p>
-        <input type="file" accept=".json" id="swn-importer-file-input">
-        <p>Note: You can get this file by clicking on the export on <a href="https://sectorswithoutnumber.com">Sectors
-                Without Numbers</a> and then selecting JSON format.</p>
-    </section>
-    <section>
-        <h2>Options</h2>
-    </section>
-    <section>
-        &nbsp;
-    </section>
-    <section>
-        <div class="flexrow">
-            <button {{#unless importEnabled}}disabled{{/unless}} id="swn-importer-import-button">Import</button>
-            <button id="swn-importer-cancel-button">Cancel</button>
-        </div>
-    </section>
-</div>
+<form>
+    <div class="flexcol">
+        <section>
+            <h2>File</h2>
+            <p>Upload the sector file</p>
+            <input type="file" accept=".json" id="swn-sector-file" required>
+            <p>Note: You can get this file by clicking on the export on <a
+                    href="https://sectorswithoutnumber.com">Sectors
+                    Without Numbers</a> and then selecting JSON format.</p>
+        </section>
+        <section>
+            <h2>Options</h2>
+        </section>
+        <section>
+            &nbsp;
+        </section>
+        <section>
+            <button type="submit">Import</button>
+        </section>
+    </div>
+</form>

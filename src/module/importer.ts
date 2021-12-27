@@ -18,6 +18,7 @@ const ORBITING_DISTANCE = 0.55 * HEX_RADIUS;
 export class Importer {
 
     private dialog: ImportDialog;
+    private options = new Options();
 
     constructor() {
         this.dialog = new ImportDialog(this);
@@ -48,11 +49,11 @@ export class Importer {
         this.dialog.render(true);
     }
 
-    importFile(fileName: string, options: Options) {
-        options;
+    importFile(fileName: string, options: Options): Promise<void> {
+        this.options = options;
 
         if (game.user?.isGM) {
-            fetch(fileName)
+            return fetch(fileName)
                 .then(str => str.json())
                 .then(d => {
                     const sectorData: SectorData = {
@@ -92,8 +93,11 @@ export class Importer {
                         },
                         default: "ok"
                     }).render(true);
+                    return Promise.resolve();
                 });
         }
+
+        return Promise.resolve();
     }
 
     preprocessEntity(sectorData: SectorData, type: keyof SectorData) {

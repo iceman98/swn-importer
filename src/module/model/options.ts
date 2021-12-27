@@ -1,2 +1,3 @@
-export interface Options {
+export class Options {
+    
 }
