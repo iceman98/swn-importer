@@ -242,7 +242,8 @@ export class Importer {
             systemType: this.getTypeName(systemEntity.type),
             sunType: entity.parentEntity === 'system' ? "SUN" : "BLACK HOLE",
             sunName: systemEntity.name,
-            children: childEntities
+            children: childEntities,
+            coordinates: (entity.type !== 'sector') ? Utils.getSectorCoordinates(systemEntity.x - 1, systemEntity.y - 1) : null
         };
 
         return data;
@@ -271,7 +272,11 @@ export class Importer {
         const sector = sectorData.sector.values().next().value;
 
         const notes: Note.Data[] = this.getSectorNotes(sectorData, journals);
-        const drawings: Drawing.Data[] = this.getSectorLabels(sectorData);
+
+        const drawings: Drawing.Data[] = [];
+        if (this.options.generateSectorCoordinates) {
+            drawings.push(...this.getSectorLabels(sectorData));
+        }
 
         const sceneData: Partial<Scene.Data> = {
             active: true,
@@ -334,7 +339,11 @@ export class Importer {
     getSystemNotes(system: PositionedEntity, journals: JournalEntry[], entities: BaseEntity[]): Note.Data[] {
         const notes: Note.Data[] = [];
 
-        const filteredEntities = entities.filter(e => e != system);
+        let filteredEntities = entities.filter(e => e != system);
+        if (!this.options.generateNotesForAllEntities) {
+            filteredEntities = filteredEntities.filter(e => e.parentEntity === 'system' || e.parentEntity === 'blackHole');
+        }
+
         for (let entityIndex = 0; entityIndex < filteredEntities.length; entityIndex++) {
             const note = this.createEntityNote(system, journals, filteredEntities[entityIndex], filteredEntities.length, entityIndex);
             if (note) {
@@ -592,12 +601,18 @@ export class Importer {
 
     createEntityJournals(sectorData: SectorData, entities: BaseEntity[], sectorFolder: Folder, systemFolders: Folder[]): Partial<JournalEntry.Data>[] {
         return entities.map(e => {
+            const hidden = (this.options.onlyGMJournals || e.isHidden);
+            const permission: Entity.Permission = {
+                default: hidden ? CONST.ENTITY_PERMISSIONS.NONE : CONST.ENTITY_PERMISSIONS.OBSERVER
+            };
+
             const journal: Partial<JournalEntry.Data> = {
                 type: 'JournalEntry',
                 name: this.getJournalName(e),
                 folder: this.getContainingSystemFolder(sectorData, sectorFolder, systemFolders, e),
-                content: "Placeholder content for " + e.name,
+                content: e.name,
                 flags: Utils.getEntityFlags(e),
+                permission
             };
             return journal;
         });

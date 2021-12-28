@@ -34,14 +34,15 @@ export class ImportDialog extends FormApplication<FormApplication.Options, Optio
     _updateObject(_: Event, formData?: Options): Promise<void> {
         const url = this.getFileUrl();
         if (formData && url) {
-            return this.importer.importFile(url, formData);
+            return this.close()
+                .then(_ => this.importer.importFile(url, formData));
         } else {
             return Promise.resolve();
         }
     }
 
     getFileUrl(): string | null {
-        const input = <HTMLInputElement>$('swn-sector-file')[0];
+        const input = <HTMLInputElement>$('#swn-sector-file')[0];
         if (input.files?.length) {
             return URL.createObjectURL(<Blob>input.files.item(0));
         } else {

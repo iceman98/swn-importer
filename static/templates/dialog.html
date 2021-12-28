@@ -10,6 +10,29 @@
         </section>
         <section>
             <h2>Options</h2>
+            <div class="flexcol">
+                <div class="flexrow">
+                    <input type="checkbox" id="swni-dialog-coordinates" name="generateSectorCoordinates" {{#if
+                        generateSectorCoordinates}}checked{{/if}}>
+                    <label for="swni-dialog-coordinates" style="align-self: center;">Generate a label with the
+                        coordinates
+                        below each hex.</label>
+                </div>
+
+                <div class="flexrow">
+                    <input type="checkbox" id="swni-dialog-notes" name="generateNotesForAllEntities" {{#if
+                        generateNotesForAllEntities}}checked{{/if}}>
+                    <label for="swni-dialog-notes" style="align-self: center;">Generate map pins for every entity. If
+                        false, only entities directly orbiting the star/blackhole will have pins.</label>
+                </div>
+
+                <div class="flexrow">
+                    <input type="checkbox" id="swni-dialog-gm" name="onlyGMJournals" {{#if
+                        onlyGMJournals}}checked{{/if}}>
+                    <label for="swni-dialog-gm" style="align-self: center;">Generate all journal entries as GM-Only. If
+                        false, the visibility will depend on the "hidden" attribute of Sectors Without Number.</label>
+                </div>
+            </div>
         </section>
         <section>
             &nbsp;
