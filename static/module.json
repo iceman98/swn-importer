@@ -5,18 +5,12 @@
   "version": "This is auto replaced",
   "library": "false",
   "manifestPlusVersion": "1.0.0",
-  "minimumCoreVersion": "0.7.9",
-  "compatibleCoreVersion": "0.7.9",
+  "minimumCoreVersion": "0.9.0",
+  "compatibleCoreVersion": "0.9.0",
   "authors": [
     {
-      "name": "Blackcloud",
-      "url": "https://github.com/Blackcloud010",
-      "discord": "Blackcloud010#5426"
-    },
-    {
-      "name": "The League of Extraordinary FVTT Developers",
-      "url": "https://github.com/League-of-Foundry-Developers",
-      "discord": "discordID#0001"
+      "name": "Iceman98",
+      "url": "https://github.com/iceman98"
     }
   ],
   "dependencies": [
