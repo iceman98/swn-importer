@@ -3,7 +3,7 @@
 
 This module allows you to import a sector from the fantastic tool https://sectorswithoutnumber.com/.
 
-![module usage recording](https://github.com/iceman98/swn-importer/raw/master/screenshots/recording.png)
+![module usage recording](https://github.com/iceman98/swn-importer/raw/master/screenshots/recording.mp4)
 
 # Setup:
 Install the module through the Foundry module list by using the manifest url:
