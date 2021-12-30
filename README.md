@@ -3,7 +3,7 @@
 
 This module allows you to import a sector from the fantastic tool https://sectorswithoutnumber.com/.
 
-![module usage recording](https://imgur.com/DOctv7R.mp4)
+![recording](https://user-images.githubusercontent.com/8527532/147767754-f1621f77-31b8-4079-9970-42a8555fabea.gif)
 
 # Setup:
 Install the module through the Foundry module list by using the manifest url:
