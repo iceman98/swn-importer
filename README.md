@@ -8,7 +8,7 @@ This module allows you to import a sector from the fantastic tool https://sector
 # Setup:
 Install the module through the Foundry module list by using the manifest url:
 
-https://github.com/iceman98/swn-importer/releases/latest/download/dist/module.json
+https://github.com/iceman98/swn-importer/releases/latest/download/module.json
 
 # Usage:
 1. Install the module
