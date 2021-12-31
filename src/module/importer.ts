@@ -323,6 +323,21 @@ export class Importer {
             }
         }
 
+        if (this.options.generateHexName) {
+            Utils.forEachEntity(sectorData, 'only-systems', (_, e, __) => {
+                const system = <PositionedEntity>e;
+                const coordinates = this.getHexCenterPosition(system.x - 1, system.y - 1);
+                const label: any = {
+                    x: coordinates.x - Math.floor(HEX_HEIGHT / 2),
+                    y: Math.floor(coordinates.y - (9 / 10) * HEX_VERTICAL_RADIUS),
+                    text: e.name,
+                    width: HEX_HEIGHT,
+                    fontSize: 16
+                };
+                labels.push(label);
+            });
+        }
+
         return labels;
     }
 

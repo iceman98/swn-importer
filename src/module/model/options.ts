@@ -3,4 +3,5 @@ export class Options {
     generateNotesForAllEntities = false;
     onlyGMJournals = true;
     addTypeToEntityJournal = false;
+    generateHexName = false;
 }
