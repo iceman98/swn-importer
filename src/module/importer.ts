@@ -268,8 +268,8 @@ export class Importer {
         }
     }
 
-    createScene(sectorData: SectorData, journals): Promise<Scene | null> {
-        const sector = sectorData.sector.values().next().value;
+    createScene(sectorData: SectorData, journals: JournalEntry[]): Promise<Scene | null> {
+        const sector = <Sector>sectorData.sector.values().next().value;
 
         const notes: Note.Data[] = this.getSectorNotes(sectorData, journals);
 
@@ -277,6 +277,8 @@ export class Importer {
         if (this.options.generateSectorCoordinates) {
             drawings.push(...this.getSectorLabels(sectorData));
         }
+
+        const sectorJournal = journals.find(j => j.getFlag(Utils.MODULE_ID, "id") === sector.id);
 
         const sceneData: Partial<Scene.Data> = {
             active: true,
@@ -294,6 +296,7 @@ export class Importer {
             name: Utils.formatLabel("SCENE-NAME", { name: sector.name }),
             padding: 0,
             notes,
+            journal: sectorJournal?.id,
             width: this.getSceneWidth(sector.columns)
         };
 
@@ -441,7 +444,7 @@ export class Importer {
 
         if (result.length != entities.length) {
             const missing = entities.filter(e => !result.includes(e));
-            missing.forEach(m=>console.log(`Missing entity ${m.name} (${m.type}) within parent ${m.parentEntity}`))
+            missing.forEach(m => console.log(`Missing entity ${m.name} (${m.type}) within parent ${m.parentEntity}`))
             console.log(entities, result);
             throw new Error("Some entity is not linked with its parent");
         }
