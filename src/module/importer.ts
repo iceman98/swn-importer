@@ -589,6 +589,8 @@ export class Importer {
 
         if (column % 2 === 0) {
             verticalOffset = HEX_VERTICAL_RADIUS;
+        } else {
+            verticalOffset = 2 * HEX_VERTICAL_RADIUS;
         }
 
         return {
