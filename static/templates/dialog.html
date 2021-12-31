@@ -20,6 +20,13 @@
                 </div>
 
                 <div class="flexrow">
+                    <input type="checkbox" id="swni-dialog-name" name="generateHexName" {{#if
+                        generateHexName}}checked{{/if}}>
+                    <label for="swni-dialog-name" style="align-self: center;">Generate a label with the
+                        system name above each hex.</label>
+                </div>
+
+                <div class="flexrow">
                     <input type="checkbox" id="swni-dialog-notes" name="generateNotesForAllEntities" {{#if
                         generateNotesForAllEntities}}checked{{/if}}>
                     <label for="swni-dialog-notes" style="align-self: center;">Generate map pins for every entity. If
@@ -36,7 +43,8 @@
                 <div class="flexrow">
                     <input type="checkbox" id="swni-dialog-type" name="addTypeToEntityJournal" {{#if
                         addTypeToEntityJournal}}checked{{/if}}>
-                    <label for="swni-dialog-type" style="align-self: center;">Add a type prefix to every entity journal (ex "Planet - XYZ").</label>
+                    <label for="swni-dialog-type" style="align-self: center;">Add a type prefix to every entity journal
+                        (ex "Planet - XYZ").</label>
                 </div>
             </div>
         </section>
