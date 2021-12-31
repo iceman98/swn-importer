@@ -13,9 +13,9 @@ jobs:
     - uses: actions/setup-node@v2.5.1
       with:
         node-version: '14'
-        cache: 'npm'
-    - run: npm install
-    - run: npm run build:production
+        cache: 'yarn'
+    - run: yarn install
+    - run: yarn run build:production
     
     # Substitute the Manifest and Download URLs in the module.json
     - name: Substitute Manifest and Download Links For Versioned Ones
