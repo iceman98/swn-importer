@@ -1,15 +1,15 @@
 <div>
     <h2>General</h2>
     <p>
-        {{name}} is a {{type}}
+        {{name}} is a {{type}}.
     </p>
 
     <section class="secret">
         {{#if children}}
-        <h2>Points of interest</h2>
+        <h2>Systems in this sector</h2>
         <ul>
             {{#children}}
-            <li>{{link}} at {{position}}</li>
+            <li>{{link}} {{#if ../showType}}({{type}}){{/if}} at coordinates <strong>{{position}}</strong></li>
             {{/children}}
         </ul>
         {{/if}}

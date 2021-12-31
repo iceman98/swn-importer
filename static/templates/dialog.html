@@ -32,6 +32,12 @@
                     <label for="swni-dialog-gm" style="align-self: center;">Generate all journal entries as GM-Only. If
                         false, the visibility will depend on the "hidden" attribute of Sectors Without Number.</label>
                 </div>
+
+                <div class="flexrow">
+                    <input type="checkbox" id="swni-dialog-type" name="addTypeToEntityJournal" {{#if
+                        addTypeToEntityJournal}}checked{{/if}}>
+                    <label for="swni-dialog-type" style="align-self: center;">Add a type prefix to every entity journal (ex "Planet - XYZ").</label>
+                </div>
             </div>
         </section>
         <section>
