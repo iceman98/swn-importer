@@ -82,9 +82,10 @@ export class Importer {
                     return this.processSector(sectorData);
                 })
                 .then(r => {
+                    const sector = <Sector>r.sectorData?.sector.values().next().value;
                     new Dialog({
                         title: Utils.getLabel("RESULT-DIALOG-TITLE"),
-                        content: Utils.formatLabel("RESULT-DIALOG-CONTENT", { sectorName: r.sectorData?.sector.values().next().value.name, journals: r.entityJournals?.length }),
+                        content: Utils.formatLabel("RESULT-DIALOG-CONTENT", { sectorName: sector.name, journals: r.entityJournals?.length }),
                         buttons: {
                             ok: {
                                 icon: '<i class="fas fa-check"></i>',
@@ -158,9 +159,9 @@ export class Importer {
             systems.push(<PositionedEntity>system);
         })
 
-        const sector = sectorData.sector.values().next().value;
+        const sector = <Sector>sectorData.sector.values().next().value;
 
-        const template = this.getEntityTemplate('sector');
+        const template = this.getEntityTemplate(sector.type);
         const templateData = this.getEntityTemplateData(systems, sector, sector, journals);
 
         const entityJournalList = Utils.filterByTagId(journals, sector.id);
@@ -216,11 +217,11 @@ export class Importer {
         return renderTemplate(template, templateData);
     }
 
-    getEntityTemplateData(groupEntities: BaseEntity[], systemEntity: PositionedEntity, entity: BaseEntity, journals: JournalEntry[]): { [k: string]: any } {
+    getEntityTemplateData(groupEntities: BaseEntity[], systemEntity: BaseEntity, entity: BaseEntity, journals: JournalEntry[]): { [k: string]: any } {
         const childEntities = groupEntities.filter(e => e.parent === entity.id).map(e => {
             const childData: any = {
                 name: e.name,
-                type: this.getTypeName(e.type),
+                type: Utils.getTypeName(e.type),
                 orbiting: false,
                 link: this.getJournalLink(journals, e.id)
             }
@@ -231,19 +232,20 @@ export class Importer {
             return childData;
         });
 
+        const positionedEntity = ('x' in systemEntity && 'y' in systemEntity) ? <PositionedEntity>systemEntity : null;
+
         const data = {
             ...entity,
-            type: this.getTypeName(entity.type),
+            showType: !this.options.addTypeToEntityJournal,
+            type: Utils.getTypeName(entity.type),
             orbiting: !(entity.type === 'moonBase' || entity.type === 'researchBase'),
             parentIsEntity: !(entity.parentEntity === 'system' || entity.parentEntity === 'blackHole'),
             parentLink: this.getJournalLink(journals, entity.parent),
-            parentType: this.getTypeName(entity.parentEntity),
+            parentType: Utils.getTypeName(entity.parentEntity),
             systemLink: this.getJournalLink(journals, systemEntity.id),
-            systemType: this.getTypeName(systemEntity.type),
-            sunType: entity.parentEntity === 'system' ? "SUN" : "BLACK HOLE",
-            sunName: systemEntity.name,
+            systemType: Utils.getTypeName(systemEntity.type),
             children: childEntities,
-            coordinates: (entity.type !== 'sector') ? Utils.getSectorCoordinates(systemEntity.x - 1, systemEntity.y - 1) : null
+            coordinates: positionedEntity ? Utils.getSectorCoordinates(positionedEntity.x - 1, positionedEntity.y - 1) : null
         };
 
         return data;
@@ -293,7 +295,7 @@ export class Importer {
             gridUnits: Utils.getLabel("HEX-UNIT-NAME"),
             height: this.getSceneHeight(sector.rows),
             img: Utils.getImagePath("starField.png"),
-            name: Utils.formatLabel("SCENE-NAME", { name: sector.name }),
+            name: Utils.getEntityJournalName(sector, this.options.addTypeToEntityJournal),
             padding: 0,
             notes,
             journal: sectorJournal?.id,
@@ -617,7 +619,7 @@ export class Importer {
 
             const journal: Partial<JournalEntry.Data> = {
                 type: 'JournalEntry',
-                name: this.getJournalName(e),
+                name: Utils.getEntityJournalName(e, this.options.addTypeToEntityJournal),
                 folder: this.getContainingSystemFolder(sectorData, sectorFolder, systemFolders, e),
                 content: e.name,
                 flags: Utils.getEntityFlags(e),
@@ -645,54 +647,13 @@ export class Importer {
         }
     }
 
-    getTypeName(type: keyof SectorData): string | null {
-        switch (type) {
-            case 'asteroidBase':
-                return Utils.getLabel("ASTEROID-BASE");
-            case 'asteroidBelt':
-                return Utils.getLabel("ASTEROID-BELT");
-            case 'blackHole':
-                return Utils.getLabel("BLACK-HOLE");
-            case 'deepSpaceStation':
-                return Utils.getLabel("DEEP-SPACE-STATION");
-            case 'gasGiantMine':
-                return Utils.getLabel("GAS-GIANT-MINE");
-            case 'moon':
-                return Utils.getLabel("MOON");
-            case 'moonBase':
-                return Utils.getLabel("MOON-BASE");
-            case 'orbitalRuin':
-                return Utils.getLabel("ORBITAL-RUIN");
-            case 'planet':
-                return Utils.getLabel("PLANET");
-            case 'refuelingStation':
-                return Utils.getLabel("REFUELING-STATION");
-            case 'researchBase':
-                return Utils.getLabel("RESEARCH-BASE");
-            case 'sector':
-                return Utils.getLabel("SECTOR");
-            case 'spaceStation':
-                return Utils.getLabel("SPACE-STATION");
-            case 'system':
-                return Utils.getLabel("SYSTEM");
-            default:
-                return null;
-        }
-    }
-
-    getJournalName(entity: BaseEntity): string {
-        const typeName = this.getTypeName(entity.type);
-        return Utils.formatLabel("ENTITY-JOURNAL-NAME", { type: typeName, name: entity.name });
-    }
-
     createSystemJournalFolders(sectorData: SectorData, parentFolder: Folder | null): Promise<Folder[]> {
         if (parentFolder) {
             const folders: Partial<Folder.Data>[] = [];
 
             sectorData.system.forEach((v, _, __) => {
-                const systemName = Utils.formatLabel("SYSTEM-FOLDER-NAME", { name: v.name });
                 folders.push({
-                    name: systemName,
+                    name: Utils.getEntityJournalName(v, this.options.addTypeToEntityJournal),
                     type: "JournalEntry",
                     parent: parentFolder,
                     flags: Utils.getEntityFlags(v),
@@ -700,9 +661,8 @@ export class Importer {
             });
 
             sectorData.blackHole.forEach((v, _, __) => {
-                const systemName = Utils.formatLabel("BLACK-HOLE-FOLDER-NAME", { name: v.name });
                 folders.push({
-                    name: systemName,
+                    name: Utils.getEntityJournalName(v, this.options.addTypeToEntityJournal),
                     type: "JournalEntry",
                     parent: parentFolder,
                     flags: Utils.getEntityFlags(v),
@@ -717,9 +677,8 @@ export class Importer {
 
     createSectorJournalFolder(sectorData: SectorData): Promise<Folder | null> {
         const sector = sectorData.sector.values().next().value;
-        const sectorName = Utils.formatLabel("SECTOR-FOLDER-NAME", { name: sector.name });
         return Folder.create({
-            name: sectorName,
+            name: Utils.getEntityJournalName(sector, this.options.addTypeToEntityJournal),
             type: "JournalEntry",
             flags: Utils.getEntityFlags(sector),
         });

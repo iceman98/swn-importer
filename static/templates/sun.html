@@ -1,7 +1,7 @@
 <div>
     <h2>General</h2>
     <p>
-        {{name}} is a {{type}} in {{parentLink}} at coordinates {{coordinates}}
+        {{name}} is a {{type}} in {{parentLink}} at coordinates <strong>{{coordinates}}</strong>.
     </p>
 
     <section class="secret">
@@ -9,7 +9,7 @@
         <h2>Points of interest</h2>
         <ul>
             {{#children}}
-            <li>{{link}}</li>
+            <li>{{link}} {{#if ../showType}}({{type}}){{/if}}</li>
             {{/children}}
         </ul>
         {{/if}}

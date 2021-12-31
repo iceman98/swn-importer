@@ -7,13 +7,6 @@
     "RESULT-DIALOG-CONTENT": "The sector {sectorName} has completed successfully. {journals} journal entries where created.",
     "ACCEPT-BUTTON": "Accept",
 
-    "SCENE-NAME": "Sector {name}",
-    "SYSTEM-FOLDER-NAME": "System - {name}",
-    "SECTOR-FOLDER-NAME": "Sector - {name}",
-    "BLACK-HOLE-FOLDER-NAME": "Black Hole - {name}",
-
-    "ENTITY-JOURNAL-NAME": "{type} - {name}",
-
     "HEX-UNIT-NAME": "units",
 
     "ASTEROID-BASE": "Asteroid Base",

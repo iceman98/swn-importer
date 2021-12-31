@@ -1,24 +1,20 @@
 <div>
     <h2>General</h2>
     <p>
-        {{name}} is a {{type}}
-        {{#if orbiting}}
-        in orbit
-        {{else}}
-        on the surface
-        {{/if}}
-        of {{parentLink}}
-        {{#if parentIsEntity}}
-        , in the system {{systemLink}}
-        {{/if}}
+        {{name}} is a {{type}} {{#if orbiting}}in orbit{{else}}on the surface{{/if}} of {{parentLink}} {{#if showType}}({{parentType}}){{/if}}.
     </p>
+    {{#if parentIsEntity}}
+        <p>
+            It's in the system {{systemLink}} {{#if showType}}({{systemType}}){{/if}}.
+        </p>
+    {{/if}}
 
     <section class="secret">
         {{#if children}}
         <h2>Points of interest</h2>
         <ul>
             {{#children}}
-            <li>{{link}}</li>
+            <li>{{link}} {{#if ../showType}}({{type}}){{/if}}</li>
             {{/children}}
         </ul>
         {{/if}}

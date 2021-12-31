@@ -11,6 +11,49 @@ export class Utils {
         return game.i18n.localize(this.LOCALIZATION_NAMESPACE + "." + name);
     }
 
+    static getEntityJournalName(entity: BaseEntity, includeType: boolean): string {
+        if (includeType) {
+            return `${this.getTypeName(entity.type)} - ${entity.name}`;
+        } else {
+            return entity.name;
+        }
+    }
+
+    static getTypeName(type: keyof SectorData): string {
+        switch (type) {
+            case 'asteroidBase':
+                return Utils.getLabel("ASTEROID-BASE");
+            case 'asteroidBelt':
+                return Utils.getLabel("ASTEROID-BELT");
+            case 'blackHole':
+                return Utils.getLabel("BLACK-HOLE");
+            case 'deepSpaceStation':
+                return Utils.getLabel("DEEP-SPACE-STATION");
+            case 'gasGiantMine':
+                return Utils.getLabel("GAS-GIANT-MINE");
+            case 'moon':
+                return Utils.getLabel("MOON");
+            case 'moonBase':
+                return Utils.getLabel("MOON-BASE");
+            case 'orbitalRuin':
+                return Utils.getLabel("ORBITAL-RUIN");
+            case 'planet':
+                return Utils.getLabel("PLANET");
+            case 'refuelingStation':
+                return Utils.getLabel("REFUELING-STATION");
+            case 'researchBase':
+                return Utils.getLabel("RESEARCH-BASE");
+            case 'sector':
+                return Utils.getLabel("SECTOR");
+            case 'spaceStation':
+                return Utils.getLabel("SPACE-STATION");
+            case 'system':
+                return Utils.getLabel("SYSTEM");
+            default:
+                return "";
+        }
+    }
+
     static formatLabel(name: string, data: { [k: string]: string | number | null | undefined }): string {
         return game.i18n.format(this.LOCALIZATION_NAMESPACE + "." + name, data);
     }
