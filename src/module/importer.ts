@@ -409,8 +409,8 @@ export class Importer {
                 result.push(m);
                 entities.filter(mb => mb.type === 'moonBase' && mb.parent === m.id).forEach(mb => result.push(mb));
                 entities.filter(rb => rb.type === 'researchBase' && rb.parent === m.id).forEach(rb => result.push(rb));
-                entities.filter(or => or.type === 'orbitalRuin' && or.parent === m.id).forEach(or => result.push(or));
                 entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === m.id).forEach(rs => result.push(rs));
+                entities.filter(or => or.type === 'orbitalRuin' && or.parent === m.id).forEach(or => result.push(or));
             });
             entities.filter(rb => rb.type === 'researchBase' && rb.parent === p.id).forEach(rb => result.push(rb));
             entities.filter(ggm => ggm.type === 'gasGiantMine' && ggm.parent === p.id).forEach(ggm => result.push(ggm));
@@ -423,6 +423,7 @@ export class Importer {
             result.push(ab);
             entities.filter(b => b.type === 'asteroidBase' && b.parent === ab.id).forEach(b => result.push(b));
             entities.filter(rs => rs.type === 'refuelingStation' && rs.parent === ab.id).forEach(rs => result.push(rs));
+            entities.filter(rb => rb.type === 'researchBase' && rb.parent === ab.id).forEach(rb => result.push(rb));
             entities.filter(ss => ss.type === 'spaceStation' && ss.parent === ab.id).forEach(ss => result.push(ss));
         });
 
@@ -435,7 +436,12 @@ export class Importer {
         entities.filter(dss => dss.type === 'deepSpaceStation' && dss.parentEntity === 'system').forEach(dss => result.push(dss));
         entities.filter(dss => dss.type === 'deepSpaceStation' && dss.parentEntity === 'blackHole').forEach(dss => result.push(dss));
 
+        entities.filter(or => or.type === 'orbitalRuin' && or.parentEntity === 'system').forEach(or => result.push(or));
+        entities.filter(or => or.type === 'orbitalRuin' && or.parentEntity === 'blackHole').forEach(or => result.push(or));
+
         if (result.length != entities.length) {
+            const missing = entities.filter(e => !result.includes(e));
+            missing.forEach(m=>console.log(`Missing entity ${m.name} (${m.type}) within parent ${m.parentEntity}`))
             console.log(entities, result);
             throw new Error("Some entity is not linked with its parent");
         }
