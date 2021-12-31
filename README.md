@@ -28,7 +28,9 @@ https://github.com/iceman98/swn-importer/releases/latest/download/module.json
 
 7. Select your options and click "Import". A message will indicate that the sector has been successfully imported.
 
-8. Enable this options if you would like to see the scene pins always
+![import result](https://i.imgur.com/O1YNs2z.png)
+
+8. Enable this option if you would like to see the scene pins always
 
 ![pin options](https://i.imgur.com/cNkYS23.png)
 
