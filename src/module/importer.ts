@@ -423,7 +423,7 @@ export class Importer {
         entities.filter(s => s.type === 'system' && s.parentEntity === 'sector').forEach(s => result.push(s));
         entities.filter(bh => bh.type === 'blackHole' && bh.parentEntity === 'sector').forEach(bh => result.push(bh));
 
-        entities.filter(p => p.type === 'planet' && p.parentEntity === 'system').forEach(p => {
+        entities.filter(p => p.type === 'planet' && (p.parentEntity === 'system' || p.parentEntity === 'blackHole')).forEach(p => {
             result.push(p);
             entities.filter(m => m.type === 'moon' && m.parent === p.id).forEach(m => {
                 result.push(m);
@@ -589,6 +589,8 @@ export class Importer {
 
         if (column % 2 === 0) {
             verticalOffset = HEX_VERTICAL_RADIUS;
+        } else {
+            verticalOffset = 2 * HEX_VERTICAL_RADIUS;
         }
 
         return {
