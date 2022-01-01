@@ -132,11 +132,23 @@ export class Importer {
             })
             .then(s => {
                 holder.scene = s;
+                return this.updateSceneThumbnail(s);
+            })
+            .then(s => {
+                holder.scene = s;
                 return this.updateJournalContent(<SectorData>holder.sectorData, <Map<string, BaseEntity[]>>holder.groupedEntities, <JournalEntry[]>holder.entityJournals);
             })
             .then(_ => {
                 return Promise.resolve(holder);
             });
+    }
+
+    updateSceneThumbnail(scene: Scene | null): Promise<Scene | null> {
+        if (scene) {
+            return scene.createThumbnail({ img: null }).then(t => scene.update(<any>{ thumb: t.thumb }, {}));
+        } else {
+            return Promise.resolve(null);
+        }
     }
 
     updateJournalContent(sectorData: SectorData, groupedEntities: Map<string, BaseEntity[]>, journals: JournalEntry[]): Promise<JournalEntry[]> {
