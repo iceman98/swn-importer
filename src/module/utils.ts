@@ -1,4 +1,5 @@
 import { BaseEntity } from './model/base-entity';
+import { PositionedEntity } from './model/positioned-entity';
 import { Sector } from './model/sector';
 import { SectorData } from './model/sector-data';
 
@@ -110,7 +111,11 @@ export class Utils {
         });
     }
 
-    static getSectorCoordinates(column: number, row: number): string {
+    static getSystemCoordinates(system: PositionedEntity): string {
+        return this.getHexCoordinates(system.x - 1, system.y - 1);
+    }
+
+    static getHexCoordinates(column: number, row: number): string {
         const xt = column < 10 ? "0" + column : column.toString();
         const yt = row < 10 ? "0" + row : row.toString();
         return xt + yt;

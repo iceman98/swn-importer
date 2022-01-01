@@ -227,7 +227,7 @@ export class Importer {
             }
             if ('x' in e) {
                 const system = <PositionedEntity>e;
-                childData.position = Utils.getSectorCoordinates(system.x - 1, system.y - 1);
+                childData.position = Utils.getSystemCoordinates(system);
             }
             return childData;
         });
@@ -245,7 +245,7 @@ export class Importer {
             systemLink: this.getJournalLink(journals, systemEntity.id),
             systemType: Utils.getTypeName(systemEntity.type),
             children: childEntities,
-            coordinates: positionedEntity ? Utils.getSectorCoordinates(positionedEntity.x - 1, positionedEntity.y - 1) : null
+            coordinates: positionedEntity ? Utils.getSystemCoordinates(positionedEntity) : null
         };
 
         return data;
@@ -316,7 +316,7 @@ export class Importer {
                 const label: any = {
                     x: coordinates.x,
                     y: Math.floor(coordinates.y + (9 / 10) * HEX_VERTICAL_RADIUS),
-                    text: Utils.getSectorCoordinates(column, row),
+                    text: Utils.getHexCoordinates(column, row),
                     fontSize: 16
                 };
                 labels.push(label);
