@@ -227,7 +227,7 @@ export class Importer {
             }
             if ('x' in e) {
                 const system = <PositionedEntity>e;
-                childData.position = Utils.getSectorCoordinates(system.x - 1, system.y - 1);
+                childData.position = Utils.getSystemCoordinates(system);
             }
             return childData;
         });
@@ -245,7 +245,7 @@ export class Importer {
             systemLink: this.getJournalLink(journals, systemEntity.id),
             systemType: Utils.getTypeName(systemEntity.type),
             children: childEntities,
-            coordinates: positionedEntity ? Utils.getSectorCoordinates(positionedEntity.x - 1, positionedEntity.y - 1) : null
+            coordinates: positionedEntity ? Utils.getSystemCoordinates(positionedEntity) : null
         };
 
         return data;
@@ -295,7 +295,7 @@ export class Importer {
             gridUnits: Utils.getLabel("HEX-UNIT-NAME"),
             height: this.getSceneHeight(sector.rows),
             img: Utils.getImagePath("starField.png"),
-            name: Utils.getEntityJournalName(sector, this.options.addTypeToEntityJournal),
+            name: sector.name,
             padding: 0,
             notes,
             journal: sectorJournal?.id,
@@ -316,7 +316,7 @@ export class Importer {
                 const label: any = {
                     x: coordinates.x,
                     y: Math.floor(coordinates.y + (9 / 10) * HEX_VERTICAL_RADIUS),
-                    text: Utils.getSectorCoordinates(column, row),
+                    text: Utils.getHexCoordinates(column, row),
                     fontSize: 16
                 };
                 labels.push(label);
@@ -670,7 +670,7 @@ export class Importer {
 
             sectorData.system.forEach((v, _, __) => {
                 folders.push({
-                    name: Utils.getEntityJournalName(v, this.options.addTypeToEntityJournal),
+                    name: Utils.getSystemFolderName(v, this.options.prefixSystemFoldersWithCoordinates),
                     type: "JournalEntry",
                     parent: parentFolder,
                     flags: Utils.getEntityFlags(v),
@@ -679,7 +679,7 @@ export class Importer {
 
             sectorData.blackHole.forEach((v, _, __) => {
                 folders.push({
-                    name: Utils.getEntityJournalName(v, this.options.addTypeToEntityJournal),
+                    name: Utils.getSystemFolderName(v, this.options.prefixSystemFoldersWithCoordinates),
                     type: "JournalEntry",
                     parent: parentFolder,
                     flags: Utils.getEntityFlags(v),
@@ -693,9 +693,9 @@ export class Importer {
     }
 
     createSectorJournalFolder(sectorData: SectorData): Promise<Folder | null> {
-        const sector = sectorData.sector.values().next().value;
+        const sector = <Sector>sectorData.sector.values().next().value;
         return Folder.create({
-            name: Utils.getEntityJournalName(sector, this.options.addTypeToEntityJournal),
+            name: sector.name,
             type: "JournalEntry",
             flags: Utils.getEntityFlags(sector),
         });

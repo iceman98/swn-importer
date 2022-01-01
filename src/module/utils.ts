@@ -1,4 +1,5 @@
 import { BaseEntity } from './model/base-entity';
+import { PositionedEntity } from './model/positioned-entity';
 import { Sector } from './model/sector';
 import { SectorData } from './model/sector-data';
 
@@ -9,6 +10,10 @@ export class Utils {
 
     static getLabel(name: string): string {
         return game.i18n.localize(this.LOCALIZATION_NAMESPACE + "." + name);
+    }
+
+    static getSystemFolderName(system: PositionedEntity, includeCoordinates: boolean): string {
+        return includeCoordinates ? `[${this.getSystemCoordinates(system)}] ${system.name}` : system.name;
     }
 
     static getEntityJournalName(entity: BaseEntity, includeType: boolean): string {
@@ -110,7 +115,11 @@ export class Utils {
         });
     }
 
-    static getSectorCoordinates(column: number, row: number): string {
+    static getSystemCoordinates(system: PositionedEntity): string {
+        return this.getHexCoordinates(system.x - 1, system.y - 1);
+    }
+
+    static getHexCoordinates(column: number, row: number): string {
         const xt = column < 10 ? "0" + column : column.toString();
         const yt = row < 10 ? "0" + row : row.toString();
         return xt + yt;
