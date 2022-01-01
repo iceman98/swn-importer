@@ -4,4 +4,5 @@ export class Options {
     onlyGMJournals = true;
     addTypeToEntityJournal = false;
     generateHexName = false;
+    prefixSystemFoldersWithCoordinates = true;
 }
