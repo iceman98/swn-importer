@@ -295,7 +295,7 @@ export class Importer {
             gridUnits: Utils.getLabel("HEX-UNIT-NAME"),
             height: this.getSceneHeight(sector.rows),
             img: Utils.getImagePath("starField.png"),
-            name: Utils.getEntityJournalName(sector, this.options.addTypeToEntityJournal),
+            name: sector.name,
             padding: 0,
             notes,
             journal: sectorJournal?.id,
@@ -668,7 +668,7 @@ export class Importer {
 
             sectorData.system.forEach((v, _, __) => {
                 folders.push({
-                    name: Utils.getEntityJournalName(v, this.options.addTypeToEntityJournal),
+                    name: Utils.getSystemFolderName(v, this.options.prefixSystemFoldersWithCoordinates),
                     type: "JournalEntry",
                     parent: parentFolder,
                     flags: Utils.getEntityFlags(v),
@@ -677,7 +677,7 @@ export class Importer {
 
             sectorData.blackHole.forEach((v, _, __) => {
                 folders.push({
-                    name: Utils.getEntityJournalName(v, this.options.addTypeToEntityJournal),
+                    name: Utils.getSystemFolderName(v, this.options.prefixSystemFoldersWithCoordinates),
                     type: "JournalEntry",
                     parent: parentFolder,
                     flags: Utils.getEntityFlags(v),
@@ -691,9 +691,9 @@ export class Importer {
     }
 
     createSectorJournalFolder(sectorData: SectorData): Promise<Folder | null> {
-        const sector = sectorData.sector.values().next().value;
+        const sector = <Sector>sectorData.sector.values().next().value;
         return Folder.create({
-            name: Utils.getEntityJournalName(sector, this.options.addTypeToEntityJournal),
+            name: sector.name,
             type: "JournalEntry",
             flags: Utils.getEntityFlags(sector),
         });

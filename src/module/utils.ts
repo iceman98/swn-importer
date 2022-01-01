@@ -12,6 +12,10 @@ export class Utils {
         return game.i18n.localize(this.LOCALIZATION_NAMESPACE + "." + name);
     }
 
+    static getSystemFolderName(system: PositionedEntity, includeCoordinates: boolean): string {
+        return includeCoordinates ? `[${this.getSystemCoordinates(system)}] ${system.name}` : system.name;
+    }
+
     static getEntityJournalName(entity: BaseEntity, includeType: boolean): string {
         if (includeType) {
             return `${this.getTypeName(entity.type)} - ${entity.name}`;
