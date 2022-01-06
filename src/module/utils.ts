@@ -1,7 +1,7 @@
 import { BaseEntity } from './model/base-entity';
 import { PositionedEntity } from './model/positioned-entity';
-import { Sector } from './model/sector';
 import { SectorData } from './model/sector-data';
+import { TreeNode } from './model/tree-node';
 
 export class Utils {
 
@@ -10,18 +10,6 @@ export class Utils {
 
     static getLabel(name: string): string {
         return game.i18n.localize(this.LOCALIZATION_NAMESPACE + "." + name);
-    }
-
-    static getSystemFolderName(system: PositionedEntity, includeCoordinates: boolean): string {
-        return includeCoordinates ? `[${this.getSystemCoordinates(system)}] ${system.name}` : system.name;
-    }
-
-    static getEntityJournalName(entity: BaseEntity, includeType: boolean): string {
-        if (includeType) {
-            return `${this.getTypeName(entity.type)} - ${entity.name}`;
-        } else {
-            return entity.name;
-        }
     }
 
     static getTypeName(type: keyof SectorData): string {
@@ -63,12 +51,27 @@ export class Utils {
         return game.i18n.format(this.LOCALIZATION_NAMESPACE + "." + name, data);
     }
 
-    static getEntityFlags(entity: BaseEntity | Sector): { [k: string]: any } {
+    static getNodeFlags(node: TreeNode): { [k: string]: any } {
         const flags: { [k: string]: any } = {};
-        flags[this.MODULE_ID + "." + "id"] = entity.id;
-        flags[this.MODULE_ID + "." + "type"] = entity.type;
+        flags[this.MODULE_ID + "." + "id"] = node.id;
+        flags[this.MODULE_ID + "." + "type"] = node.type;
         return flags;
     }
+
+    static getIdFlag(entity: Entity): string {
+        return <string>entity.getFlag(Utils.MODULE_ID, "id");
+    }
+
+    // static treeAsPreorder(node: TreeNode): TreeNode[] {
+    //     const nodes: TreeNode[] = [];
+    //     Utils.preorderTraversal(node, nodes);
+    //     return nodes;
+    // }
+
+    // private static preorderTraversal(node: TreeNode, list: TreeNode[]): void {
+    //     node.children.forEach(child => Utils.preorderTraversal(child, list));
+    //     list.push(node);
+    // }
 
     static getAsList<E>(entities: E | E[] | null): E[] {
         if (entities) {
@@ -82,11 +85,11 @@ export class Utils {
         }
     }
 
-    static filterByTagId(entities: Entity[], id: string): Entity[] {
-        return entities.filter(e => e.getFlag(this.MODULE_ID, "id") === id);
-    }
+    // static filterByTagId(entities: Entity[], id: string): Entity[] {
+    //     return entities.filter(e => e.getFlag(this.MODULE_ID, "id") === id);
+    // }
 
-    static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (type: keyof SectorData, entities: Map<string, BaseEntity>) => void) {
+    static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (type: keyof SectorData, entities: { [k: string]: BaseEntity }) => void) {
         let entities: (keyof SectorData)[];
 
         switch (types) {
@@ -102,16 +105,16 @@ export class Utils {
         }
 
         entities.forEach(type => {
-            const map = <Map<string, BaseEntity>>sectorData[type];
+            const map = <{ [k: string]: BaseEntity }>sectorData[type];
             consumer(type, map);
         });
     }
 
     static forEachEntity(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (key: string, entity: BaseEntity, type: keyof SectorData) => void) {
         this.forEachEntityType(sectorData, types, (type, map) => {
-            map.forEach((v, k, _) => {
-                consumer(k, v, type);
-            });
+            for (const x in map) {
+                consumer(x, map[x], type);
+            }
         });
     }
 
@@ -133,12 +136,44 @@ export class Utils {
         return `modules/${this.MODULE_ID}/templates/${name}`;
     }
 
-    static getMapValues<K, V>(map: Map<K, V>): V[] {
-        const values: V[] = [];
-        map.forEach((v, _, __) => {
-            values.push(v);
+    // static getMapValues<V>(map: { [k: string]: V }): V[] {
+    //     const values: V[] = [];
+    //     for (const k in map) {
+    //         values.push(map[k]);
+    //     }
+    //     return values;
+    // }
+
+    static getDataAsNodeMap(sectorData: SectorData) {
+        const nodeMap = new Map<string, TreeNode>();
+        Utils.forEachEntity(sectorData, "all", (k, e, t) => {
+            const node: TreeNode = {
+                id: k,
+                entity: e,
+                type: t,
+                children: [],
+                coordinates: ('x' in e) ? Utils.getSystemCoordinates(<PositionedEntity>e) : undefined,
+                parent: undefined,
+                folder: undefined,
+                journal: undefined
+            };
+            nodeMap.set(k, node);
         });
-        return values;
+        return nodeMap;
+    }
+
+    static linkTreeNodes(nodeMap: Map<string, TreeNode>): void {
+        nodeMap.forEach(node => {
+            if (node.entity.parent) {
+                const parent = nodeMap.get(node.entity.parent);
+                if (parent) {
+                    if (!parent.children.includes(node)) {
+                        parent.children.push(node);
+                    }
+                    node.parent = parent;
+                }
+            }
+        });
     }
 
 }
