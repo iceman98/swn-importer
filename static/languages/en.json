@@ -4,7 +4,7 @@
     "IMPORT-BUTTON-TOOLTIP": "Import a sector from Sectors Without Number",
 
     "RESULT-DIALOG-TITLE": "Import Completed",
-    "RESULT-DIALOG-CONTENT": "The sector {sectorName} has completed successfully. {journals} journal entries where created.",
+    "RESULT-DIALOG-CONTENT": "The sector {sectorName} has been imported successfully. {journals} journal entries where created in {time} milliseconds.",
     "ACCEPT-BUTTON": "Accept",
 
     "HEX-UNIT-NAME": "units",

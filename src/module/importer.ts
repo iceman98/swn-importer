@@ -50,6 +50,7 @@ export class Importer {
     }
 
     importFile(fileName: string, options: Options): Promise<void> {
+        const start = new Date();
         this.options = options;
 
         if (game.user?.isGM) {
@@ -82,10 +83,11 @@ export class Importer {
                     return this.processSector(sectorData);
                 })
                 .then(r => {
+                    const time = (new Date()).getTime() - start.getTime();
                     const sector = <Sector>r.sectorData?.sector.values().next().value;
                     new Dialog({
                         title: Utils.getLabel("RESULT-DIALOG-TITLE"),
-                        content: Utils.formatLabel("RESULT-DIALOG-CONTENT", { sectorName: sector.name, journals: r.entityJournals?.length }),
+                        content: Utils.formatLabel("RESULT-DIALOG-CONTENT", { sectorName: sector.name, journals: r.entityJournals?.length, time }),
                         buttons: {
                             ok: {
                                 icon: '<i class="fas fa-check"></i>',
