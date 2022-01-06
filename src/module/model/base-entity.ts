@@ -1,9 +1,8 @@
 import { Attributes } from './attributes';
 import { ParentEntityType } from './parent-entity-type';
-import { PlanetAttributes } from './planet-attributes';
 
 export interface BaseEntity {
-    attributes: Attributes | PlanetAttributes;
+    attributes: Attributes;
     created: string;
     creator: string;
     isHidden: boolean;

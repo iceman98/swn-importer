@@ -1,3 +1,4 @@
+import { Attributes } from './model/attributes';
 import { BaseEntity } from './model/base-entity';
 import { PositionedEntity } from './model/positioned-entity';
 import { SectorData } from './model/sector-data';
@@ -176,4 +177,36 @@ export class Utils {
         });
     }
 
+    static getSystemNode(node: TreeNode): TreeNode | undefined {
+        if (node.type === 'system' || node.type === 'blackHole') {
+            return node;
+        } else {
+            if (node.parent) {
+                return Utils.getSystemNode(node.parent);
+            } else {
+                return undefined;
+            }
+        }
+    }
+
+    static getAttributeName(name: keyof Attributes): string {
+        switch (name) {
+            case 'occupation':
+                return "Occupation";
+            case 'situation':
+                return "Situation";
+            case 'atmosphere':
+                return "Atmosphere";
+            case 'biosphere':
+                return "Biosphere";
+            case 'population':
+                return "Population";
+            case 'techLevel':
+                return "Technology level";
+            case 'temperature':
+                return "Temperature";
+            default:
+                return name;
+        }
+    }
 }

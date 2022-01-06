@@ -74,7 +74,11 @@ export class SectorLoader {
     }
 
     private async updateJournalContents(sectorTree: SectorTree) {
-        sectorTree; //TODO: implement
+        const journalData: Partial<JournalEntry.Data>[] = [];
+        for (const node of sectorTree.nodeMap.values()) {
+            journalData.push(await JournalUtils.getUpdateJournalData(node, this.options));
+        }
+        await (<any>JournalEntry).updateDocuments(journalData);
     }
 
     private async createScene(sectorTree: SectorTree) {
