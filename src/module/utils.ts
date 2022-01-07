@@ -1,3 +1,4 @@
+import { Constants } from './constants';
 import { Attributes } from './model/attributes';
 import { BaseEntity } from './model/base-entity';
 import { PositionedEntity } from './model/positioned-entity';
@@ -6,11 +7,10 @@ import { TreeNode } from './model/tree-node';
 
 export class Utils {
 
-    static readonly MODULE_ID = "swn-importer";
-    static readonly LOCALIZATION_NAMESPACE = "SWN-IMPORTER";
+
 
     static getLabel(name: string): string {
-        return game.i18n.localize(this.LOCALIZATION_NAMESPACE + "." + name);
+        return game.i18n.localize(Constants.LOCALIZATION_NAMESPACE + "." + name);
     }
 
     static getTypeName(type: keyof SectorData): string {
@@ -49,30 +49,40 @@ export class Utils {
     }
 
     static formatLabel(name: string, data: { [k: string]: string | number | null | undefined }): string {
-        return game.i18n.format(this.LOCALIZATION_NAMESPACE + "." + name, data);
+        return game.i18n.format(Constants.LOCALIZATION_NAMESPACE + "." + name, data);
     }
 
     static getNodeFlags(node: TreeNode): { [k: string]: any } {
         const flags: { [k: string]: any } = {};
-        flags[this.MODULE_ID + "." + "id"] = node.id;
-        flags[this.MODULE_ID + "." + "type"] = node.type;
+        flags[Constants.MODULE_ID + "." + "id"] = node.id;
+        flags[Constants.MODULE_ID + "." + "type"] = node.type;
         return flags;
     }
 
     static getIdFlag(entity: Entity): string {
-        return <string>entity.getFlag(Utils.MODULE_ID, "id");
+        return <string>entity.getFlag(Constants.MODULE_ID, "id");
     }
 
-    // static treeAsPreorder(node: TreeNode): TreeNode[] {
-    //     const nodes: TreeNode[] = [];
-    //     Utils.preorderTraversal(node, nodes);
-    //     return nodes;
-    // }
+    static traversal(node: TreeNode, type: 'preorder' | 'postorder'): TreeNode[] {
+        const list: TreeNode[] = [];
 
-    // private static preorderTraversal(node: TreeNode, list: TreeNode[]): void {
-    //     node.children.forEach(child => Utils.preorderTraversal(child, list));
-    //     list.push(node);
-    // }
+        switch (type) {
+            case 'postorder':
+                node.children.forEach(child => {
+                    list.push(...this.traversal(child, type));
+                });
+                list.push(node);
+                break;
+            case 'preorder':
+                list.push(node);
+                node.children.forEach(child => {
+                    list.push(...this.traversal(child, type));
+                });
+                break;
+        }
+
+        return list;
+    }
 
     static getAsList<E>(entities: E | E[] | null): E[] {
         if (entities) {
@@ -130,11 +140,11 @@ export class Utils {
     }
 
     static getImagePath(name: string): string {
-        return `modules/${this.MODULE_ID}/images/${name}`;
+        return `modules/${Constants.MODULE_ID}/images/${name}`;
     }
 
     static getTemplatePath(name: string): string {
-        return `modules/${this.MODULE_ID}/templates/${name}`;
+        return `modules/${Constants.MODULE_ID}/templates/${name}`;
     }
 
     // static getMapValues<V>(map: { [k: string]: V }): V[] {
@@ -208,5 +218,17 @@ export class Utils {
             default:
                 return name;
         }
+    }
+
+    static getContainingSystem(node: TreeNode): TreeNode {
+        if (node.type === 'system' || node.type === 'blackHole') {
+            return node;
+        } else {
+            if (node.parent) {
+                return this.getContainingSystem(node.parent);
+            }
+        }
+
+        throw new Error("Couldnt find containing system of " + node.id);
     }
 }

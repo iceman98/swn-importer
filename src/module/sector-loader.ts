@@ -3,6 +3,7 @@ import { JournalUtils } from './journal-utils';
 import { Options } from './model/options';
 import { SectorData } from './model/sector-data';
 import { SectorTree } from './model/sector-tree';
+import { SceneUtils } from './scene-utils';
 import { Utils } from './utils';
 
 export class SectorLoader {
@@ -82,7 +83,13 @@ export class SectorLoader {
     }
 
     private async createScene(sectorTree: SectorTree) {
-        sectorTree; //TODO: implement
+        const scene = await Scene.create(SceneUtils.getSceneData(sectorTree, this.options));
+        if (scene) {
+            const thumbnail = await scene.createThumbnail({ img: null });
+            await scene.update(<any>{ thumb: thumbnail.thumb }, {});
+        } else {
+            throw new Error("Couldn't create the scene");
+        }
     }
 
 }
