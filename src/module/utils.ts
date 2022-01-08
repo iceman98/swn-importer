@@ -62,7 +62,7 @@ export class Utils {
      * @param data The data for the label parameters
      * @returns The localized label
      */
-    static formatLabel(name: string, data: { [k: string]: any }): string {
+    static formatLabel(name: string, data: Record<string, any>): string {
         return game.i18n.format(Constants.LOCALIZATION_NAMESPACE + "." + name, data);
     }
 
@@ -71,8 +71,8 @@ export class Utils {
      * @param node The node to generate flags for
      * @returns The Foundry flags
      */
-    static getNodeFlags(node: TreeNode): { [k: string]: any } {
-        const flags: { [k: string]: any } = {};
+    static getNodeFlags(node: TreeNode): Record<string, any> {
+        const flags: Record<string, any> = {};
         flags[Constants.MODULE_ID + "." + "id"] = node.id;
         flags[Constants.MODULE_ID + "." + "type"] = node.type;
         return flags;
@@ -278,12 +278,12 @@ export class Utils {
         throw new Error("Entities are not linked: " + ascendant.id + " - " + descendant.id);
     }
 
-    private static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (type: keyof SectorData, entities: { [k: string]: BaseEntity }) => void) {
+    private static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (type: keyof SectorData, entities: Record<string, BaseEntity>) => void) {
         let entities: (keyof SectorData)[];
 
         switch (types) {
             case 'all':
-                entities = ['asteroidBase', 'asteroidBelt', 'blackHole', 'deepSpaceStation', 'gasGiantMine', 'moon', 'moonBase', 'orbitalRuin', 'planet', 'refuelingStation', 'researchBase', 'sector', 'spaceStation', 'system'];
+                entities = ['asteroidBase', 'asteroidBelt', 'blackHole', 'deepSpaceStation', 'gasGiantMine', 'moon', 'moonBase', 'note', 'orbitalRuin', 'planet', 'refuelingStation', 'researchBase', 'sector', 'spaceStation', 'system'];
                 break;
             case 'only-basic':
                 entities = ['asteroidBase', 'asteroidBelt', 'deepSpaceStation', 'gasGiantMine', 'moon', 'moonBase', 'orbitalRuin', 'planet', 'refuelingStation', 'researchBase', 'spaceStation'];
@@ -294,7 +294,7 @@ export class Utils {
         }
 
         entities.forEach(type => {
-            const map = <{ [k: string]: BaseEntity }>sectorData[type];
+            const map = <Record<string, BaseEntity>>sectorData[type];
             consumer(type, map);
         });
     }

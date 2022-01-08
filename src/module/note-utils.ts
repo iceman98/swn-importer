@@ -44,7 +44,10 @@ export class NoteUtils {
             nodes = [system, ...system.children];
         }
 
-        const notes = nodes.map((node, index) => <Note.Data>this.createEntityNote(node, nodes.length, index));
+        const notes = nodes
+            .filter(node => node.type !== 'note')
+            .map((node, index, list) => <Note.Data>this.createEntityNote(node, list.length, index));
+
         return notes;
     }
 

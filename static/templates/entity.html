@@ -4,7 +4,7 @@
         <div>
             <p>
                 <strong>{{name}}</strong> is a {{type}} {{location}} {{parentLink}} {{#if
-                showType}}({{parentType}}){{/if}}.
+                showType}}({{parentType}}){{/if}} at coordinates <strong>{{coordinates}}</strong>.
             </p>
             {{#if systemLink}}
             <p>
@@ -26,16 +26,25 @@
         <p>{{description}}</p>
         {{/if}}
 
+        {{#if notes}}
+        <h3>Notes</h3>
+        <ul>
+            {{#notes}}
+            <li>{{name}} {{#if description}}: {{description}}{{/if}}</li>
+            {{/notes}}
+        </ul>
+        {{/if}}
+
         {{#if diagram}}
         <h2>Diagram</h2>
         <div>
             {{#diagram}}
-            <div style="display:flex; flex-direction: row; align-items: center;">
+            <div style="display:flex; flex-direction: row; align-items: center; height: 32px;">
                 <div style="width: {{indentation}}px;">
 
                 </div>
                 <div>
-                    <img src="{{image}}" style="width: 32px;" />
+                    <img src="{{image}}" style="width: 32px; border-width: 0;" />
                 </div>
                 <div>
                     &nbsp;
@@ -56,19 +65,21 @@
         </div>
         {{/if}}
 
+        {{#if attributes}}
         <h2>Characteristics</h2>
         <div style="display:table">
             {{#attributes}}
             <div style="display:table-row">
                 <div style="display:table-cell">
-                    <span style="font-weight: bold">{{name}}</span>
+                    <strong>{{name}}</strong>
                 </div>
-                <div style="display:table-cell">
-                    <span>{{description}}</span>
+                <div style="display:table-cell;">
+                    {{description}}
                 </div>
             </div>
             {{/attributes}}
         </div>
+        {{/if}}
 
         {{#tags}}
         <h2>{{name}}</h2>

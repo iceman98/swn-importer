@@ -1,4 +1,5 @@
 import { FolderUtils } from './folder-utils';
+import { AttributeEntry } from './model/attribute-entry';
 import { Attributes } from './model/attributes';
 import { DiagramEntry } from './model/diagram-entry';
 import { Options } from './model/options';
@@ -58,20 +59,26 @@ export class JournalUtils {
         }
     }
 
-    private static getTemplateData(node: TreeNode, options: Options): { [k: string]: any; } {
+    private static getTemplateData(node: TreeNode, options: Options): Record<string, any> {
         const system = (node.type !== 'sector') ? Utils.getContainingSystem(node) : undefined;
 
-        const children = node.children.map(child => {
-            const childData: any = {
-                link: child.journal?.link,
-                type: Utils.getTypeName(child.type),
-                coordinates: child.coordinates
-            }
-            return childData;
-        });
+        const children = node.children
+            .filter(node => node.type !== 'note')
+            .map(child => {
+                const childData: any = {
+                    link: child.journal?.link,
+                    type: Utils.getTypeName(child.type),
+                    coordinates: child.coordinates
+                }
+                return childData;
+            });
 
-        const attributes: { name: string, description: string }[] = [];
+        const attributes: AttributeEntry[] = [];
         let description: string | undefined;
+
+        const notes: AttributeEntry[] = node.children
+            .filter(node => node.type === 'note')
+            .map(node => { return { name: node.entity.name, description: node.entity.attributes.content } });
 
         for (const key in node.entity.attributes) {
             const attributeName = <keyof Attributes>key;
@@ -91,11 +98,14 @@ export class JournalUtils {
             }
         }
 
+        const includeSystemLink: boolean = (!!system && system !== node && system !== node.parent);
+
         const data = {
             name: node.entity.name,
             diagram: JournalUtils.generateDiagram(node, options),
             attributes,
             description,
+            notes,
             image: node.entity.image,
             tags: node.entity.attributes.tags,
             showType: !options.addTypeToEntityJournal,
@@ -103,8 +113,8 @@ export class JournalUtils {
             location: JournalUtils.getLocationWithinParent(node),
             parentLink: node.parent?.journal?.link,
             parentType: node.parent ? Utils.getTypeName(node.parent.type) : undefined,
-            systemLink: node.parent === system ? undefined : system?.journal?.link,
-            systemType: system ? Utils.getTypeName(system.type) : undefined,
+            systemLink: (includeSystemLink && system) ? system.journal?.link : undefined,
+            systemType: (includeSystemLink && system) ? Utils.getTypeName(system.type) : undefined,
             children,
             coordinates: system?.coordinates
         };
@@ -140,7 +150,7 @@ export class JournalUtils {
     }
 
     private static generateDiagram(root: TreeNode, options: Options): DiagramEntry[] {
-        const entities = Utils.traversal(root, 'preorder');
+        const entities = Utils.traversal(root, 'preorder').filter(n => n.type !== 'note');
 
         if (entities.length > 1) {
             return entities.map(node => {
