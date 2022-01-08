@@ -1,5 +1,5 @@
 import { Attributes } from './attributes';
-import { ParentEntityType } from './parent-entity-type';
+import { SectorData } from './sector-data';
 
 export interface BaseEntity {
     attributes: Attributes;
@@ -8,6 +8,6 @@ export interface BaseEntity {
     isHidden: boolean;
     name: string;
     parent: string;
-    parentEntity: ParentEntityType;
+    parentEntity: keyof SectorData;
     updated: string;
 }

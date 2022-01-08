@@ -9,6 +9,10 @@ import { Utils } from './utils';
 export class SectorLoader {
     constructor(private sectorData: SectorData, private options: Options) { }
 
+    /**
+     * Imports the sector data into Foundry and return it as a tree
+     * @returns The sector tree
+     */
     async import(): Promise<SectorTree> {
         const nodeMap = Utils.getDataAsNodeMap(this.sectorData);
         Utils.linkTreeNodes(nodeMap);

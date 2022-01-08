@@ -9,7 +9,7 @@ Hooks.once("init", async () => {
 });
 
 Hooks.once("ready", async () => {
-    // swnImporter.removeExistingData();
+    // Importer.removeExistingData();
     // swnImporter.importFile('/modules/swn-importer/acheron-rho.json', new Options());
     // swnImporter.openImportDialog();
 });

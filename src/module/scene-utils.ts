@@ -1,5 +1,5 @@
 import { Constants } from './constants';
-import { Coordinates } from './model/icon-offset';
+import { Coordinates } from './model/coordinates';
 import { Options } from './model/options';
 import { PositionedEntity } from './model/positioned-entity';
 import { Sector } from './model/sector';
@@ -9,21 +9,19 @@ import { Utils } from './utils';
 
 export class SceneUtils {
 
+    /**
+     * Gets a Foundry Scene Data object to generate a scene for a sector
+     * @param node The sector tree to generate a scene for
+     * @param options The options object
+     * @returns The Foundry Scene Data
+     */
     static getSceneData(sectorTree: SectorTree, options: Options): Partial<Scene.Data> {
-
         const sector = <Sector>sectorTree.root.entity;
-
-        const notes: Note.Data[] = NoteUtils.getSectorNotes(sectorTree, options);
-
-        const drawings: Drawing.Data[] = [];
-        if (options.generateSectorCoordinates) {
-            drawings.push(...this.getSectorLabels(sectorTree, options));
-        }
 
         const sceneData: Partial<Scene.Data> = {
             active: true,
             backgroundColor: Constants.BACKGROUND_COLOR,
-            drawings,
+            drawings: this.getSectorLabels(sectorTree, options),
             flags: Utils.getNodeFlags(sectorTree.root),
             grid: Constants.HEX_WIDTH,
             gridAlpha: 0.3,
@@ -35,7 +33,7 @@ export class SceneUtils {
             img: Utils.getImagePath("starField.png"),
             name: sectorTree.root.entity.name,
             padding: 0,
-            notes,
+            notes: NoteUtils.getSectorNotes(sectorTree, options),
             journal: sectorTree.root.journal?.id,
             width: SceneUtils.getSceneWidth(sector.columns)
         };
@@ -52,20 +50,22 @@ export class SceneUtils {
     }
 
     private static getSectorLabels(sectorTree: SectorTree, options: Options): Drawing.Data[] {
-        const sector = <Sector>sectorTree.root.entity;
         const labels: Drawing.Data[] = [];
 
-        for (let row = 0; row < sector.rows; row++) {
-            for (let column = 0; column < sector.columns; column++) {
-                const coordinates = this.getHexCenterPosition(column, row);
+        if (options.generateSectorCoordinates) {
+            const sector = <Sector>sectorTree.root.entity;
+            for (let row = 0; row < sector.rows; row++) {
+                for (let column = 0; column < sector.columns; column++) {
+                    const coordinates = this.getHexCenterPosition(column, row);
 
-                const label: any = {
-                    x: coordinates.x,
-                    y: Math.floor(coordinates.y + (9 / 10) * Constants.HEX_VERTICAL_RADIUS),
-                    text: Utils.getHexCoordinates(column, row),
-                    fontSize: 16
-                };
-                labels.push(label);
+                    const label: any = {
+                        x: coordinates.x,
+                        y: Math.floor(coordinates.y + (9 / 10) * Constants.HEX_VERTICAL_RADIUS),
+                        text: Utils.getHexCoordinates(column, row),
+                        fontSize: 16
+                    };
+                    labels.push(label);
+                }
             }
         }
 
@@ -81,7 +81,6 @@ export class SceneUtils {
                     fontSize: 16
                 };
                 labels.push(label);
-
             });
         }
 

@@ -1,5 +1,5 @@
 import { Constants } from './constants';
-import { Coordinates } from './model/icon-offset';
+import { Coordinates } from './model/coordinates';
 import { IconPosition } from './model/icon-position';
 import { Options } from './model/options';
 import { PositionedEntity } from './model/positioned-entity';
@@ -10,13 +10,18 @@ import { Utils } from './utils';
 
 export class NoteUtils {
 
+    /**
+     * Gets a Foundry Note Data list to generate scene pins for a system/blackhole
+     * @param node The tree node to generate pins for
+     * @param options The options object
+     * @returns The Foundry Note Data list
+     */
     static getSectorNotes(sectorTree: SectorTree, options: Options): Note.Data[] {
         const notes: Note.Data[] = [];
 
         sectorTree.root.children.forEach(node => {
             notes.push(...this.getSystemNotes(node, options));
         });
-
 
         return notes;
     }
@@ -30,14 +35,14 @@ export class NoteUtils {
             nodes = [system, ...system.children];
         }
 
-        const notes = nodes.map((node, index) => this.createEntityNote(node, nodes.length, index));
+        const notes = nodes.map((node, index) => <Note.Data>this.createEntityNote(node, nodes.length, index));
         return notes;
     }
 
-    private static createEntityNote(node: TreeNode, entityCount: number, entityIndex: number): Note.Data {
+    private static createEntityNote(node: TreeNode, entityCount: number, entityIndex: number): Partial<Note.Data> {
         const iconPosition = this.getIconPosition(node, entityCount, entityIndex);
 
-        const note: any = {
+        const note: Partial<Note.Data> = {
             entryId: node.journal?.id,
             x: iconPosition.x,
             y: iconPosition.y,
@@ -45,8 +50,7 @@ export class NoteUtils {
             iconSize: 32,
             text: node.entity.name,
             fontSize: 32,
-            textAnchor: iconPosition.tooltipPosition,
-            // iconTint: this.getIconTint(node.type)
+            textAnchor: iconPosition.tooltipPosition
         };
 
         return note;
@@ -84,7 +88,7 @@ export class NoteUtils {
         return {
             x: Math.floor(center.x + offset.x),
             y: Math.floor(center.y + offset.y),
-            tooltipPosition
+            tooltipPosition: <Const.TextAnchorPoint>tooltipPosition
         };
     }
 
@@ -114,11 +118,4 @@ export class NoteUtils {
         return Utils.getImagePath(type + ".png");
     }
 
-    // getIconTint(type: keyof SectorData): string {
-    //     // TODO: implement
-    //     switch (type) {
-    //         default:
-    //             return "#ffffff";
-    //     }
-    // }
 }

@@ -3,7 +3,13 @@ import { Utils } from './utils';
 
 export class TemplateUtils {
 
-    static async renderTemplate(type: keyof SectorData, data: { [k: string]: any }): Promise<string> {
+    /**
+     * Renders the data on the appropiate template for the entity type
+     * @param type The entity type to select a template
+     * @param data The data for the template
+     * @returns The template rendered with the provided data (promise)
+     */
+    static async renderJournalContent(type: keyof SectorData, data: { [k: string]: any }): Promise<string> {
         const path = TemplateUtils.getTemplatePath(type);
         const content = renderTemplate(path, data);
         return content;

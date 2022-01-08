@@ -7,6 +7,12 @@ import { Utils } from './utils';
 
 export class JournalUtils {
 
+    /**
+     * Gets a Foundry Journal Data object to generate an empty journal for an entity
+     * @param node The tree node to generate an empty journal for
+     * @param options The options object
+     * @returns The Foundry Journal Data
+     */
     static getEmptyJournalData(node: TreeNode, options: Options): Partial<JournalEntry.Data> {
         const hidden = (options.onlyGMJournals || node.entity.isHidden);
         const permission: Entity.Permission = {
@@ -27,10 +33,16 @@ export class JournalUtils {
         return journal;
     }
 
+    /**
+     * Gets a Foundry Journal Data object to update an existing journal for an entity
+     * @param node The tree node to generate a journal update for
+     * @param options The options object
+     * @returns The Foundry Journal update Data (promise)
+     */
     static async getUpdateJournalData(node: TreeNode, options: Options): Promise<Partial<JournalEntry.Data>> {
         if (node.journal) {
             const templateData = JournalUtils.getTemplateData(node, options);
-            const content = await TemplateUtils.renderTemplate(node.type, templateData);
+            const content = await TemplateUtils.renderJournalContent(node.type, templateData);
 
             const updateData: Partial<JournalEntry.Data> = {
                 _id: node.journal.id,
@@ -45,6 +57,8 @@ export class JournalUtils {
 
     private static getTemplateData(node: TreeNode, options: Options): { [k: string]: any; } {
 
+        const system = Utils.getContainingSystem(node);
+
         const children = node.children.map(child => {
             const childData: any = {
                 name: child.entity.name,
@@ -56,12 +70,7 @@ export class JournalUtils {
             return childData;
         });
 
-        const location = JournalUtils.getParentLocation(node);
-
-        const system = Utils.getSystemNode(node);
-
         const attributes: { name: string, description: string }[] = [];
-
         let description: string | undefined;
 
         for (const key in node.entity.attributes) {
@@ -71,7 +80,7 @@ export class JournalUtils {
                     description = node.entity.attributes.description;
                     break;
                 case 'tags':
-                    // implement?
+                    // TODO: implement?
                     break;
                 default:
                     attributes.push({
@@ -89,22 +98,22 @@ export class JournalUtils {
             tags: node.entity.attributes.tags,
             showType: !options.addTypeToEntityJournal,
             type: Utils.getTypeName(node.type),
-            location,
+            location: JournalUtils.getLocationWithinParent(node),
             parentLink: node.parent?.journal?.link,
             parentType: node.parent ? Utils.getTypeName(node.parent.type) : undefined,
             systemLink: node.parent === system ? undefined : system?.journal?.link,
-            systemType: system ? Utils.getTypeName(system.type) : undefined,
+            systemType: Utils.getTypeName(system.type),
             children,
-            coordinates: system?.coordinates
+            coordinates: system.coordinates
         };
 
         return data;
 
     }
 
-    private static getParentLocation(node: TreeNode): string | undefined {
+    private static getLocationWithinParent(node: TreeNode): string | undefined {
         if (!node.parent) {
-            // surely it's a system???
+            // surely it's a system?!??
             return undefined;
         } else {
             switch (node.parent.type) {

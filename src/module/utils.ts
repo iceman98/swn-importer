@@ -7,12 +7,20 @@ import { TreeNode } from './model/tree-node';
 
 export class Utils {
 
-
-
+    /**
+     * Get a localized label from the module i18m tables
+     * @param name The label key
+     * @returns The localized label
+     */
     static getLabel(name: string): string {
         return game.i18n.localize(Constants.LOCALIZATION_NAMESPACE + "." + name);
     }
 
+    /**
+     * Get a localized entity type name
+     * @param type The entity type
+     * @returns The localized entity type name
+     */
     static getTypeName(type: keyof SectorData): string {
         switch (type) {
             case 'asteroidBase':
@@ -48,10 +56,21 @@ export class Utils {
         }
     }
 
-    static formatLabel(name: string, data: { [k: string]: string | number | null | undefined }): string {
+    /**
+     * Get a localized label with parameters from the module i18m tables
+     * @param name The label key
+     * @param data The data for the label parameters
+     * @returns The localized label
+     */
+    static formatLabel(name: string, data: { [k: string]: any }): string {
         return game.i18n.format(Constants.LOCALIZATION_NAMESPACE + "." + name, data);
     }
 
+    /**
+     * Get the Foundry flags for a SWN entity
+     * @param node The node to generate flags for
+     * @returns The Foundry flags
+     */
     static getNodeFlags(node: TreeNode): { [k: string]: any } {
         const flags: { [k: string]: any } = {};
         flags[Constants.MODULE_ID + "." + "id"] = node.id;
@@ -59,24 +78,35 @@ export class Utils {
         return flags;
     }
 
+    /**
+     * Get the SWN id of a Foundry entity
+     * @param entity The entity to get the id for
+     * @returns The entity SWN id
+     */
     static getIdFlag(entity: Entity): string {
         return <string>entity.getFlag(Constants.MODULE_ID, "id");
     }
 
-    static traversal(node: TreeNode, type: 'preorder' | 'postorder'): TreeNode[] {
+    /**
+     * Get all nodes from a root node preordered or postordered
+     * @param node The root node of the traversal
+     * @param strategy The type of traversal (preorder: root + children | postorder: children + root)
+     * @returns A list with the node and all its children traversed with the specified strategy
+     */
+    static traversal(node: TreeNode, strategy: 'preorder' | 'postorder'): TreeNode[] {
         const list: TreeNode[] = [];
 
-        switch (type) {
+        switch (strategy) {
             case 'postorder':
                 node.children.forEach(child => {
-                    list.push(...this.traversal(child, type));
+                    list.push(...this.traversal(child, strategy));
                 });
                 list.push(node);
                 break;
             case 'preorder':
                 list.push(node);
                 node.children.forEach(child => {
-                    list.push(...this.traversal(child, type));
+                    list.push(...this.traversal(child, strategy));
                 });
                 break;
         }
@@ -84,6 +114,11 @@ export class Utils {
         return list;
     }
 
+    /**
+     * Convert a Foundry create/update response to a list of created/updated entities
+     * @param entities An object, object array or null
+     * @returns A list with the the object or objects (or empty)
+     */
     static getAsList<E>(entities: E | E[] | null): E[] {
         if (entities) {
             if (entities instanceof Array) {
@@ -96,32 +131,13 @@ export class Utils {
         }
     }
 
-    // static filterByTagId(entities: Entity[], id: string): Entity[] {
-    //     return entities.filter(e => e.getFlag(this.MODULE_ID, "id") === id);
-    // }
-
-    static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (type: keyof SectorData, entities: { [k: string]: BaseEntity }) => void) {
-        let entities: (keyof SectorData)[];
-
-        switch (types) {
-            case 'all':
-                entities = ['asteroidBase', 'asteroidBelt', 'blackHole', 'deepSpaceStation', 'gasGiantMine', 'moon', 'moonBase', 'orbitalRuin', 'planet', 'refuelingStation', 'researchBase', 'sector', 'spaceStation', 'system'];
-                break;
-            case 'only-basic':
-                entities = ['asteroidBase', 'asteroidBelt', 'deepSpaceStation', 'gasGiantMine', 'moon', 'moonBase', 'orbitalRuin', 'planet', 'refuelingStation', 'researchBase', 'spaceStation'];
-                break;
-            case 'only-systems':
-                entities = ['blackHole', 'system'];
-                break;
-        }
-
-        entities.forEach(type => {
-            const map = <{ [k: string]: BaseEntity }>sectorData[type];
-            consumer(type, map);
-        });
-    }
-
-    static forEachEntity(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (key: string, entity: BaseEntity, type: keyof SectorData) => void) {
+    /**
+     * Execute a function on every entity of an imported sector of specified types
+     * @param sectorData The sector data to visit
+     * @param types The entity types that will be visited
+     * @param consumer The function to be executed on every visited entity
+     */
+    private static forEachEntity(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (key: string, entity: BaseEntity, type: keyof SectorData) => void) {
         this.forEachEntityType(sectorData, types, (type, map) => {
             for (const x in map) {
                 consumer(x, map[x], type);
@@ -129,33 +145,42 @@ export class Utils {
         });
     }
 
-    static getSystemCoordinates(system: PositionedEntity): string {
-        return this.getHexCoordinates(system.x - 1, system.y - 1);
-    }
-
+    /**
+     * Get a hex coordinates as XXYY where XX is the column and YY is the row
+     * @param column Zero-based grid column
+     * @param row Zero-based grid row
+     * @returns The coordinates of the hex
+     */
     static getHexCoordinates(column: number, row: number): string {
         const xt = column < 10 ? "0" + column : column.toString();
         const yt = row < 10 ? "0" + row : row.toString();
         return xt + yt;
     }
 
+    /**
+     * Get a module image path
+     * @param name The image name
+     * @returns The image path
+     */
     static getImagePath(name: string): string {
         return `modules/${Constants.MODULE_ID}/images/${name}`;
     }
 
+    /**
+     * Get a module template path
+     * @param name The template name
+     * @returns The template path
+     */
     static getTemplatePath(name: string): string {
         return `modules/${Constants.MODULE_ID}/templates/${name}`;
     }
 
-    // static getMapValues<V>(map: { [k: string]: V }): V[] {
-    //     const values: V[] = [];
-    //     for (const k in map) {
-    //         values.push(map[k]);
-    //     }
-    //     return values;
-    // }
-
-    static getDataAsNodeMap(sectorData: SectorData) {
+    /**
+     * Convert a sector data to a map of tree nodes indexed by the entity key
+     * @param sectorData The sector data to be parsed
+     * @returns A map with all sector entities as nodes
+     */
+    static getDataAsNodeMap(sectorData: SectorData): Map<string, TreeNode> {
         const nodeMap = new Map<string, TreeNode>();
         Utils.forEachEntity(sectorData, "all", (k, e, t) => {
             const node: TreeNode = {
@@ -173,6 +198,10 @@ export class Utils {
         return nodeMap;
     }
 
+    /**
+     * Modify every unlinked node of the map to create a node tree by the entity.parent property
+     * @param nodeMap The node map to parse
+     */
     static linkTreeNodes(nodeMap: Map<string, TreeNode>): void {
         nodeMap.forEach(node => {
             if (node.entity.parent) {
@@ -187,19 +216,13 @@ export class Utils {
         });
     }
 
-    static getSystemNode(node: TreeNode): TreeNode | undefined {
-        if (node.type === 'system' || node.type === 'blackHole') {
-            return node;
-        } else {
-            if (node.parent) {
-                return Utils.getSystemNode(node.parent);
-            } else {
-                return undefined;
-            }
-        }
-    }
-
+    /**
+     * Get a localized label of the attribute name
+     * @param name The attribute name
+     * @returns The localized name of the attribute
+     */
     static getAttributeName(name: keyof Attributes): string {
+        // TODO: localize!
         switch (name) {
             case 'occupation':
                 return "Occupation";
@@ -220,6 +243,11 @@ export class Utils {
         }
     }
 
+    /**
+     * Traverse all node ascendants of the current node to find its containing system/blackhole
+     * @param node The leaf entity node
+     * @returns The tree node representing the containing system/blackhole of the node (including itself)
+    */
     static getContainingSystem(node: TreeNode): TreeNode {
         if (node.type === 'system' || node.type === 'blackHole') {
             return node;
@@ -231,4 +259,30 @@ export class Utils {
 
         throw new Error("Couldnt find containing system of " + node.id);
     }
+
+    private static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (type: keyof SectorData, entities: { [k: string]: BaseEntity }) => void) {
+        let entities: (keyof SectorData)[];
+
+        switch (types) {
+            case 'all':
+                entities = ['asteroidBase', 'asteroidBelt', 'blackHole', 'deepSpaceStation', 'gasGiantMine', 'moon', 'moonBase', 'orbitalRuin', 'planet', 'refuelingStation', 'researchBase', 'sector', 'spaceStation', 'system'];
+                break;
+            case 'only-basic':
+                entities = ['asteroidBase', 'asteroidBelt', 'deepSpaceStation', 'gasGiantMine', 'moon', 'moonBase', 'orbitalRuin', 'planet', 'refuelingStation', 'researchBase', 'spaceStation'];
+                break;
+            case 'only-systems':
+                entities = ['blackHole', 'system'];
+                break;
+        }
+
+        entities.forEach(type => {
+            const map = <{ [k: string]: BaseEntity }>sectorData[type];
+            consumer(type, map);
+        });
+    }
+
+    private static getSystemCoordinates(system: PositionedEntity): string {
+        return this.getHexCoordinates(system.x - 1, system.y - 1);
+    }
+
 }
