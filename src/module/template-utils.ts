@@ -9,7 +9,7 @@ export class TemplateUtils {
      * @param data The data for the template
      * @returns The template rendered with the provided data (promise)
      */
-    static async renderJournalContent(type: keyof SectorData, data: { [k: string]: any }): Promise<string> {
+    static async renderJournalContent(type: keyof SectorData, data: Record<string, any>): Promise<string> {
         const path = TemplateUtils.getTemplatePath(type);
         const content = renderTemplate(path, data);
         return content;
@@ -18,8 +18,6 @@ export class TemplateUtils {
     private static getTemplatePath(type: keyof SectorData): string {
         if (type === 'sector') {
             return Utils.getTemplatePath("sector.html");
-        } else if (type === 'system' || type === 'blackHole') {
-            return Utils.getTemplatePath("sun.html");
         } else {
             return Utils.getTemplatePath("entity.html");
         }

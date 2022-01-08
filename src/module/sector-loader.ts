@@ -49,7 +49,9 @@ export class SectorLoader {
     private async createSystemFolders(sectorTree: SectorTree) {
         const folderData: Partial<Folder.Data>[] = [];
         sectorTree.root.children.forEach(node => {
-            folderData.push(FolderUtils.getFolderData(node, this.options));
+            if (node.type !== 'note') {
+                folderData.push(FolderUtils.getFolderData(node, this.options));
+            }
         });
 
         const folders = Utils.getAsList(await Folder.create(folderData));
@@ -65,7 +67,9 @@ export class SectorLoader {
     private async createEntityJournals(sectorTree: SectorTree) {
         const journalData: Partial<JournalEntry.Data>[] = [];
         sectorTree.nodeMap.forEach(node => {
-            journalData.push(JournalUtils.getEmptyJournalData(node, this.options));
+            if (node.type !== 'note') {
+                journalData.push(JournalUtils.getEmptyJournalData(node, this.options));
+            }
         });
 
         const journals = Utils.getAsList(await JournalEntry.create(journalData));
@@ -81,7 +85,9 @@ export class SectorLoader {
     private async updateJournalContents(sectorTree: SectorTree) {
         const journalData: Partial<JournalEntry.Data>[] = [];
         for (const node of sectorTree.nodeMap.values()) {
-            journalData.push(await JournalUtils.getUpdateJournalData(node, this.options));
+            if (node.type !== 'note') {
+                journalData.push(await JournalUtils.getUpdateJournalData(node, this.options));
+            }
         }
         await (<any>JournalEntry).updateDocuments(journalData);
     }

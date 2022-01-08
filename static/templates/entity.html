@@ -4,7 +4,7 @@
         <div>
             <p>
                 <strong>{{name}}</strong> is a {{type}} {{location}} {{parentLink}} {{#if
-                showType}}({{parentType}}){{/if}}.
+                showType}}({{parentType}}){{/if}} at coordinates <strong>{{coordinates}}</strong>.
             </p>
             {{#if systemLink}}
             <p>
@@ -21,98 +21,84 @@
     </div>
 
     <section class="secret">
-        {{#if description}}
-        <h2>Description</h2>
-        <p>{{description}}</p>
-        {{/if}}
+        <h2 style="margin-top: 5px;">Details</h2>
+        <div style="display:flex;flex-direction: row; justify-content:space-between;">
+            <div>
+                {{#if attributes}}
+                <h3>Attributes</h3>
+                <table>
+                    {{#attributes}}
+                    <tr>
+                        <td style="padding: 3px;">
+                            <strong>{{name}}</strong>
+                        </td>
+                        <td style="padding: 3px;">
+                            {{description}}
+                        </td>
+                    </tr>
+                    {{/attributes}}
+                </table>
+                {{/if}}
 
-        {{#if diagram}}
-        <h2>Diagram</h2>
-        <div>
-            {{#diagram}}
-            <div style="display:flex; flex-direction: row; align-items: center;">
-                <div style="width: {{indentation}}px;">
+                {{#if description}}
+                <h3>Description</h3>
+                <blockquote>{{description}}</blockquote>
+                {{/if}}
 
-                </div>
-                <div>
-                    <img src="{{image}}" style="width: 32px;" />
-                </div>
-                <div>
-                    &nbsp;
-                    {{#if link}}
-                    {{link}}
-                    {{else}}
-                    <strong>{{../name}}</strong>
-                    {{/if}}
-                </div>
-                {{#if type}}
-                <div>
-                    &nbsp;
-                    ({{type}})
-                </div>
+                {{#if notes}}
+                <h3>Notes</h3>
+                <ul style="list-style-type: circle;">
+                    {{#notes}}
+                    <li>{{name}} {{#if description}}: {{description}}{{/if}}</li>
+                    {{/notes}}
+                </ul>
                 {{/if}}
             </div>
-            {{/diagram}}
-        </div>
-        {{/if}}
+            {{#if diagram}}
+            <div style="border: 1px solid; padding: 5px;">
+                {{#diagram}}
+                <div style="display:flex; flex-direction: row; align-items: center; height: 32px;">
+                    <div style="width: {{indentation}}px;">
 
-        <h2>Characteristics</h2>
-        <div style="display:table">
-            {{#attributes}}
-            <div style="display:table-row">
-                <div style="display:table-cell">
-                    <span style="font-weight: bold">{{name}}</span>
+                    </div>
+                    <div>
+                        <img src="{{image}}" style="width: 32px; border-width: 0;" />
+                    </div>
+                    <div>
+                        &nbsp;
+                        {{#if link}}
+                        {{link}}
+                        {{else}}
+                        <strong>{{../name}}</strong>
+                        {{/if}}
+                    </div>
+                    {{#if type}}
+                    <div>
+                        &nbsp;
+                        ({{type}})
+                    </div>
+                    {{/if}}
                 </div>
-                <div style="display:table-cell">
-                    <span>{{description}}</span>
-                </div>
+                {{/diagram}}
             </div>
-            {{/attributes}}
+            {{/if}}
         </div>
 
         {{#tags}}
-        <h2>{{name}}</h2>
+        <h2 style="margin-top: 5px;">{{name}}</h2>
         <p>{{description}}</p>
+        {{#lists}}
         <div>
-            Enemies
-            <ul>
-                {{#enemies}}
-                <li>{{.}}</li>
-                {{/enemies}}
+            <h3>{{name}}</h3>
+            <ul style="list-style-type: circle;">
+                {{#elements}}
+                <li>
+                    {{.}}
+                </li>
+                {{/elements}}
             </ul>
         </div>
-        <div>
-            Friends
-            <ul>
-                {{#friends}}
-                <li>{{.}}</li>
-                {{/friends}}
-            </ul>
-        </div>
-        <div>
-            Complications
-            <ul>
-                {{#complications}}
-                <li>{{.}}</li>
-                {{/complications}}
-            </ul>
-        </div>
-        <div>
-            Things
-            <ul>
-                {{#things}}
-                <li>{{.}}</li>
-                {{/things}}
-            </ul>
-        </div>
-        <div>
-            Places
-            <ul>
-                {{#places}}
-                <li>{{.}}</li>
-                {{/places}}
-            </ul>
-        </div>
+        {{/lists}}
         {{/tags}}
 
     </section>
