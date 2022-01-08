@@ -26,6 +26,15 @@ export class NoteUtils {
         return notes;
     }
 
+    /**
+     * Gets the icon path that represents an entity type
+     * @param type The type of entity
+     * @returns The icon path
+     */
+    public static getEntityIcon(type: keyof SectorData): string {
+        return Utils.getImagePath(type + ".png");
+    }
+
     private static getSystemNotes(system: TreeNode, options: Options): Note.Data[] {
         let nodes: TreeNode[];
 
@@ -112,10 +121,6 @@ export class NoteUtils {
             x: Math.floor(((3 / 4) * Constants.HEX_WIDTH * column) + Constants.HEX_RADIUS),
             y: Math.floor((Constants.HEX_HEIGHT * row) + Constants.HEX_VERTICAL_RADIUS + verticalOffset)
         }
-    }
-
-    private static getEntityIcon(type: keyof SectorData): string {
-        return Utils.getImagePath(type + ".png");
     }
 
 }

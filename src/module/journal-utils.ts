@@ -1,7 +1,9 @@
 import { FolderUtils } from './folder-utils';
 import { Attributes } from './model/attributes';
+import { DiagramEntry } from './model/diagram-entry';
 import { Options } from './model/options';
 import { TreeNode } from './model/tree-node';
+import { NoteUtils } from './note-utils';
 import { TemplateUtils } from './template-utils';
 import { Utils } from './utils';
 
@@ -61,11 +63,9 @@ export class JournalUtils {
 
         const children = node.children.map(child => {
             const childData: any = {
-                name: child.entity.name,
-                type: Utils.getTypeName(child.type),
-                orbiting: false,
                 link: child.journal?.link,
-                position: child.coordinates
+                type: Utils.getTypeName(child.type),
+                coordinates: child.coordinates
             }
             return childData;
         });
@@ -93,6 +93,7 @@ export class JournalUtils {
 
         const data = {
             name: node.entity.name,
+            diagram: JournalUtils.generateDiagram(node, options),
             attributes,
             description,
             image: node.entity.image,
@@ -136,5 +137,22 @@ export class JournalUtils {
                     return "in";
             }
         }
+    }
+
+    private static generateDiagram(root: TreeNode, options: Options): DiagramEntry[] {
+        const entities = Utils.traversal(root, 'preorder');
+
+        if (entities.length > 1) {
+            return entities.map(node => {
+                return {
+                    indentation: Utils.getDistance(root, node) * 20,
+                    image: NoteUtils.getEntityIcon(node.type),
+                    link: (root !== node) ? node.journal?.link : undefined,
+                    type: !options.addTypeToEntityJournal ? node.type : undefined
+                }
+            });
+        }
+
+        return [];
     }
 }
