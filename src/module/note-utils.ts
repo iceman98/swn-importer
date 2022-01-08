@@ -30,7 +30,7 @@ export class NoteUtils {
         let nodes: TreeNode[];
 
         if (options.generateNotesForAllEntities) {
-            nodes = Utils.traversal(system, 'preorder').filter(e => e != system);
+            nodes = Utils.traversal(system, 'preorder');
         } else {
             nodes = [system, ...system.children];
         }
