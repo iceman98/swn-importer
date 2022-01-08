@@ -1,5 +1,6 @@
 import { Importer } from './importer';
 import { Options } from './model/options';
+import { Utils } from './utils';
 
 export class ImportDialog extends FormApplication<FormApplication.Options, Options, Options> {
 
@@ -12,7 +13,7 @@ export class ImportDialog extends FormApplication<FormApplication.Options, Optio
             resizable: true,
             height: 'auto',
             id: 'swn-importer-dialog',
-            template: "modules/swn-importer/templates/dialog.html",
+            template: Utils.getTemplatePath("dialog.html"),
             title: 'Import Sector Without Numbers sector',
             editable: true
         };
@@ -31,17 +32,15 @@ export class ImportDialog extends FormApplication<FormApplication.Options, Optio
         return new Options();
     }
 
-    _updateObject(_: Event, formData?: Options): Promise<void> {
-        const url = this.getFileUrl();
+    async _updateObject(_: Event, formData?: Options): Promise<void> {
+        const url = ImportDialog.getFileUrl();
         if (formData && url) {
-            return this.close()
-                .then(_ => this.importer.importFile(url, formData));
-        } else {
-            return Promise.resolve();
+            await this.close();
+            this.importer.importFile(url, formData);
         }
     }
 
-    getFileUrl(): string | null {
+    private static getFileUrl(): string | null {
         const input = <HTMLInputElement>$('#swn-sector-file')[0];
         if (input.files?.length) {
             return URL.createObjectURL(<Blob>input.files.item(0));

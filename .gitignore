@@ -19,3 +19,7 @@ dist/
 
 # If you add foundry.js for autocomplete
 foundry.js
+
+# test files
+static/acheron-rho.json
+static/test-alpha.json

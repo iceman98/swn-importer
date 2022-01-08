@@ -1,15 +1,31 @@
 <div>
     <h2>General</h2>
-    <p>
-        {{name}} is a {{type}} {{#if orbiting}}in orbit{{else}}on the surface{{/if}} of {{parentLink}} {{#if showType}}({{parentType}}){{/if}}.
-    </p>
-    {{#if parentIsEntity}}
-        <p>
-            It's in the system {{systemLink}} {{#if showType}}({{systemType}}){{/if}}.
-        </p>
-    {{/if}}
+    <div style="display: flex; flex-direction:row; justify-content:space-between;">
+        <div>
+            <p>
+                <strong>{{name}}</strong> is a {{type}} {{location}} {{parentLink}} {{#if
+                showType}}({{parentType}}){{/if}}.
+            </p>
+            {{#if systemLink}}
+            <p>
+                It's in {{systemLink}} {{#if showType}}({{systemType}}){{/if}} at coordinates
+                <strong>{{coordinates}}</strong>.
+            </p>
+            {{/if}}
+        </div>
+        {{#if image}}
+        <div>
+            <img src="{{image}}" alt="{{type}} image" style="min-width: 200px; width: 200px;" />
+        </div>
+        {{/if}}
+    </div>
 
     <section class="secret">
+        {{#if description}}
+        <h2>Description</h2>
+        <p>{{description}}</p>
+        {{/if}}
+
         {{#if children}}
         <h2>Points of interest</h2>
         <ul>
@@ -20,126 +36,63 @@
         {{/if}}
 
         <h2>Characteristics</h2>
-        {{#attributes}}
-            <div style="display:table">
-                {{#if occupation}}
-                    <div style="display:table-row">
-                        <div style="display:table-cell">
-                            <span style="font-weight: bold">Occupation</span>
-                        </div>
-                        <div style="display:table-cell">
-                            <span>{{occupation}}</span>
-                        </div>
-                    </div>
-                {{/if}}
-
-                {{#if situation}}
-                    <div style="display:table-row">
-                        <div style="display:table-cell">
-                            <span style="font-weight: bold">Situation</span>
-                        </div>
-                        <div style="display:table-cell">
-                            <span>{{situation}}</span>
-                        </div>
-                    </div>
-                {{/if}}
-
-                {{#if atmosphere}}
-                    <div style="display:table-row">
-                        <div style="display:table-cell">
-                            <span style="font-weight: bold">Atmosphere</span>
-                        </div>
-                        <div style="display:table-cell">
-                            <span>{{atmosphere}}</span>
-                        </div>
-                    </div>
-                {{/if}}
-                {{#if biosphere}}
-                    <div style="display:table-row">
-                        <div style="display:table-cell">
-                            <span style="font-weight: bold">Biosphere</span>
-                        </div>
-                        <div style="display:table-cell">
-                            <span>{{biosphere}}</span>
-                        </div>
-                    </div>
-                {{/if}}
-                {{#if population}}
-                    <div style="display:table-row">
-                        <div style="display:table-cell">
-                            <span style="font-weight: bold">Population</span>
-                        </div>
-                        <div style="display:table-cell">
-                            <span>{{population}}</span>
-                        </div>
-                    </div>
-                {{/if}}
-                {{#if techLevel}}
-                    <div style="display:table-row">
-                        <div style="display:table-cell">
-                            <span style="font-weight: bold">Technology Level</span>
-                        </div>
-                        <div style="display:table-cell">
-                            <span>{{techLevel}}</span>
-                        </div>
-                    </div>
-                {{/if}}
-                {{#if temperature}}
-                    <div style="display:table-row">
-                        <div style="display:table-cell">
-                            <span style="font-weight: bold">Temperature</span>
-                        </div>
-                        <div style="display:table-cell">
-                            <span>{{temperature}}</span>
-                        </div>
-                    </div>
-                {{/if}}
+        <div style="display:table">
+            {{#attributes}}
+            <div style="display:table-row">
+                <div style="display:table-cell">
+                    <span style="font-weight: bold">{{name}}</span>
+                </div>
+                <div style="display:table-cell">
+                    <span>{{description}}</span>
+                </div>
             </div>
+            {{/attributes}}
+        </div>
 
-            {{#tags}}
-                <h2>{{name}}</h2>
-                <p>{{description}}</p>
-                <div>
-                    Enemies
-                    <ul>
-                        {{#enemies}}
-                        <li>{{.}}</li>
-                        {{/enemies}}
-                    </ul>
-                </div>
-                <div>
-                    Friends
-                    <ul>
-                        {{#friends}}
-                        <li>{{.}}</li>
-                        {{/friends}}
-                    </ul>
-                </div>
-                <div>
-                    Complications
-                    <ul>
-                        {{#complications}}
-                        <li>{{.}}</li>
-                        {{/complications}}
-                    </ul>
-                </div>
-                <div>
-                    Things
-                    <ul>
-                        {{#things}}
-                        <li>{{.}}</li>
-                        {{/things}}
-                    </ul>
-                </div>
-                <div>
-                    Places
-                    <ul>
-                        {{#places}}
-                        <li>{{.}}</li>
-                        {{/places}}
-                    </ul>
-                </div>
-            {{/tags}}
-        {{/attributes}}
+        {{#tags}}
+        <h2>{{name}}</h2>
+        <p>{{description}}</p>
+        <div>
+            Enemies
+            <ul>
+                {{#enemies}}
+                <li>{{.}}</li>
+                {{/enemies}}
+            </ul>
+        </div>
+        <div>
+            Friends
+            <ul>
+                {{#friends}}
+                <li>{{.}}</li>
+                {{/friends}}
+            </ul>
+        </div>
+        <div>
+            Complications
+            <ul>
+                {{#complications}}
+                <li>{{.}}</li>
+                {{/complications}}
+            </ul>
+        </div>
+        <div>
+            Things
+            <ul>
+                {{#things}}
+                <li>{{.}}</li>
+                {{/things}}
+            </ul>
+        </div>
+        <div>
+            Places
+            <ul>
+                {{#places}}
+                <li>{{.}}</li>
+                {{/places}}
+            </ul>
+        </div>
+        {{/tags}}
+
     </section>
 </div>

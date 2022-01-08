@@ -3,19 +3,19 @@ import { PositionedEntity } from './positioned-entity';
 import { Sector } from './sector';
 
 export interface SectorData {
-    asteroidBase: Map<string, BaseEntity>;
-    asteroidBelt: Map<string, BaseEntity>;
-    blackHole: Map<string, PositionedEntity>;
-    deepSpaceStation: Map<string, BaseEntity>;
-    gasGiantMine: Map<string, BaseEntity>;
-    moon: Map<string, BaseEntity>;
-    moonBase: Map<string, BaseEntity>;
+    asteroidBase: { [k: string]: BaseEntity };
+    asteroidBelt: { [k: string]: BaseEntity };
+    blackHole: { [k: string]: PositionedEntity };
+    deepSpaceStation: { [k: string]: BaseEntity };
+    gasGiantMine: { [k: string]: BaseEntity };
+    moon: { [k: string]: BaseEntity };
+    moonBase: { [k: string]: BaseEntity };
     note: any;
-    orbitalRuin: Map<string, BaseEntity>;
-    planet: Map<string, BaseEntity>;
-    refuelingStation: Map<string, BaseEntity>;
-    researchBase: Map<string, BaseEntity>;
-    sector: Map<string, Sector>;
-    spaceStation: Map<string, BaseEntity>;
-    system: Map<string, PositionedEntity>;
+    orbitalRuin: { [k: string]: BaseEntity };
+    planet: { [k: string]: BaseEntity };
+    refuelingStation: { [k: string]: BaseEntity };
+    researchBase: { [k: string]: BaseEntity };
+    sector: { [k: string]: Sector };
+    spaceStation: { [k: string]: BaseEntity };
+    system: { [k: string]: PositionedEntity };
 }

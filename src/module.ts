@@ -9,8 +9,8 @@ Hooks.once("init", async () => {
 });
 
 Hooks.once("ready", async () => {
-    // swnImporter.removeExistingData();
-    // swnImporter.importFile('/modules/swn-importer/acheron-rho.json', new Options());
+    // Importer.removeExistingData();
+    // swnImporter.importFile('/modules/swn-importer/test-alpha.json', new Options());
     // swnImporter.openImportDialog();
 });
 
