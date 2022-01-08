@@ -58,9 +58,11 @@
             <div style="border: 1px solid; padding: 5px;">
                 {{#diagram}}
                 <div style="display:flex; flex-direction: row; align-items: center; height: 32px;">
-                    <div style="width: {{indentation}}px;">
-
+                    {{#indentation}}
+                    <div style="width: 32px; min-width: 32px; text-align: center; font-family: monospace; font-size: 27px; color: lightslategrey">
+                        {{.}}
                     </div>
+                    {{/indentation}}
                     <div>
                         <img src="{{image}}" style="width: 32px; border-width: 0;" />
                     </div>

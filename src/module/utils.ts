@@ -302,6 +302,20 @@ export class Utils {
         throw new Error("Entities are not linked: " + ascendant.id + " - " + descendant.id);
     }
 
+    /**
+     * Find out if a node is the last child of its parent
+     * @param node The node to evaluate
+     * @returns True if this node is the last child of its parent
+     */
+    static isLastChild(node: TreeNode) {
+        if (node.parent) {
+            const siblings = node.parent.children;
+            return node === siblings[siblings.length - 1];
+        }
+
+        return false;
+    }
+
     private static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (type: keyof SectorData, entities: Record<string, BaseEntity>) => void) {
         let entities: (keyof SectorData)[];
 

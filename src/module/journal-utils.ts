@@ -159,9 +159,22 @@ export class JournalUtils {
         const entities = Utils.traversal(root, 'preorder').filter(n => n.type !== 'note');
 
         if (entities.length > 1) {
-            return entities.map(node => {
+            return entities.map((node) => {
+                const indentation: string[] = [];
+                const distance = Utils.getDistance(root, node);
+                for (let i = 0; i < distance; i++) {
+                    if (i === distance - 1) {
+                        if (Utils.isLastChild(node)) {
+                            indentation.push('└');
+                        } else {
+                            indentation.push('├');
+                        }
+                    } else {
+                        indentation.push('│');
+                    }
+                }
                 return {
-                    indentation: Utils.getDistance(root, node) * 20,
+                    indentation,
                     image: NoteUtils.getEntityIcon(node.type),
                     link: (root !== node) ? node.journal?.link : undefined,
                     type: !options.addTypeToEntityJournal ? node.type : undefined

@@ -1,5 +1,5 @@
 export interface DiagramEntry {
-    indentation: number;
+    indentation: string[];
     image: string;
     link: string | undefined;
     type: string | undefined;
