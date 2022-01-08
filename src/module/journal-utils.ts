@@ -2,7 +2,10 @@ import { FolderUtils } from './folder-utils';
 import { AttributeEntry } from './model/attribute-entry';
 import { Attributes } from './model/attributes';
 import { DiagramEntry } from './model/diagram-entry';
+import { DisplayList } from './model/display-list';
+import { DisplayTag } from './model/display-tag';
 import { Options } from './model/options';
+import { Tag } from './model/tag';
 import { TreeNode } from './model/tree-node';
 import { NoteUtils } from './note-utils';
 import { TemplateUtils } from './template-utils';
@@ -74,6 +77,8 @@ export class JournalUtils {
             });
 
         const attributes: AttributeEntry[] = [];
+
+        let tags: DisplayTag[] | undefined;
         let description: string | undefined;
 
         const notes: AttributeEntry[] = node.children
@@ -87,7 +92,7 @@ export class JournalUtils {
                     description = node.entity.attributes.description;
                     break;
                 case 'tags':
-                    // TODO: implement?
+                    tags = JournalUtils.getDisplayTags(node.entity.attributes.tags);
                     break;
                 default:
                     attributes.push({
@@ -107,7 +112,7 @@ export class JournalUtils {
             description,
             notes,
             image: node.entity.image,
-            tags: node.entity.attributes.tags,
+            tags,
             showType: !options.addTypeToEntityJournal,
             type: Utils.getTypeName(node.type),
             location: JournalUtils.getLocationWithinParent(node),
@@ -130,6 +135,7 @@ export class JournalUtils {
         } else {
             switch (node.parent.type) {
                 case 'asteroidBelt':
+                    // TODO: localize!
                     return "in an asteroid of";
                 case 'sector':
                     return "in";
@@ -165,4 +171,26 @@ export class JournalUtils {
 
         return [];
     }
+
+    private static getDisplayTags(tags: Tag[]): DisplayTag[] {
+        return tags.map(tag => {
+            const lists: DisplayList[] = [];
+
+            for (const key in tag) {
+                if (key !== 'types' && tag[key] instanceof Array) {
+                    lists.push({
+                        name: Utils.getTagListName(<keyof Tag>key),
+                        elements: tag[key]
+                    });
+                }
+            }
+
+            return {
+                name: tag.name,
+                description: tag.description,
+                lists
+            };
+        });
+    }
+
 }

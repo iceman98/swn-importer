@@ -3,6 +3,7 @@ import { Attributes } from './model/attributes';
 import { BaseEntity } from './model/base-entity';
 import { PositionedEntity } from './model/positioned-entity';
 import { SectorData } from './model/sector-data';
+import { Tag } from './model/tag';
 import { TreeNode } from './model/tree-node';
 
 export class Utils {
@@ -238,6 +239,29 @@ export class Utils {
                 return "Technology level";
             case 'temperature':
                 return "Temperature";
+            default:
+                return name;
+        }
+    }
+
+    /**
+     * Get a localized label of the tag list name
+     * @param name The tag list
+     * @returns The localized name of the tag list
+     */
+    static getTagListName(name: keyof Tag): string {
+        // TODO: localize!
+        switch (name) {
+            case 'complications':
+                return "Complications";
+            case 'enemies':
+                return "Enemies";
+            case 'friends':
+                return "Friends";
+            case 'places':
+                return "Places";
+            case 'things':
+                return "Things";
             default:
                 return name;
         }
