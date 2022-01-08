@@ -1,10 +1,24 @@
 <div>
     <h2>General</h2>
-    <p>
-        {{name}} is a {{type}} in {{parentLink}} at coordinates <strong>{{coordinates}}</strong>.
-    </p>
+    <div style="display: flex; flex-direction:row; justify-content:space-between;">
+        <div>
+            <p>
+                {{name}} is a {{type}} in {{parentLink}} at coordinates <strong>{{coordinates}}</strong>.
+            </p>
+        </div>
+        {{#if image}}
+        <div>
+            <img src="{{image}}" alt="{{type}} image" style="min-width: 200px; width: 200px;" />
+        </div>
+        {{/if}}
+    </div>
 
     <section class="secret">
+        {{#if description}}
+        <h2>Description</h2>
+        <p>{{description}}</p>
+        {{/if}}
+        
         {{#if children}}
         <h2>Points of interest</h2>
         <ul>

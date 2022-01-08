@@ -5,6 +5,7 @@ export interface BaseEntity {
     attributes: Attributes;
     created: string;
     creator: string;
+    image: string;
     isHidden: boolean;
     name: string;
     parent: string;

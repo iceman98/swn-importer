@@ -27,7 +27,8 @@ export class JournalUtils {
             name,
             folder,
             flags: Utils.getNodeFlags(node),
-            permission
+            permission,
+            img: node.entity.image
         };
 
         return journal;
@@ -94,6 +95,7 @@ export class JournalUtils {
             name: node.entity.name,
             attributes,
             description,
+            image: node.entity.image,
             tags: node.entity.attributes.tags,
             showType: !options.addTypeToEntityJournal,
             type: Utils.getTypeName(node.type),
