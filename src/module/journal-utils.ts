@@ -56,8 +56,7 @@ export class JournalUtils {
     }
 
     private static getTemplateData(node: TreeNode, options: Options): { [k: string]: any; } {
-
-        const system = Utils.getContainingSystem(node);
+        const system = (node.type !== 'sector') ? Utils.getContainingSystem(node) : undefined;
 
         const children = node.children.map(child => {
             const childData: any = {
@@ -102,9 +101,9 @@ export class JournalUtils {
             parentLink: node.parent?.journal?.link,
             parentType: node.parent ? Utils.getTypeName(node.parent.type) : undefined,
             systemLink: node.parent === system ? undefined : system?.journal?.link,
-            systemType: Utils.getTypeName(system.type),
+            systemType: system ? Utils.getTypeName(system.type) : undefined,
             children,
-            coordinates: system.coordinates
+            coordinates: system?.coordinates
         };
 
         return data;
