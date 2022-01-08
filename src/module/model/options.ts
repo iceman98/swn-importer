@@ -2,7 +2,7 @@ export class Options {
     generateSectorCoordinates = true;
     generateNotesForAllEntities = false;
     onlyGMJournals = true;
-    addTypeToEntityJournal = false;
-    generateHexName = false;
+    addTypeToEntityJournal = true;
+    generateHexName = true;
     prefixSystemFoldersWithCoordinates = true;
 }
