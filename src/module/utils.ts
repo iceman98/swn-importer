@@ -260,6 +260,24 @@ export class Utils {
         throw new Error("Couldnt find containing system of " + node.id);
     }
 
+    /**
+     * Finds the distance between a node and a descendant node
+     * @param ascendant The ascendant node
+     * @param descendant The descendant node
+     * @returns The distance between nodes
+     */
+    static getDistance(ascendant: TreeNode, descendant: TreeNode): number {
+        if (ascendant === descendant) {
+            return 0;
+        } else {
+            if (descendant.parent) {
+                return this.getDistance(ascendant, descendant.parent) + 1;
+            }
+        }
+
+        throw new Error("Entities are not linked: " + ascendant.id + " - " + descendant.id);
+    }
+
     private static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (type: keyof SectorData, entities: { [k: string]: BaseEntity }) => void) {
         let entities: (keyof SectorData)[];
 

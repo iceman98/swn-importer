@@ -26,13 +26,34 @@
         <p>{{description}}</p>
         {{/if}}
 
-        {{#if children}}
-        <h2>Points of interest</h2>
-        <ul>
-            {{#children}}
-            <li>{{link}} {{#if ../showType}}({{type}}){{/if}}</li>
-            {{/children}}
-        </ul>
+        {{#if diagram}}
+        <h2>Diagram</h2>
+        <div>
+            {{#diagram}}
+            <div style="display:flex; flex-direction: row; align-items: center;">
+                <div style="width: {{indentation}}px;">
+
+                </div>
+                <div>
+                    <img src="{{image}}" style="width: 32px;" />
+                </div>
+                <div>
+                    &nbsp;
+                    {{#if link}}
+                    {{link}}
+                    {{else}}
+                    <strong>{{../name}}</strong>
+                    {{/if}}
+                </div>
+                {{#if type}}
+                <div>
+                    &nbsp;
+                    ({{type}})
+                </div>
+                {{/if}}
+            </div>
+            {{/diagram}}
+        </div>
         {{/if}}
 
         <h2>Characteristics</h2>
