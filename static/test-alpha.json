@@ -1,0 +1,951 @@
+{
+  "asteroidBase": {
+    "qidAuHOKUlPVDqz3vbvg": {
+      "name": "Bonneville",
+      "parent": "O1vMCBWh7gMYnzPPu6DY",
+      "parentEntity": "asteroidBelt",
+      "attributes": {
+        "occupation": "Wage-slave corporate miners",
+        "situation": "Life support is threatened",
+        "description": "ab description",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": "img"
+    }
+  },
+  "asteroidBelt": {
+    "O1vMCBWh7gMYnzPPu6DY": {
+      "name": "(18)  Khanpur",
+      "parent": "Tda7fTxUGTTETki5e0U9",
+      "parentEntity": "system",
+      "attributes": {
+        "occupation": "Pirates hiding out among the rocks",
+        "situation": "Foreign spy ships hide there",
+        "description": "asteroid belt description",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": "img"
+    }
+  },
+  "blackHole": {},
+  "deepSpaceStation": {
+    "LsX24ZvHXIMkHbQHVNXB": {
+      "name": "Moanda 1",
+      "parent": "Tda7fTxUGTTETki5e0U9",
+      "parentEntity": "system",
+      "attributes": {
+        "occupation": "Dangerously odd humans",
+        "situation": "Black market for the elite",
+        "description": "dss description",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": "img"
+    }
+  },
+  "gasGiantMine": {
+    "5FAOCmpcUgodKEzNueeb": {
+      "name": "Sinton Project",
+      "parent": "miNoAb2XQ1QIDMhhmsJo",
+      "parentEntity": "planet",
+      "attributes": {
+        "occupation": "Miserable gas-miner slaves or serfs",
+        "situation": "They need vital supplies"
+      },
+      "isHidden": false
+    }
+  },
+  "moon": {
+    "HATL9mj3Bg358uWlPTHy": {
+      "name": "Oenespi",
+      "parent": "miNoAb2XQ1QIDMhhmsJo",
+      "parentEntity": "planet",
+      "attributes": {},
+      "isHidden": false
+    }
+  },
+  "moonBase": {
+    "Np36INwQQONfDbB0AClJ": {
+      "name": "Talsi Project",
+      "parent": "HATL9mj3Bg358uWlPTHy",
+      "parentEntity": "moon",
+      "attributes": {
+        "occupation": "Military listening post",
+        "situation": "Criminals trying to take over",
+        "description": "mb description",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": ""
+    }
+  },
+  "note": {
+    "Z9COE3m1FJ0CnAq6EHsS": {
+      "name": "sector note",
+      "parent": "lsn6DafF05aAqtza89yG",
+      "parentEntity": "sector",
+      "attributes": {
+        "content": null
+      },
+      "isHidden": false,
+      "image": ""
+    },
+    "gPJnc9pbVCFU7F410eiG": {
+      "name": "system note",
+      "parent": "Tda7fTxUGTTETki5e0U9",
+      "parentEntity": "system",
+      "attributes": {},
+      "isHidden": false
+    },
+    "a6ilCV6kZwfBhEabOYOP": {
+      "name": "belt note",
+      "parent": "O1vMCBWh7gMYnzPPu6DY",
+      "parentEntity": "asteroidBelt",
+      "attributes": {
+        "content": null
+      },
+      "isHidden": false,
+      "image": ""
+    },
+    "Pbg2dNWDM8AKcvHKWUSo": {
+      "name": "fuel station note",
+      "parent": "1oTPobFXIWJTqUFce8LC",
+      "parentEntity": "refuelingStation",
+      "attributes": {
+        "content": null
+      },
+      "isHidden": false,
+      "image": ""
+    },
+    "eyQBuqn8UA1o7DpPsry8": {
+      "name": "research note",
+      "parent": "CCRzmfClX9GnamOyoayO",
+      "parentEntity": "researchBase",
+      "attributes": {
+        "content": null
+      },
+      "isHidden": false,
+      "image": ""
+    },
+    "ZQiCMPlO2s1Qw9dqGNE8": {
+      "name": "station note",
+      "parent": "llepCkLkcI1nS0rQpFK7",
+      "parentEntity": "spaceStation",
+      "attributes": {
+        "content": null
+      },
+      "isHidden": false,
+      "image": ""
+    },
+    "LWyLPkFldRhYABK0rO1U": {
+      "name": "dss note",
+      "parent": "LsX24ZvHXIMkHbQHVNXB",
+      "parentEntity": "deepSpaceStation",
+      "attributes": {
+        "content": null
+      },
+      "isHidden": false,
+      "image": ""
+    },
+    "efbp1iMGTDalOeH7hyF4": {
+      "name": "planet note",
+      "parent": "miNoAb2XQ1QIDMhhmsJo",
+      "parentEntity": "planet",
+      "attributes": {
+        "content": null
+      },
+      "isHidden": false,
+      "image": ""
+    },
+    "lmnWi9fFehyDKuiCHGiC": {
+      "name": "ab note",
+      "parent": "qidAuHOKUlPVDqz3vbvg",
+      "parentEntity": "asteroidBase",
+      "attributes": {
+        "content": null
+      },
+      "isHidden": false,
+      "image": ""
+    },
+    "EeaHW6HNONrHLAA3iQDh": {
+      "name": "mine note",
+      "parent": "5FAOCmpcUgodKEzNueeb",
+      "parentEntity": "gasGiantMine",
+      "attributes": {},
+      "isHidden": false
+    },
+    "5qAFEEvPZdY07w8vZoOh": {
+      "name": "mb note",
+      "parent": "Np36INwQQONfDbB0AClJ",
+      "parentEntity": "moonBase",
+      "attributes": {},
+      "isHidden": false
+    },
+    "3xtVpgXNaGYgAltu9vRy": {
+      "name": "ruin note",
+      "parent": "EfBZL8DXA2V9jiFCkwzn",
+      "parentEntity": "orbitalRuin",
+      "attributes": {
+        "content": null
+      },
+      "isHidden": false,
+      "image": ""
+    }
+  },
+  "orbitalRuin": {
+    "EfBZL8DXA2V9jiFCkwzn": {
+      "name": "Persbo 5",
+      "parent": "HATL9mj3Bg358uWlPTHy",
+      "parentEntity": "moon",
+      "attributes": {
+        "occupation": "Military quarantine enforcers",
+        "situation": "Meddling with strange tech",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": ""
+    },
+    "PhSzuf8hgDe0nmKkuHVO": {
+      "name": "Plum 6",
+      "parent": "miNoAb2XQ1QIDMhhmsJo",
+      "parentEntity": "planet",
+      "attributes": {
+        "occupation": "Heirs of the original builders",
+        "situation": "Trying to stop it awakening"
+      },
+      "isHidden": false
+    }
+  },
+  "planet": {
+    "miNoAb2XQ1QIDMhhmsJo": {
+      "name": "Dimikhann",
+      "parent": "Tda7fTxUGTTETki5e0U9",
+      "parentEntity": "system",
+      "attributes": {
+        "techLevel": "TL2",
+        "atmosphere": "Breatheable mix",
+        "temperature": "Variable cold-to-temperate",
+        "biosphere": "Human-miscible",
+        "population": "Several million inhabitants",
+        "description": "planet description",
+        "tags": [
+          {
+            "name": "Prison Planet",
+            "description": "This planet is or was intended as a prison. Some such prisons were meant for specific malefactors of the Terran Mandate, while others were to contain entire \"dangerous\" ethnic groups or alien races. Some may still have warden AIs or automatic systems to prevent any unauthorized person from leaving, and any authorization permits have long since expired.",
+            "enemies": [
+              "Crazed warden ai",
+              "Brutal heir to gang leadership",
+              "Offworlder who's somehow acquired warden powers and exploits the locals"
+            ],
+            "friends": [
+              "Innocent local born here",
+              "Native technician forced to maintain the very tech that imprisons them",
+              "Offworlder trapped here by accident"
+            ],
+            "complications": [
+              "Departure permits are a precious currency",
+              "The prison industry still makes valuable pretech devices",
+              "Gangs have metamorphosed into governments",
+              "The local nobility descended from the prison staff"
+            ],
+            "things": [
+              "A pass to get offworld",
+              "A key to bypass ancient security devices",
+              "Contraband forbidden by the security scanners"
+            ],
+            "places": [
+              "Mandate-era prison block converted to government building",
+              "Industrial facility manned by mandatory numbers of prisoners",
+              "Makeshift shop where contraband is assembled"
+            ]
+          },
+          {
+            "name": "Taboo Treasure",
+            "description": "The natives here produce something that is both fabulously valuable and strictly forbidden elsewhere in the sector. It may be a lethally addictive drug, forbidden gengineering tech, vat-grown \"perfect slaves\", or a useful substance that can only be made through excruciating human suffering. This treasure is freely traded on the world, but bringing it elsewhere is usually an invitation to a long prison stay or worse.",
+            "enemies": [
+              "Maker of a vile commodity",
+              "Smuggler for a powerful offworlder",
+              "Depraved offworlder here for \"fun\"",
+              "Local warlord who controls the treasure"
+            ],
+            "friends": [
+              "Reformer seeking to end its use",
+              "Innovator trying to repurpose the treasure in innocent ways",
+              "Wretched addict unwillingly prey to the treasure"
+            ],
+            "complications": [
+              "The treasure is extremely hard to smuggle",
+              "Its use visibly marks a user",
+              "The natives consider it for their personal use only"
+            ],
+            "things": [
+              "Load of the forbidden good",
+              "Smuggling tech that could hide the good perfectly",
+              "Blackmail data on offworld buyers of the good"
+            ],
+            "places": [
+              "Den where the good is used",
+              "Market selling the good to locals and a few outsiders",
+              "Factory or processing area where the good is created"
+            ]
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": "img"
+    }
+  },
+  "refuelingStation": {
+    "5IMGFQEm3lIyn8IhzuKk": {
+      "name": "Crater 7",
+      "parent": "miNoAb2XQ1QIDMhhmsJo",
+      "parentEntity": "planet",
+      "attributes": {
+        "occupation": "Sordid purveyors of decadent fun",
+        "situation": "Has corrupt customs agents",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false
+    },
+    "00MG4oUHCTV3VFU578Xe": {
+      "name": "Janssen 9",
+      "parent": "Tda7fTxUGTTETki5e0U9",
+      "parentEntity": "system",
+      "attributes": {
+        "occupation": "Sordid purveyors of decadent fun",
+        "situation": "A ship is in severe distress",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false
+    },
+    "1oTPobFXIWJTqUFce8LC": {
+      "name": "Circle 7",
+      "parent": "O1vMCBWh7gMYnzPPu6DY",
+      "parentEntity": "asteroidBelt",
+      "attributes": {
+        "occupation": "Religious missionaries to travelers",
+        "situation": "A ship is in severe distress",
+        "description": "refueling station description",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": "img"
+    },
+    "DXI4Z9NxRmcKvVWvZKBi": {
+      "name": "Tooting 7",
+      "parent": "HATL9mj3Bg358uWlPTHy",
+      "parentEntity": "moon",
+      "attributes": {
+        "occupation": "Religious missionaries to travelers",
+        "situation": "Has corrupt customs agents"
+      },
+      "isHidden": false
+    }
+  },
+  "researchBase": {
+    "cdQfb4ZnTsJrIw88SGAn": {
+      "name": "Dank",
+      "parent": "miNoAb2XQ1QIDMhhmsJo",
+      "parentEntity": "planet",
+      "attributes": {
+        "occupation": "Experiments that have gotten loose",
+        "situation": "Perilous research underway",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false
+    },
+    "eomay0d3Y2WLbqSVTv76": {
+      "name": "Huancayo 6",
+      "parent": "Tda7fTxUGTTETki5e0U9",
+      "parentEntity": "system",
+      "attributes": {
+        "occupation": "Black-ops governmental researchers",
+        "situation": "Science monsters run amok",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false
+    },
+    "CCRzmfClX9GnamOyoayO": {
+      "name": "Dingo 1",
+      "parent": "O1vMCBWh7gMYnzPPu6DY",
+      "parentEntity": "asteroidBelt",
+      "attributes": {
+        "occupation": "Black-ops governmental researchers",
+        "situation": "Selling black-market tech",
+        "description": "research description",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": "img"
+    },
+    "bunBKK9elhJ0vsDLsqme": {
+      "name": "Newton 7",
+      "parent": "HATL9mj3Bg358uWlPTHy",
+      "parentEntity": "moon",
+      "attributes": {
+        "occupation": "Black-ops governmental researchers",
+        "situation": "Selling black-market tech"
+      },
+      "isHidden": false
+    }
+  },
+  "sector": {
+    "lsn6DafF05aAqtza89yG": {
+      "name": "Test Alpha",
+      "rows": 3,
+      "columns": 3,
+      "image": "img",
+      "attributes": {
+        "description": null
+      },
+      "mapLocked": true
+    }
+  },
+  "spaceStation": {
+    "llepCkLkcI1nS0rQpFK7": {
+      "name": "Puyo 7",
+      "parent": "O1vMCBWh7gMYnzPPu6DY",
+      "parentEntity": "asteroidBelt",
+      "attributes": {
+        "occupation": "Eccentric oligarch and minions",
+        "situation": "Vault for dangerous pretech",
+        "description": "station description",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": "img"
+    },
+    "fc9xJKAIRESAPWUkpyG5": {
+      "name": "Crater 8",
+      "parent": "miNoAb2XQ1QIDMhhmsJo",
+      "parentEntity": "planet",
+      "attributes": {
+        "occupation": "Eccentric oligarch and minions",
+        "situation": "Supply base for pirates",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false
+    }
+  },
+  "system": {
+    "Tda7fTxUGTTETki5e0U9": {
+      "x": 2,
+      "y": 2,
+      "name": "Bero",
+      "parent": "lsn6DafF05aAqtza89yG",
+      "parentEntity": "sector",
+      "attributes": {
+        "description": "system description",
+        "tags": [
+          {
+            "name": "My Custom Tag",
+            "description": "This is a custom tag",
+            "types": [
+              "planet",
+              "asteroidBase",
+              "blackHole",
+              "gasGiantMine",
+              "deepSpaceStation",
+              "asteroidBelt",
+              "moon",
+              "moonBase",
+              "orbitalRuin",
+              "refuelingStation",
+              "researchBase",
+              "spaceStation",
+              "system"
+            ],
+            "enemies": [
+              "an enemy"
+            ],
+            "friends": [
+              "a friend"
+            ],
+            "complications": [
+              "a complicatin"
+            ],
+            "things": [
+              "a thing"
+            ],
+            "places": [
+              "a place"
+            ],
+            "creator": "lLIVZU4KIjhgFJJjphqom8PqF7y2"
+          }
+        ]
+      },
+      "isHidden": false,
+      "image": "img"
+    }
+  }
+}
