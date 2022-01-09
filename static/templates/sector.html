@@ -22,18 +22,13 @@
         {{/if}}
 
         {{#if notes}}
-        <h3>Notes</h3>
-        <ul style="list-style-type: circle;">
-            {{#notes}}
-            <li>{{name}} {{#if description}}: {{description}}{{/if}}</li>
-            {{/notes}}
-        </ul>
+        {{>notes}}
         {{/if}}
-        
+
         {{#tags}}
-            {{>tag}}
+        {{>tag}}
         {{/tags}}
-        
+
         {{#if children}}
         <h3>Systems in this sector</h3>
         <ul style="list-style-type: circle;">
@@ -42,6 +37,6 @@
             {{/children}}
         </ul>
         {{/if}}
-        
+
     </section>
 </div>
