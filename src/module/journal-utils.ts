@@ -92,7 +92,8 @@ export class JournalUtils {
                 const childData: any = {
                     link: child.journal?.link,
                     type: Utils.getTypeName(child.type),
-                    coordinates: child.coordinates
+                    coordinates: child.coordinates,
+                    tags: Utils.getEntityDisplayTags(sectorTree, child)
                 }
                 return childData;
             });
@@ -128,7 +129,7 @@ export class JournalUtils {
 
         const data: DisplayEntity = {
             name: node.entity.name,
-            diagram: JournalUtils.generateDiagram(node, options),
+            diagram: JournalUtils.generateDiagram(sectorTree, node, options),
             attributes,
             description,
             notes,
@@ -178,13 +179,13 @@ export class JournalUtils {
         }
     }
 
-    private static generateDiagram(root: TreeNode, options: Options): DiagramEntry[] {
-        const entities = Utils.traversal(root, 'preorder').filter(n => n.type !== 'note');
+    private static generateDiagram(sectorTree: SectorTree, diagramRoot: TreeNode, options: Options): DiagramEntry[] {
+        const entities = Utils.traversal(diagramRoot, 'preorder').filter(n => n.type !== 'note');
 
         if (entities.length > 1) {
             return entities.map((node) => {
                 const indentation: string[] = [];
-                const distance = Utils.getDistance(root, node);
+                const distance = Utils.getDistance(diagramRoot, node);
                 for (let i = 0; i < distance; i++) {
                     if (i === distance - 1) {
                         if (Utils.isLastChild(node)) {
@@ -199,8 +200,9 @@ export class JournalUtils {
                 return {
                     indentation,
                     image: NoteUtils.getEntityIcon(node.type),
-                    link: (root !== node) ? node.journal?.link : undefined,
-                    type: !options.addTypeToEntityJournal ? node.type : undefined
+                    link: (diagramRoot !== node) ? node.journal?.link : undefined,
+                    type: !options.addTypeToEntityJournal ? node.type : undefined,
+                    tags: Utils.getEntityDisplayTags(sectorTree, node)
                 }
             });
         }

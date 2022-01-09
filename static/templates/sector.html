@@ -21,9 +21,7 @@
         <blockquote>{{description}}</blockquote>
         {{/if}}
 
-        {{#if notes}}
         {{>notes}}
-        {{/if}}
 
         {{#tags}}
         {{>tag}}
@@ -33,7 +31,7 @@
         <h3>Systems in this sector</h3>
         <ul style="list-style-type: circle;">
             {{#children}}
-            <li>{{link}} {{#if ../showType}}({{type}}){{/if}} at coordinates <strong>{{coordinates}}</strong></li>
+            <li>{{link}} {{#if ../showType}}({{type}}){{/if}} {{>tagLinks tags=tags}} at coordinates <strong>{{coordinates}}</strong></li>
             {{/children}}
         </ul>
         {{/if}}

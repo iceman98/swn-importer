@@ -7,7 +7,7 @@ import { Utils } from './utils';
 export class Importer {
 
     private dialog: ImportDialog;
-    private readonly PARTIALS = ["tag", "notes"];
+    private readonly PARTIALS = ["tag", "notes", "tagLinks"];
 
     constructor() {
         this.dialog = new ImportDialog(this);

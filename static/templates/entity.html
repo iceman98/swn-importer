@@ -4,12 +4,13 @@
         <div>
             <p>
                 <strong>{{name}}</strong> is a {{type}} {{location}} {{parentLink}} {{#if
-                showType}}({{parentType}}){{/if}} at coordinates <strong>{{coordinates}}</strong>.
+                showType}}({{parentType}}){{/if}} {{>tagLinks tags=parentTags}} at coordinates
+                <strong>{{coordinates}}</strong>.
             </p>
             {{#if systemLink}}
             <p>
-                It's in {{systemLink}} {{#if showType}}({{systemType}}){{/if}} at coordinates
-                <strong>{{coordinates}}</strong>.
+                It's in {{systemLink}} {{#if showType}}({{systemType}}){{/if}} {{>tagLinks tags=systemTags}} at
+                coordinates <strong>{{coordinates}}</strong>.
             </p>
             {{/if}}
         </div>
@@ -45,9 +46,7 @@
                 <blockquote>{{description}}</blockquote>
                 {{/if}}
 
-                {{#if notes}}
                 {{>notes}}
-                {{/if}}
             </div>
             {{#if diagram}}
             <div style="border: 1px solid; padding: 5px;">
@@ -62,8 +61,7 @@
                     <div>
                         <img src="{{image}}" style="width: 32px; border-width: 0;" />
                     </div>
-                    <div>
-                        &nbsp;
+                    <div style="margin-left: 5px;">
                         {{#if link}}
                         {{link}}
                         {{else}}
@@ -71,8 +69,7 @@
                         {{/if}}
                     </div>
                     {{#if type}}
-                    <div>
-                        &nbsp;
+                    <div style="margin-left: 5px;">
                         ({{type}})
                     </div>
                     {{/if}}
@@ -83,7 +80,7 @@
         </div>
 
         {{#tags}}
-            {{>tag}}
+        {{>tag}}
         {{/tags}}
 
     </section>
