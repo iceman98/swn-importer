@@ -2,6 +2,8 @@ import { FolderUtils } from './folder-utils';
 import { AttributeEntry } from './model/attribute-entry';
 import { Attributes } from './model/attributes';
 import { DiagramEntry } from './model/diagram-entry';
+import { DisplayChild } from './model/display-child';
+import { DisplayEntity } from './model/display-entity';
 import { DisplayTag } from './model/display-tag';
 import { Options } from './model/options';
 import { SectorTree } from './model/sector-tree';
@@ -81,10 +83,10 @@ export class JournalUtils {
         return journal;
     }
 
-    private static getTemplateData(sectorTree: SectorTree, node: TreeNode, options: Options): Record<string, any> {
+    private static getTemplateData(sectorTree: SectorTree, node: TreeNode, options: Options): DisplayEntity {
         const system = (node.type !== 'sector') ? Utils.getContainingSystem(node) : undefined;
 
-        const children = node.children
+        const children: DisplayChild[] = node.children
             .filter(node => node.type !== 'note')
             .map(child => {
                 const childData: any = {
@@ -124,7 +126,7 @@ export class JournalUtils {
 
         const includeSystemLink: boolean = (!!system && system !== node && system !== node.parent);
 
-        const data = {
+        const data: DisplayEntity = {
             name: node.entity.name,
             diagram: JournalUtils.generateDiagram(node, options),
             attributes,
