@@ -2,11 +2,13 @@ import { FolderUtils } from './folder-utils';
 import { AttributeEntry } from './model/attribute-entry';
 import { Attributes } from './model/attributes';
 import { DiagramEntry } from './model/diagram-entry';
-import { DisplayList } from './model/display-list';
+import { DisplayChild } from './model/display-child';
+import { DisplayEntity } from './model/display-entity';
 import { DisplayTag } from './model/display-tag';
 import { Options } from './model/options';
-import { Tag } from './model/tag';
+import { SectorTree } from './model/sector-tree';
 import { TreeNode } from './model/tree-node';
+import { TreeTag } from './model/tree-tag';
 import { NoteUtils } from './note-utils';
 import { TemplateUtils } from './template-utils';
 import { Utils } from './utils';
@@ -42,13 +44,14 @@ export class JournalUtils {
 
     /**
      * Gets a Foundry Journal Data object to update an existing journal for an entity
+     * @param sectorTree The sector tree
      * @param node The tree node to generate a journal update for
      * @param options The options object
      * @returns The Foundry Journal update Data (promise)
      */
-    static async getUpdateJournalData(node: TreeNode, options: Options): Promise<Partial<JournalEntry.Data>> {
+    static async getUpdateJournalData(sectorTree: SectorTree, node: TreeNode, options: Options): Promise<Partial<JournalEntry.Data>> {
         if (node.journal) {
-            const templateData = JournalUtils.getTemplateData(node, options);
+            const templateData = JournalUtils.getTemplateData(sectorTree, node, options);
             const content = await TemplateUtils.renderJournalContent(node.type, templateData);
 
             const updateData: Partial<JournalEntry.Data> = {
@@ -62,16 +65,35 @@ export class JournalUtils {
         }
     }
 
-    private static getTemplateData(node: TreeNode, options: Options): Record<string, any> {
+    /**
+     * Gets a Foundry Journal Data object to generate a journal for a tag
+     * @param tag The tag to create a journal entry for
+     * @param folder The folder to put the journal into
+     */
+    static async getTagJournalData(tagNode: TreeTag, folder: Folder): Promise<Partial<JournalEntry.Data>> {
+        const journal: Partial<JournalEntry.Data> = {
+            type: 'JournalEntry',
+            name: tagNode.tag.name,
+            content: await renderTemplate(Utils.getTemplatePath("tag.html"), tagNode.displayTag),
+            folder: folder.id,
+            flags: Utils.getTagFlags(tagNode),
+            permission: { default: CONST.ENTITY_PERMISSIONS.NONE }
+        };
+
+        return journal;
+    }
+
+    private static getTemplateData(sectorTree: SectorTree, node: TreeNode, options: Options): DisplayEntity {
         const system = (node.type !== 'sector') ? Utils.getContainingSystem(node) : undefined;
 
-        const children = node.children
+        const children: DisplayChild[] = node.children
             .filter(node => node.type !== 'note')
             .map(child => {
                 const childData: any = {
                     link: child.journal?.link,
                     type: Utils.getTypeName(child.type),
-                    coordinates: child.coordinates
+                    coordinates: child.coordinates,
+                    tags: Utils.getEntityDisplayTags(sectorTree, child)
                 }
                 return childData;
             });
@@ -92,7 +114,7 @@ export class JournalUtils {
                     description = node.entity.attributes.description;
                     break;
                 case 'tags':
-                    tags = JournalUtils.getDisplayTags(node.entity.attributes.tags);
+                    tags = Utils.getEntityDisplayTags(sectorTree, node);
                     break;
                 default:
                     attributes.push({
@@ -105,9 +127,9 @@ export class JournalUtils {
 
         const includeSystemLink: boolean = (!!system && system !== node && system !== node.parent);
 
-        const data = {
+        const data: DisplayEntity = {
             name: node.entity.name,
-            diagram: JournalUtils.generateDiagram(node, options),
+            diagram: JournalUtils.generateDiagram(sectorTree, node, options),
             attributes,
             description,
             notes,
@@ -118,8 +140,10 @@ export class JournalUtils {
             location: JournalUtils.getLocationWithinParent(node),
             parentLink: node.parent?.journal?.link,
             parentType: node.parent ? Utils.getTypeName(node.parent.type) : undefined,
+            parentTags: node.parent ? Utils.getEntityDisplayTags(sectorTree, node.parent) : undefined,
             systemLink: (includeSystemLink && system) ? system.journal?.link : undefined,
             systemType: (includeSystemLink && system) ? Utils.getTypeName(system.type) : undefined,
+            systemTags: (includeSystemLink && system) ? Utils.getEntityDisplayTags(sectorTree, system) : undefined,
             children,
             coordinates: system?.coordinates
         };
@@ -155,13 +179,13 @@ export class JournalUtils {
         }
     }
 
-    private static generateDiagram(root: TreeNode, options: Options): DiagramEntry[] {
-        const entities = Utils.traversal(root, 'preorder').filter(n => n.type !== 'note');
+    private static generateDiagram(sectorTree: SectorTree, diagramRoot: TreeNode, options: Options): DiagramEntry[] {
+        const entities = Utils.traversal(diagramRoot, 'preorder').filter(n => n.type !== 'note');
 
         if (entities.length > 1) {
             return entities.map((node) => {
                 const indentation: string[] = [];
-                const distance = Utils.getDistance(root, node);
+                const distance = Utils.getDistance(diagramRoot, node);
                 for (let i = 0; i < distance; i++) {
                     if (i === distance - 1) {
                         if (Utils.isLastChild(node)) {
@@ -176,34 +200,14 @@ export class JournalUtils {
                 return {
                     indentation,
                     image: NoteUtils.getEntityIcon(node.type),
-                    link: (root !== node) ? node.journal?.link : undefined,
-                    type: !options.addTypeToEntityJournal ? node.type : undefined
+                    link: (diagramRoot !== node) ? node.journal?.link : undefined,
+                    type: !options.addTypeToEntityJournal ? node.type : undefined,
+                    tags: Utils.getEntityDisplayTags(sectorTree, node)
                 }
             });
         }
 
         return [];
-    }
-
-    private static getDisplayTags(tags: Tag[]): DisplayTag[] {
-        return tags.map(tag => {
-            const lists: DisplayList[] = [];
-
-            for (const key in tag) {
-                if (key !== 'types' && tag[key] instanceof Array) {
-                    lists.push({
-                        name: Utils.getTagListName(<keyof Tag>key),
-                        elements: tag[key]
-                    });
-                }
-            }
-
-            return {
-                name: tag.name,
-                description: tag.description,
-                lists
-            };
-        });
     }
 
 }

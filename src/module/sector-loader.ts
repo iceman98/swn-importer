@@ -15,11 +15,12 @@ export class SectorLoader {
      */
     async import(): Promise<SectorTree> {
         const nodeMap = Utils.getDataAsNodeMap(this.sectorData);
+        const tagMap = Utils.getTagMap(Utils.getValueList(nodeMap));
         Utils.linkTreeNodes(nodeMap);
 
         for (const node of nodeMap.values()) {
             if (node.type === 'sector') {
-                const tree = { nodeMap, root: node };
+                const tree = { nodeMap, root: node, tagMap };
                 await this.importIntoFoundry(tree);
                 return tree;
             }
@@ -30,6 +31,7 @@ export class SectorLoader {
 
     private async importIntoFoundry(sectorTree: SectorTree) {
         await this.createSectorFolder(sectorTree);
+        await this.createTagJournals(sectorTree);
         await this.createSystemFolders(sectorTree);
         await this.createEntityJournals(sectorTree);
         await this.updateJournalContents(sectorTree);
@@ -44,6 +46,24 @@ export class SectorLoader {
         } else {
             throw new Error("Could not create a folder for the sector");
         }
+    }
+
+    private async createTagJournals(sectorTree: SectorTree) {
+        const tagFolder = await Folder.create({
+            name: "Tags",
+            type: "JournalEntry",
+            parent: sectorTree.root.folder
+        });
+        const journalDataPromises = Utils.getValueList(sectorTree.tagMap).map(node => JournalUtils.getTagJournalData(node, <Folder>tagFolder));
+        const journalData = await Promise.all(journalDataPromises);
+        const journalEntries = await JournalEntry.create(journalData);
+        Utils.getAsList(journalEntries).forEach(e => {
+            const tag = sectorTree.tagMap.get(Utils.getIdFlag(e));
+            if (tag) {
+                tag.journal = e;
+                tag.displayTag.link = e.link;
+            }
+        });
     }
 
     private async createSystemFolders(sectorTree: SectorTree) {
@@ -86,7 +106,7 @@ export class SectorLoader {
         const journalData: Partial<JournalEntry.Data>[] = [];
         for (const node of sectorTree.nodeMap.values()) {
             if (node.type !== 'note') {
-                journalData.push(await JournalUtils.getUpdateJournalData(node, this.options));
+                journalData.push(await JournalUtils.getUpdateJournalData(sectorTree, node, this.options));
             }
         }
         await (<any>JournalEntry).updateDocuments(journalData);

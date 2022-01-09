@@ -4,12 +4,13 @@
         <div>
             <p>
                 <strong>{{name}}</strong> is a {{type}} {{location}} {{parentLink}} {{#if
-                showType}}({{parentType}}){{/if}} at coordinates <strong>{{coordinates}}</strong>.
+                showType}}({{parentType}}){{/if}} {{>tagLinks tags=parentTags}} at coordinates
+                <strong>{{coordinates}}</strong>.
             </p>
             {{#if systemLink}}
             <p>
-                It's in {{systemLink}} {{#if showType}}({{systemType}}){{/if}} at coordinates
-                <strong>{{coordinates}}</strong>.
+                It's in {{systemLink}} {{#if showType}}({{systemType}}){{/if}} {{>tagLinks tags=systemTags}} at
+                coordinates <strong>{{coordinates}}</strong>.
             </p>
             {{/if}}
         </div>
@@ -45,29 +46,22 @@
                 <blockquote>{{description}}</blockquote>
                 {{/if}}
 
-                {{#if notes}}
-                <h3>Notes</h3>
-                <ul style="list-style-type: circle;">
-                    {{#notes}}
-                    <li>{{name}} {{#if description}}: {{description}}{{/if}}</li>
-                    {{/notes}}
-                </ul>
-                {{/if}}
+                {{>notes}}
             </div>
             {{#if diagram}}
             <div style="border: 1px solid; padding: 5px;">
                 {{#diagram}}
                 <div style="display:flex; flex-direction: row; align-items: center; height: 32px;">
                     {{#indentation}}
-                    <div style="width: 32px; min-width: 32px; text-align: center; font-family: monospace; font-size: 27px; color: lightslategrey">
+                    <div
+                        style="width: 32px; min-width: 32px; text-align: center; font-family: monospace; font-size: 27px; color: lightslategrey">
                         {{.}}
                     </div>
                     {{/indentation}}
                     <div>
                         <img src="{{image}}" style="width: 32px; border-width: 0;" />
                     </div>
-                    <div>
-                        &nbsp;
+                    <div style="margin-left: 5px;">
                         {{#if link}}
                         {{link}}
                         {{else}}
@@ -75,8 +69,7 @@
                         {{/if}}
                     </div>
                     {{#if type}}
-                    <div>
-                        &nbsp;
+                    <div style="margin-left: 5px;">
                         ({{type}})
                     </div>
                     {{/if}}
@@ -87,20 +80,7 @@
         </div>
 
         {{#tags}}
-        <h2 style="margin-top: 5px;">{{name}}</h2>
-        <p>{{description}}</p>
-        {{#lists}}
-        <div>
-            <h3>{{name}}</h3>
-            <ul style="list-style-type: circle;">
-                {{#elements}}
-                <li>
-                    {{.}}
-                </li>
-                {{/elements}}
-            </ul>
-        </div>
-        {{/lists}}
+        {{>tag}}
         {{/tags}}
 
     </section>

@@ -1,10 +1,14 @@
 import { Constants } from './constants';
 import { Attributes } from './model/attributes';
 import { BaseEntity } from './model/base-entity';
+import { DisplayList } from './model/display-list';
+import { DisplayTag } from './model/display-tag';
 import { PositionedEntity } from './model/positioned-entity';
 import { SectorData } from './model/sector-data';
+import { SectorTree } from './model/sector-tree';
 import { Tag } from './model/tag';
 import { TreeNode } from './model/tree-node';
+import { TreeTag } from './model/tree-tag';
 
 export class Utils {
 
@@ -76,6 +80,17 @@ export class Utils {
         const flags: Record<string, any> = {};
         flags[Constants.MODULE_ID + "." + "id"] = node.id;
         flags[Constants.MODULE_ID + "." + "type"] = node.type;
+        return flags;
+    }
+
+    /**
+     * Get the Foundry flags for a SWN tag
+     * @param node The tag to generate flags for
+     * @returns The Foundry flags
+     */
+    static getTagFlags(tagNode: TreeTag): Record<string, any> {
+        const flags: Record<string, any> = {};
+        flags[Constants.MODULE_ID + "." + "id"] = tagNode.tag.name;
         return flags;
     }
 
@@ -314,6 +329,72 @@ export class Utils {
         }
 
         return false;
+    }
+
+    /**
+     * Gets all the distinct tags of a node list into a map
+     * @param nodeList The node list to process
+     * @returns A map with the tag name and content
+     */
+    static getTagMap(nodeList: TreeNode[]): Map<string, TreeTag> {
+        const tagMap = new Map<string, TreeTag>();
+        nodeList.forEach(node => {
+            if (node.entity.attributes.tags) {
+                node.entity.attributes.tags.forEach(tag => {
+                    if (!tagMap.has(tag.name)) {
+                        tagMap.set(tag.name, { id: tag.name, tag, displayTag: Utils.getDisplayTag(tag), journal: undefined });
+                    }
+                });
+            }
+        });
+        return tagMap;
+    }
+
+    /**
+     * Get the values of a map into a list
+     * @param map The map to parse
+     * @returns A list with all values in the map
+     */
+    static getValueList<K, V>(map: Map<K, V>): V[] {
+        const result: V[] = [];
+        map.forEach(value => result.push(value));
+        return result;
+    }
+
+    /**
+     * Gets a list of display tags for a given entity
+     * @param sectorTree The sector tree
+     * @param node The node to get the tags for
+     * @returns The list of display tags for the node
+     */
+    static getEntityDisplayTags(sectorTree: SectorTree, node: TreeNode): DisplayTag[] | undefined {
+        if (node && node.entity && node.entity.attributes && node.entity.attributes.tags) {
+            return <DisplayTag[]>node.entity.attributes.tags
+                .map(t => sectorTree.tagMap.get(t.name))
+                .filter(t => t !== undefined)
+                .map(t => t?.displayTag);
+        }
+        return undefined;
+    }
+
+    private static getDisplayTag(tag: Tag): DisplayTag {
+        const lists: DisplayList[] = [];
+
+        for (const key in tag) {
+            if (key !== 'types' && tag[key] instanceof Array) {
+                lists.push({
+                    name: Utils.getTagListName(<keyof Tag>key),
+                    elements: tag[key]
+                });
+            }
+        }
+
+        return {
+            name: tag.name,
+            description: tag.description,
+            lists,
+            link: undefined
+        };
     }
 
     private static forEachEntityType(sectorData: SectorData, types: 'all' | 'only-basic' | 'only-systems', consumer: (type: keyof SectorData, entities: Record<string, BaseEntity>) => void) {

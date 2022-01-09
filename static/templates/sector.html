@@ -21,40 +21,20 @@
         <blockquote>{{description}}</blockquote>
         {{/if}}
 
-        {{#if notes}}
-        <h3>Notes</h3>
-        <ul style="list-style-type: circle;">
-            {{#notes}}
-            <li>{{name}} {{#if description}}: {{description}}{{/if}}</li>
-            {{/notes}}
-        </ul>
-        {{/if}}
-        
+        {{>notes}}
+
         {{#tags}}
-        <h2 style="margin-top: 5px;">{{name}}</h2>
-        <p>{{description}}</p>
-        {{#lists}}
-        <div>
-            <h3>{{name}}</h3>
-            <ul style="list-style-type: circle;">
-                {{#elements}}
-                <li>
-                    {{.}}
-                </li>
-                {{/elements}}
-            </ul>
-        </div>
-        {{/lists}}
+        {{>tag}}
         {{/tags}}
-        
+
         {{#if children}}
         <h3>Systems in this sector</h3>
         <ul style="list-style-type: circle;">
             {{#children}}
-            <li>{{link}} {{#if ../showType}}({{type}}){{/if}} at coordinates <strong>{{coordinates}}</strong></li>
+            <li>{{link}} {{#if ../showType}}({{type}}){{/if}} {{>tagLinks tags=tags}} at coordinates <strong>{{coordinates}}</strong></li>
             {{/children}}
         </ul>
         {{/if}}
-        
+
     </section>
 </div>
