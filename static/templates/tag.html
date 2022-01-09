@@ -1,0 +1,14 @@
+<h2 style="margin-top: 5px;">{{name}}</h2>
+<p>{{description}}</p>
+{{#lists}}
+<div>
+    <h3>{{name}}</h3>
+    <ul style="list-style-type: circle;">
+        {{#elements}}
+        <li>
+            {{.}}
+        </li>
+        {{/elements}}
+    </ul>
+</div>
+{{/lists}}

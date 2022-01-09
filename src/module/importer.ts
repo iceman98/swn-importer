@@ -7,6 +7,7 @@ import { Utils } from './utils';
 export class Importer {
 
     private dialog: ImportDialog;
+    private readonly PARTIALS = ["tag"];
 
     constructor() {
         this.dialog = new ImportDialog(this);
@@ -54,6 +55,8 @@ export class Importer {
         if (game.user?.isGM) {
             try {
                 const importedData: SectorData = await (await fetch(fileName)).json();
+                await this.registerPartials();
+
                 const loader = new SectorLoader(importedData, options);
                 const result = await loader.import();
 
@@ -93,5 +96,12 @@ export class Importer {
                 }).render(true);
             }
         }
+    }
+
+    private async registerPartials() {
+        const templates = await loadTemplates(this.PARTIALS.map(t => Utils.getTemplatePath(t + ".html")));
+        this.PARTIALS.forEach((name, index) => {
+            Handlebars.registerPartial(name, templates[index]);
+        })
     }
 }

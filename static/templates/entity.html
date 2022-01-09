@@ -59,7 +59,8 @@
                 {{#diagram}}
                 <div style="display:flex; flex-direction: row; align-items: center; height: 32px;">
                     {{#indentation}}
-                    <div style="width: 32px; min-width: 32px; text-align: center; font-family: monospace; font-size: 27px; color: lightslategrey">
+                    <div
+                        style="width: 32px; min-width: 32px; text-align: center; font-family: monospace; font-size: 27px; color: lightslategrey">
                         {{.}}
                     </div>
                     {{/indentation}}
@@ -87,20 +88,7 @@
         </div>
 
         {{#tags}}
-        <h2 style="margin-top: 5px;">{{name}}</h2>
-        <p>{{description}}</p>
-        {{#lists}}
-        <div>
-            <h3>{{name}}</h3>
-            <ul style="list-style-type: circle;">
-                {{#elements}}
-                <li>
-                    {{.}}
-                </li>
-                {{/elements}}
-            </ul>
-        </div>
-        {{/lists}}
+            {{>tag}}
         {{/tags}}
 
     </section>
