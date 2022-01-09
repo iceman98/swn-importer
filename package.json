@@ -1,7 +1,7 @@
 {
-  "name": "placeholder",
+  "name": "swn-importer",
   "version": "1.0.0",
-  "description": "Placeholder.",
+  "description": "Sectors Without Number import modeule for Foundry",
   "private": true,
   "scripts": {
     "build": "webpack",
