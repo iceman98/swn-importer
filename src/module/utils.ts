@@ -5,6 +5,7 @@ import { DisplayList } from './model/display-list';
 import { DisplayTag } from './model/display-tag';
 import { PositionedEntity } from './model/positioned-entity';
 import { SectorData } from './model/sector-data';
+import { SectorTree } from './model/sector-tree';
 import { Tag } from './model/tag';
 import { TreeNode } from './model/tree-node';
 import { TreeTag } from './model/tree-tag';
@@ -358,6 +359,22 @@ export class Utils {
         const result: V[] = [];
         map.forEach(value => result.push(value));
         return result;
+    }
+
+    /**
+     * Gets a list of display tags for a given entity
+     * @param sectorTree The sector tree
+     * @param node The node to get the tags for
+     * @returns The list of display tags for the node
+     */
+    static getEntityDisplayTags(sectorTree: SectorTree, node: TreeNode): DisplayTag[] | undefined {
+        if (node && node.entity && node.entity.attributes && node.entity.attributes.tags) {
+            return <DisplayTag[]>node.entity.attributes.tags
+                .map(t => sectorTree.tagMap.get(t.name))
+                .filter(t => t !== undefined)
+                .map(t => t?.displayTag);
+        }
+        return undefined;
     }
 
     private static getDisplayTag(tag: Tag): DisplayTag {

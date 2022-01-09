@@ -113,7 +113,7 @@ export class JournalUtils {
                     description = node.entity.attributes.description;
                     break;
                 case 'tags':
-                    tags = <DisplayTag[]>node.entity.attributes.tags.map(t => sectorTree.tagMap.get(t.name)?.displayTag);
+                    tags = Utils.getEntityDisplayTags(sectorTree, node);
                     break;
                 default:
                     attributes.push({
@@ -139,8 +139,10 @@ export class JournalUtils {
             location: JournalUtils.getLocationWithinParent(node),
             parentLink: node.parent?.journal?.link,
             parentType: node.parent ? Utils.getTypeName(node.parent.type) : undefined,
+            parentTags: node.parent ? Utils.getEntityDisplayTags(sectorTree, node.parent) : undefined,
             systemLink: (includeSystemLink && system) ? system.journal?.link : undefined,
             systemType: (includeSystemLink && system) ? Utils.getTypeName(system.type) : undefined,
+            systemTags: (includeSystemLink && system) ? Utils.getEntityDisplayTags(sectorTree, system) : undefined,
             children,
             coordinates: system?.coordinates
         };
