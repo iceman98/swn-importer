@@ -4,6 +4,7 @@ import { Attributes } from './model/attributes';
 import { DiagramEntry } from './model/diagram-entry';
 import { DisplayTag } from './model/display-tag';
 import { Options } from './model/options';
+import { SectorTree } from './model/sector-tree';
 import { TreeNode } from './model/tree-node';
 import { TreeTag } from './model/tree-tag';
 import { NoteUtils } from './note-utils';
@@ -41,13 +42,14 @@ export class JournalUtils {
 
     /**
      * Gets a Foundry Journal Data object to update an existing journal for an entity
+     * @param sectorTree The sector tree
      * @param node The tree node to generate a journal update for
      * @param options The options object
      * @returns The Foundry Journal update Data (promise)
      */
-    static async getUpdateJournalData(node: TreeNode, options: Options): Promise<Partial<JournalEntry.Data>> {
+    static async getUpdateJournalData(sectorTree: SectorTree, node: TreeNode, options: Options): Promise<Partial<JournalEntry.Data>> {
         if (node.journal) {
-            const templateData = JournalUtils.getTemplateData(node, options);
+            const templateData = JournalUtils.getTemplateData(sectorTree, node, options);
             const content = await TemplateUtils.renderJournalContent(node.type, templateData);
 
             const updateData: Partial<JournalEntry.Data> = {
@@ -79,7 +81,7 @@ export class JournalUtils {
         return journal;
     }
 
-    private static getTemplateData(node: TreeNode, options: Options): Record<string, any> {
+    private static getTemplateData(sectorTree: SectorTree, node: TreeNode, options: Options): Record<string, any> {
         const system = (node.type !== 'sector') ? Utils.getContainingSystem(node) : undefined;
 
         const children = node.children
@@ -109,7 +111,7 @@ export class JournalUtils {
                     description = node.entity.attributes.description;
                     break;
                 case 'tags':
-                    tags = node.entity.attributes.tags.map(t => Utils.getDisplayTag(t));
+                    tags = <DisplayTag[]>node.entity.attributes.tags.map(t => sectorTree.tagMap.get(t.name)?.displayTag);
                     break;
                 default:
                     attributes.push({

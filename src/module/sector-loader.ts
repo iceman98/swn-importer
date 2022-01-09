@@ -31,9 +31,9 @@ export class SectorLoader {
 
     private async importIntoFoundry(sectorTree: SectorTree) {
         await this.createSectorFolder(sectorTree);
+        await this.createTagJournals(sectorTree);
         await this.createSystemFolders(sectorTree);
         await this.createEntityJournals(sectorTree);
-        await this.createTagJournals(sectorTree);
         await this.updateJournalContents(sectorTree);
         await this.createScene(sectorTree);
     }
@@ -61,6 +61,7 @@ export class SectorLoader {
             const tag = sectorTree.tagMap.get(Utils.getIdFlag(e));
             if (tag) {
                 tag.journal = e;
+                tag.displayTag.link = e.link;
             }
         });
     }
@@ -105,7 +106,7 @@ export class SectorLoader {
         const journalData: Partial<JournalEntry.Data>[] = [];
         for (const node of sectorTree.nodeMap.values()) {
             if (node.type !== 'note') {
-                journalData.push(await JournalUtils.getUpdateJournalData(node, this.options));
+                journalData.push(await JournalUtils.getUpdateJournalData(sectorTree, node, this.options));
             }
         }
         await (<any>JournalEntry).updateDocuments(journalData);

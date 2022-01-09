@@ -1,5 +1,8 @@
 <h2 style="margin-top: 5px;">{{name}}</h2>
 <p>{{description}}</p>
+{{#if link}}
+    <p>Original tag: {{link}}</p>
+{{/if}}
 {{#lists}}
 <div>
     <h3>{{name}}</h3>

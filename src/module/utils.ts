@@ -360,12 +360,7 @@ export class Utils {
         return result;
     }
 
-    /**
-     * Convert a swn tag into a display tag
-     * @param tag The tag to convert
-     * @returns A display tag
-     */
-    static getDisplayTag(tag: Tag): DisplayTag {
+    private static getDisplayTag(tag: Tag): DisplayTag {
         const lists: DisplayList[] = [];
 
         for (const key in tag) {
@@ -380,7 +375,8 @@ export class Utils {
         return {
             name: tag.name,
             description: tag.description,
-            lists
+            lists,
+            link: undefined
         };
     }
 
