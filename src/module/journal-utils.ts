@@ -2,11 +2,10 @@ import { FolderUtils } from './folder-utils';
 import { AttributeEntry } from './model/attribute-entry';
 import { Attributes } from './model/attributes';
 import { DiagramEntry } from './model/diagram-entry';
-import { DisplayList } from './model/display-list';
 import { DisplayTag } from './model/display-tag';
 import { Options } from './model/options';
-import { Tag } from './model/tag';
 import { TreeNode } from './model/tree-node';
+import { TreeTag } from './model/tree-tag';
 import { NoteUtils } from './note-utils';
 import { TemplateUtils } from './template-utils';
 import { Utils } from './utils';
@@ -62,6 +61,24 @@ export class JournalUtils {
         }
     }
 
+    /**
+     * Gets a Foundry Journal Data object to generate a journal for a tag
+     * @param tag The tag to create a journal entry for
+     * @param folder The folder to put the journal into
+     */
+    static async getTagJournalData(tagNode: TreeTag, folder: Folder): Promise<Partial<JournalEntry.Data>> {
+        const journal: Partial<JournalEntry.Data> = {
+            type: 'JournalEntry',
+            name: tagNode.tag.name,
+            content: await renderTemplate(Utils.getTemplatePath("tag.html"), tagNode.displayTag),
+            folder: folder.id,
+            flags: Utils.getTagFlags(tagNode),
+            permission: { default: CONST.ENTITY_PERMISSIONS.NONE }
+        };
+
+        return journal;
+    }
+
     private static getTemplateData(node: TreeNode, options: Options): Record<string, any> {
         const system = (node.type !== 'sector') ? Utils.getContainingSystem(node) : undefined;
 
@@ -92,7 +109,7 @@ export class JournalUtils {
                     description = node.entity.attributes.description;
                     break;
                 case 'tags':
-                    tags = JournalUtils.getDisplayTags(node.entity.attributes.tags);
+                    tags = node.entity.attributes.tags.map(t => Utils.getDisplayTag(t));
                     break;
                 default:
                     attributes.push({
@@ -183,27 +200,6 @@ export class JournalUtils {
         }
 
         return [];
-    }
-
-    private static getDisplayTags(tags: Tag[]): DisplayTag[] {
-        return tags.map(tag => {
-            const lists: DisplayList[] = [];
-
-            for (const key in tag) {
-                if (key !== 'types' && tag[key] instanceof Array) {
-                    lists.push({
-                        name: Utils.getTagListName(<keyof Tag>key),
-                        elements: tag[key]
-                    });
-                }
-            }
-
-            return {
-                name: tag.name,
-                description: tag.description,
-                lists
-            };
-        });
     }
 
 }
