@@ -1,57 +1,50 @@
 <form>
     <div class="flexcol">
         <section>
-            <h2>File</h2>
-            <p>Upload the sector file</p>
+            <h2>{{ localize "SWN-IMPORTER.DIALOG-FILE" }}</h2>
+            <p>{{ localize "SWN-IMPORTER.DIALOG-UPLOAD-FILE" }}</p>
             <input type="file" accept=".json" id="swn-sector-file" required>
             <p>Note: You can get this file by clicking on the export on <a
                     href="https://sectorswithoutnumber.com">Sectors
                     Without Numbers</a> and then selecting JSON format.</p>
         </section>
         <section>
-            <h2>Options</h2>
+            <h2>{{ localize "SWN-IMPORTER.DIALOG-OPTIONS" }}</h2>
             <div class="flexcol">
                 <div class="flexrow">
                     <input type="checkbox" id="swni-dialog-coordinates" name="generateSectorCoordinates" {{#if
                         generateSectorCoordinates}}checked{{/if}}>
-                    <label for="swni-dialog-coordinates" style="align-self: center;">Generate a label with the
-                        coordinates
-                        below each hex.</label>
+                    <label for="swni-dialog-coordinates" style="align-self: center;">{{ localize "SWN-IMPORTER.DIALOG-COORDINATES" }}</label>
                 </div>
 
                 <div class="flexrow">
                     <input type="checkbox" id="swni-dialog-name" name="generateHexName" {{#if
                         generateHexName}}checked{{/if}}>
-                    <label for="swni-dialog-name" style="align-self: center;">Generate a label with the
-                        system name above each hex.</label>
+                    <label for="swni-dialog-name" style="align-self: center;">{{ localize "SWN-IMPORTER.DIALOG-NAME" }}</label>
                 </div>
 
                 <div class="flexrow">
                     <input type="checkbox" id="swni-dialog-notes" name="generateNotesForAllEntities" {{#if
                         generateNotesForAllEntities}}checked{{/if}}>
-                    <label for="swni-dialog-notes" style="align-self: center;">Generate map pins for every entity. If
-                        false, only entities directly orbiting the star/blackhole will have pins.</label>
+                    <label for="swni-dialog-notes" style="align-self: center;">{{ localize "SWN-IMPORTER.DIALOG-NOTES" }}</label>
                 </div>
 
                 <div class="flexrow">
                     <input type="checkbox" id="swni-dialog-gm" name="onlyGMJournals" {{#if
                         onlyGMJournals}}checked{{/if}}>
-                    <label for="swni-dialog-gm" style="align-self: center;">Generate all journal entries as GM-Only. If
-                        false, the visibility will depend on the "hidden" attribute of Sectors Without Number.</label>
+                    <label for="swni-dialog-gm" style="align-self: center;">{{ localize "SWN-IMPORTER.DIALOG-GM" }}</label>
                 </div>
 
                 <div class="flexrow">
                     <input type="checkbox" id="swni-dialog-type" name="addTypeToEntityJournal" {{#if
                         addTypeToEntityJournal}}checked{{/if}}>
-                    <label for="swni-dialog-type" style="align-self: center;">Add a type prefix to every entity journal
-                        (ex "Planet - XYZ").</label>
+                    <label for="swni-dialog-type" style="align-self: center;">{{ localize "SWN-IMPORTER.DIALOG-TYPE" }}</label>
                 </div>
 
                 <div class="flexrow">
                     <input type="checkbox" id="swni-dialog-coord-prefix" name="prefixSystemFoldersWithCoordinates" {{#if
                         prefixSystemFoldersWithCoordinates}}checked{{/if}}>
-                    <label for="swni-dialog-coord-prefix" style="align-self: center;">Prefix system/black-hole holders
-                        with coordinates (ex "[0103] System name").</label>
+                    <label for="swni-dialog-coord-prefix" style="align-self: center;">{{ localize "SWN-IMPORTER.DIALOG-COORD-PREFIX" }}</label>
                 </div>
             </div>
         </section>
@@ -59,7 +52,7 @@
             &nbsp;
         </section>
         <section>
-            <button type="submit">Import</button>
+            <button type="submit">{{ localize "SWN-IMPORTER.DIALOG-IMPORT" }}</button>
         </section>
     </div>
 </form>

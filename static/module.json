@@ -33,6 +33,11 @@
       "lang": "en",
       "name": "English",
       "path": "languages/en.json"
+    },
+	{
+      "lang": "es",
+      "name": "Español",
+      "path": "languages/es.json"
     }
   ],
   "url": "This is auto replaced",

@@ -1,0 +1,54 @@
+{
+  "SWN-IMPORTER": {
+    "IMPORT-BUTTON-NAME": "Importar SWN",
+    "IMPORT-BUTTON-TOOLTIP": "Importa un sector desde Sectors Without Number",
+
+    "RESULT-DIALOG-TITLE": "Importación Completada",
+    "RESULT-DIALOG-CONTENT": "El sector {sectorName} ha sido importado satisfactoriamente. {journals} entradas en el diario fueron creadas en {time} milisegundos.",
+    "ACCEPT-BUTTON": "Aceptar",
+
+    "HEX-UNIT-NAME": "unidades",
+
+    "ASTEROID-BASE": "Base en Asteroide",
+    "ASTEROID-BELT": "Cinturón de Asteroides",
+    "BLACK-HOLE": "Agujero Negro",
+    "DEEP-SPACE-STATION": "Estación de Espacio Profundo",
+    "GAS-GIANT-MINE": "Mina de gigante gaseoso",
+    "MOON": "Luna",
+    "MOON-BASE": "Base Lunar",
+    "ORBITAL-RUIN": "Ruina Orbital",
+    "PLANET": "Planeta",
+    "REFUELING-STATION": "Estación de Servicio",
+    "RESEARCH-BASE": "Base de Investigación",
+    "SECTOR": "Sector",
+    "SPACE-STATION": "Estación Espacial",
+    "SYSTEM": "Sistema",
+
+	"DIALOG-FILE": "Archivo",
+	"DIALOG-UPLOAD-FILE": "Subir archivo de sector",
+	"DIALOG-OPTIONS": "Opciones",
+	"DIALOG-COORDINATES": "Genera una etiqueta con las coordenadas bajo cada hexágono.",
+	"DIALOG-NAME": "Genera una etiqueta con el nombre del sistema sobre cada hexágono.",
+	"DIALOG-NOTES": "Genera pines en el mapa por cada entidad. En caso de ser falso, solo entidades que orbiten directamente la estrella/agujero negro tendrán pines.",
+	"DIALOG-GM": "Genera todas las entradas del diario para que exclusivamente sea visible por el DJ. La visibilidad dependerá del atributo 'hidden' (escondido) de Sectors Without Number.",
+	"DIALOG-TYPE": "Añade su tipo como prefijo a cada entidad en tu diario (Ej 'Planeta - XYZ').",
+	"DIALOG-COORD-PREFIX": "Concatena los contenedores de sistemas/agujeros negros con coordenadas (Ej '[103] Nombre del sistema').",
+	"DIALOG-IMPORT": "Importar",
+
+	"ENTITY-GENERAL": "General",
+	"ENTITY-DETAILS": "Detalles",
+	"ENTITY-DESCRIPTION": "Description",
+	"ENTITY-ATTRIBUTES": "Atributos",
+
+	"NOTES-TITLE": "Notas",
+
+	"SECTOR-GENERAL": "General",
+	"SECTOR-DETAILS": "Detalles",
+	"SECTOR-DESCRIPTION": "Descripción",
+	"SECTOR-SYSTEMS-IN-SECTOR": "Sistemas en este sector",
+
+	"TAG-ORIGINAL": "Etiqueta original:",
+
+	"TAGLINKS-TAGS": "Etiquetas:"
+  }
+}

@@ -22,6 +22,33 @@
     "RESEARCH-BASE": "Research Base",
     "SECTOR": "Sector",
     "SPACE-STATION": "Space Station",
-    "SYSTEM": "System"
-  }
+    "SYSTEM": "System",
+  
+	"DIALOG-FILE": "File",
+	"DIALOG-UPLOAD-FILE": "Upload the sector file",
+	"DIALOG-OPTIONS": "Options",
+	"DIALOG-COORDINATES": "Generate a label with the coordinates below each hex.",
+	"DIALOG-NAME": "Generate a label with the system name above each hex.",
+	"DIALOG-NOTES": "Generate map pins for every entity. If false, only entities directly orbiting the star/blackhole will have pins.",
+	"DIALOG-GM": "Generate all journal entries as GM-Only. If false, the visibility will depend on the 'hidden' attribute of Sectors Without Number.",
+	"DIALOG-TYPE": "Add a type prefix to every entity journal (ex 'Planet - XYZ').",
+	"DIALOG-COORD-PREFIX": "Prefix system/black-hole holders with coordinates (ex '[0103] System name').",
+	"DIALOG-IMPORT": "Import",
+
+	"ENTITY-GENERAL": "General",
+	"ENTITY-DETAILS": "Details",
+	"ENTITY-DESCRIPTION": "Description",
+	"ENTITY-ATTRIBUTES": "Attributes",
+
+	"NOTES-TITLE": "Notes",
+
+	"SECTOR-GENERAL": "General",
+	"SECTOR-DETAILS": "Details",
+	"SECTOR-DESCRIPTION": "Description",
+	"SECTOR-SYSTEMS-IN-SECTOR": "Systems in this sector",
+
+	"TAG-ORIGINAL": "Original tag:",
+
+	"TAGLINKS-TAGS": "Tags:"
+	}
 }

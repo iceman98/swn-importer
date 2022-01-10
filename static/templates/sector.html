@@ -1,5 +1,5 @@
 <div>
-    <h2>General</h2>
+    <h2>{{ localize "SWN-IMPORTER.SECTOR-GENERAL" }}</h2>
     <div style="display: flex; flex-direction:row; justify-content:space-between;">
         <div>
             <p>
@@ -14,10 +14,10 @@
     </div>
 
     <section class="secret">
-        <h2 style="margin-top: 5px;">Details</h2>
+        <h2 style="margin-top: 5px;">{{ localize "SWN-IMPORTER.SECTOR-DETAILS" }}</h2>
 
         {{#if description}}
-        <h3>Description</h3>
+        <h3>{{ localize "SWN-IMPORTER.SECTOR-DESCRIPTION" }}</h3>
         <blockquote>{{description}}</blockquote>
         {{/if}}
 
@@ -28,7 +28,7 @@
         {{/tags}}
 
         {{#if children}}
-        <h3>Systems in this sector</h3>
+        <h3>{{ localize "SWN-IMPORTER.SECTOR-SYSTEMS-IN-SECTOR" }}</h3>
         <ul style="list-style-type: circle;">
             {{#children}}
             <li>{{link}} {{#if ../showType}}({{type}}){{/if}} {{>tagLinks tags=tags}} at coordinates <strong>{{coordinates}}</strong></li>
