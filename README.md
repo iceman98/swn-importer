@@ -24,11 +24,11 @@ https://github.com/iceman98/swn-importer/releases/latest/download/module.json
 
 6. Drag and drop the sector json file onto the file chooser or click on the button to browse for it
 
-![options dialog](https://imgur.com/X6ZFNsl.png)
+![options dialog](https://user-images.githubusercontent.com/8527532/148824290-e28e0979-4131-44af-9f74-b5fd07a9281d.png)
 
 7. Select your options and click "Import". A message will indicate that the sector has been successfully imported.
 
-![import result](https://i.imgur.com/O1YNs2z.png)
+![import result](https://user-images.githubusercontent.com/8527532/148824347-77661c7e-2397-4106-ad48-e78aaeddecf3.png)
 
 8. Enable this option if you would like to see the scene pins always
 
