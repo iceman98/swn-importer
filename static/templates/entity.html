@@ -1,5 +1,5 @@
 <div>
-    <h2>General</h2>
+    <h2>{{ localize "SWN-IMPORTER.ENTITY-GENERAL" }}</h2>
     <div style="display: flex; flex-direction:row; justify-content:space-between;">
         <div>
             <p>
@@ -22,11 +22,11 @@
     </div>
 
     <section class="secret">
-        <h2 style="margin-top: 5px;">Details</h2>
+        <h2 style="margin-top: 5px;">{{ localize "SWN-IMPORTER.ENTITY-DETAILS" }}</h2>
         <div style="display:flex;flex-direction: row; justify-content:space-between;">
             <div>
                 {{#if attributes}}
-                <h3>Attributes</h3>
+                <h3>{{ localize "SWN-IMPORTER.ENTITY-ATTRIBUTES" }}</h3>
                 <table>
                     {{#attributes}}
                     <tr>
