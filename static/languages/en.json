@@ -24,6 +24,8 @@
     "SPACE-STATION": "Space Station",
     "SYSTEM": "System",
   
+	"DIALOG-FILE": "File",
+	"DIALOG-UPLOAD-FILE": "Upload the sector file",
 	"DIALOG-COORDINATES": "Generate a label with the coordinates below each hex.",
 	"DIALOG-NAME": "Generate a label with the system name above each hex.",
 	"DIALOG-NOTES": "Generate map pins for every entity. If false, only entities directly orbiting the star/blackhole will have pins.",

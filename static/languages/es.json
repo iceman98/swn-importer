@@ -24,6 +24,8 @@
     "SPACE-STATION": "Estación Espacial",
     "SYSTEM": "Sistema",
 
+	"DIALOG-FILE": "Archivo",
+	"DIALOG-UPLOAD-FILE": "Subir archivo de sector",
 	"DIALOG-COORDINATES": "Genera una etiqueta con las coordenadas bajo cada hexágono.",
 	"DIALOG-NAME": "Genera una etiqueta con el nombre del sistema sobre cada hexágono.",
 	"DIALOG-NOTES": "Genera pines en el mapa por cada entidad. En caso de ser falso, solo entidades que orbiten directamente la estrella/agujero negro tendrán pines.",
