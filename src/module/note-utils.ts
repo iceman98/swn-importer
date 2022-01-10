@@ -46,7 +46,8 @@ export class NoteUtils {
 
         const notes = nodes
             .filter(node => node.type !== 'note')
-            .map((node, index, list) => <Note.Data>this.createEntityNote(node, list.length, index));
+            .map((node, index, list) => <Note.Data>this.createEntityNote(node, list.length, index))
+            .reverse();
 
         return notes;
     }

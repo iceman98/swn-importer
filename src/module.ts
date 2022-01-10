@@ -1,6 +1,6 @@
 import { TemplatePreloader } from "./module/helper/TemplatePreloader";
 import { Importer } from './module/importer';
-// import { Options } from './module/model/options';
+import { Options } from './module/model/options';
 
 let swnImporter: Importer;
 
@@ -9,8 +9,8 @@ Hooks.once("init", async () => {
 });
 
 Hooks.once("ready", async () => {
-    // Importer.removeExistingData();
-    // swnImporter.importFile('/modules/swn-importer/test-alpha.json', new Options());
+    Importer.removeExistingData();
+    swnImporter.importFile('/modules/swn-importer/acheron-rho.json', new Options());
     // swnImporter.openImportDialog();
 });
 
