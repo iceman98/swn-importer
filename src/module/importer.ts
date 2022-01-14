@@ -1,3 +1,4 @@
+import { Constants } from './constants';
 import { ImportDialog } from './import-dialog';
 import { Options } from './model/options';
 import { SectorData } from './model/sector-data';
@@ -7,7 +8,6 @@ import { Utils } from './utils';
 export class Importer {
 
     private dialog: ImportDialog;
-    private readonly PARTIALS = ["tag", "notes", "tagLinks"];
 
     constructor() {
         this.dialog = new ImportDialog(this);
@@ -55,7 +55,6 @@ export class Importer {
         if (game.user?.isGM) {
             try {
                 const importedData: SectorData = await (await fetch(fileName)).json();
-                await this.registerPartials();
 
                 const loader = new SectorLoader(importedData, options);
                 const result = await loader.import();
@@ -98,9 +97,12 @@ export class Importer {
         }
     }
 
-    private async registerPartials() {
-        const templates = await loadTemplates(this.PARTIALS.map(t => Utils.getTemplatePath(t + ".html")));
-        this.PARTIALS.forEach((name, index) => {
+    /**
+     * Register the handlebars partials
+     */
+    async registerPartials() {
+        const templates = await loadTemplates(Constants.PARTIALS.map(t => Utils.getTemplatePath(t + ".html")));
+        Constants.PARTIALS.forEach((name, index) => {
             Handlebars.registerPartial(name, templates[index]);
         })
     }

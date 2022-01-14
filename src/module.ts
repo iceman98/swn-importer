@@ -9,6 +9,8 @@ Hooks.once("init", async () => {
 });
 
 Hooks.once("ready", async () => {
+    swnImporter.registerPartials();
+    
     // Importer.removeExistingData();
     // swnImporter.importFile('/modules/swn-importer/test-alpha.json', new Options());
     // swnImporter.openImportDialog();
