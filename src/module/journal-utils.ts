@@ -199,7 +199,7 @@ export class JournalUtils {
                 }
                 return {
                     indentation,
-                    image: NoteUtils.getEntityIcon(node.type),
+                    image: NoteUtils.getEntityIcon(node.type, options),
                     link: (diagramRoot !== node) ? node.journal?.link : undefined,
                     type: !options.addTypeToEntityJournal ? node.type : undefined,
                     tags: Utils.getEntityDisplayTags(sectorTree, node)

@@ -30,7 +30,7 @@ export class SceneUtils {
             gridType: CONST.GRID_TYPES.HEXODDQ,
             gridUnits: Utils.getLabel("HEX-UNIT-NAME"),
             height: SceneUtils.getSceneHeight(sector.rows),
-            img: Utils.getImagePath("starField.png"),
+            img: options.backgroundPath,
             name: sectorTree.root.entity.name,
             padding: 0,
             notes: NoteUtils.getSectorNotes(sectorTree, options),

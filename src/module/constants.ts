@@ -20,4 +20,7 @@ export class Constants {
 
     /** Distance of notes from center of hex */
     static readonly ORBITING_DISTANCE = 0.55 * Constants.HEX_RADIUS;
+
+    /** List of handlebars partials */
+    static readonly PARTIALS = ["tag", "notes", "tagLinks", "imagePicker"];
 }
