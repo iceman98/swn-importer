@@ -22,5 +22,5 @@ export class Constants {
     static readonly ORBITING_DISTANCE = 0.55 * Constants.HEX_RADIUS;
 
     /** List of handlebars partials */
-    static readonly PARTIALS = ["tag", "notes", "tagLinks"];
+    static readonly PARTIALS = ["tag", "notes", "tagLinks", "imagePicker"];
 }
