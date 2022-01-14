@@ -29,10 +29,11 @@ export class NoteUtils {
     /**
      * Gets the icon path that represents an entity type
      * @param type The type of entity
+     * @param options The options object
      * @returns The icon path
      */
-    public static getEntityIcon(type: keyof SectorData): string {
-        return Utils.getImagePath(type + ".png");
+    public static getEntityIcon(type: keyof SectorData, options: Options): string {
+        return options[type + "Path"];
     }
 
     private static getSystemNotes(system: TreeNode, options: Options): Note.Data[] {
@@ -46,20 +47,20 @@ export class NoteUtils {
 
         const notes = nodes
             .filter(node => node.type !== 'note')
-            .map((node, index, list) => <Note.Data>this.createEntityNote(node, list.length, index))
+            .map((node, index, list) => <Note.Data>this.createEntityNote(node, list.length, index, options))
             .reverse();
 
         return notes;
     }
 
-    private static createEntityNote(node: TreeNode, entityCount: number, entityIndex: number): Partial<Note.Data> {
+    private static createEntityNote(node: TreeNode, entityCount: number, entityIndex: number, options: Options): Partial<Note.Data> {
         const iconPosition = this.getIconPosition(node, entityCount, entityIndex);
 
         const note: Partial<Note.Data> = {
             entryId: node.journal?.id,
             x: iconPosition.x,
             y: iconPosition.y,
-            icon: this.getEntityIcon(node.type),
+            icon: this.getEntityIcon(node.type, options),
             iconSize: 32,
             text: node.entity.name,
             fontSize: 32,
