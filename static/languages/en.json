@@ -52,6 +52,8 @@
     "SECTOR-DESCRIPTION": "Description",
     "SECTOR-SYSTEMS-IN-SECTOR": "Systems in this sector",
 
+    "JOURNAL-IS-A": "is a",
+
     "TAG-ORIGINAL": "Original tag:",
 
     "TAGLINKS-TAGS": "Tags:"

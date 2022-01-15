@@ -52,6 +52,8 @@
     "SECTOR-DESCRIPTION": "Descripción",
     "SECTOR-SYSTEMS-IN-SECTOR": "Sistemas en este sector",
 
+    "JOURNAL-IS-A": "es un",
+
     "TAG-ORIGINAL": "Etiqueta original:",
 
     "TAGLINKS-TAGS": "Etiquetas:"
