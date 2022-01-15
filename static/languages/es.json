@@ -59,6 +59,14 @@
     "JOURNAL-IN-ORBIT-AROUND": "en órbita alrededor de",
     "JOURNAL-ON-THE-SURFACE": "en la superfície de",
 
+    "ATTRIBUTE-OCCUPATION": "Ocupación",
+    "ATTRIBUTE-SITUATION": "Situación",
+    "ATTRIBUTE-ATMOSPHERE": "Atmósfera",
+    "ATTRIBUTE-BIOSPHERE": "Biosfera",
+    "ATTRIBUTE-POPULATION": "Población",
+    "ATTRIBUTE-TECHNOLOGY-LEVEL": "Nivel tecnológico",
+    "ATTRIBUTE-TEMPERATURE": "Temperatura",
+
     "TAG-ORIGINAL": "Etiqueta original:",
 
     "TAGLINKS-TAGS": "Etiquetas:"
