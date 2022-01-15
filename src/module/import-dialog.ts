@@ -14,7 +14,7 @@ export class ImportDialog extends FormApplication<FormApplication.Options, Optio
             height: 'auto',
             id: 'swn-importer-dialog',
             template: Utils.getTemplatePath("dialog.html"),
-            title: 'Import Sector Without Numbers sector',
+            title: Utils.getLabel("DIALOG-TITLE"),
             editable: true
         };
 
