@@ -67,6 +67,12 @@
     "ATTRIBUTE-TECHNOLOGY-LEVEL": "Technology level",
     "ATTRIBUTE-TEMPERATURE": "Temperature",
 
+    "TAG-COMPLICATIONS": "Complications",
+    "TAG-ENEMIES": "Enemies",
+    "TAG-FRIENDS": "Friends",
+    "TAG-PLACES": "Places",
+    "TAG-THINGS": "Things",
+
     "TAG-ORIGINAL": "Original tag:",
 
     "TAGLINKS-TAGS": "Tags:"

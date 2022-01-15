@@ -43,7 +43,7 @@
 
     "ENTITY-GENERAL": "General",
     "ENTITY-DETAILS": "Detalles",
-    "ENTITY-DESCRIPTION": "Description",
+    "ENTITY-DESCRIPTION": "Descripción",
     "ENTITY-ATTRIBUTES": "Atributos",
 
     "NOTES-TITLE": "Notas",
@@ -66,6 +66,12 @@
     "ATTRIBUTE-POPULATION": "Población",
     "ATTRIBUTE-TECHNOLOGY-LEVEL": "Nivel tecnológico",
     "ATTRIBUTE-TEMPERATURE": "Temperatura",
+
+    "TAG-COMPLICATIONS": "Complicaciones",
+    "TAG-ENEMIES": "Enemigos",
+    "TAG-FRIENDS": "Amigos",
+    "TAG-PLACES": "Lugares",
+    "TAG-THINGS": "Cosas",
 
     "TAG-ORIGINAL": "Etiqueta original:",
 

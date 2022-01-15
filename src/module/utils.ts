@@ -264,18 +264,17 @@ export class Utils {
      * @returns The localized name of the tag list
      */
     static getTagListName(name: keyof Tag): string {
-        // TODO: localize!
         switch (name) {
             case 'complications':
-                return "Complications";
+                return Utils.getLabel("TAG-COMPLICATIONS");
             case 'enemies':
-                return "Enemies";
+                return Utils.getLabel("TAG-ENEMIES");
             case 'friends':
-                return "Friends";
+                return Utils.getLabel("TAG-FRIENDS");
             case 'places':
-                return "Places";
+                return Utils.getLabel("TAG-PLACES");
             case 'things':
-                return "Things";
+                return Utils.getLabel("TAG-THINGS");
             default:
                 return name;
         }
