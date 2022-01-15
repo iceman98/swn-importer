@@ -4,9 +4,7 @@
             <h2>{{ localize "SWN-IMPORTER.DIALOG-FILE" }}</h2>
             <p>{{ localize "SWN-IMPORTER.DIALOG-UPLOAD-FILE" }}</p>
             <input type="file" accept=".json" id="swn-sector-file" required>
-            <p>Note: You can get this file by clicking on the export on <a
-                    href="https://sectorswithoutnumber.com">Sectors
-                    Without Numbers</a> and then selecting JSON format.</p>
+            <p>{{{ localize "SWN-IMPORTER.DIALOG-NOTE" }}}</p>
         </section>
         <section>
             <h2>{{ localize "SWN-IMPORTER.DIALOG-OPTIONS" }}</h2>
@@ -62,7 +60,7 @@
                 {{>imagePicker optionName="spaceStationPath" label="SWN-IMPORTER.SPACE-STATION" initialValue=spaceStationPath}}
                 {{>imagePicker optionName="systemPath" label="SWN-IMPORTER.SYSTEM" initialValue=systemPath}}
                 
-                {{>imagePicker optionName="backgroundPath" label="SWN-IMPORTER.BACKGROUND" initialValue=backgroundPath}}
+                {{>imagePicker optionName="backgroundPath" label="SWN-IMPORTER.DIALOG-BACKGROUND" initialValue=backgroundPath}}
             </div>
         </section>
         <section>
