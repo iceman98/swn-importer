@@ -70,18 +70,20 @@ export class SceneUtils {
         }
 
         if (options.generateHexName) {
-            sectorTree.root.children.forEach(node => {
-                const system = <PositionedEntity>node.entity;
-                const coordinates = this.getHexCenterPosition(system.x - 1, system.y - 1);
-                const label: any = {
-                    x: coordinates.x - Math.floor(Constants.HEX_HEIGHT / 2),
-                    y: Math.floor(coordinates.y - (9 / 10) * Constants.HEX_VERTICAL_RADIUS),
-                    text: system.name,
-                    width: Constants.HEX_HEIGHT,
-                    fontSize: 16
-                };
-                labels.push(label);
-            });
+            sectorTree.root.children
+                .filter(node => node.type !== 'note')
+                .forEach(node => {
+                    const system = <PositionedEntity>node.entity;
+                    const coordinates = this.getHexCenterPosition(system.x - 1, system.y - 1);
+                    const label: any = {
+                        x: coordinates.x - Math.floor(Constants.HEX_HEIGHT / 2),
+                        y: Math.floor(coordinates.y - (9 / 10) * Constants.HEX_VERTICAL_RADIUS),
+                        text: system.name,
+                        width: Constants.HEX_HEIGHT,
+                        fontSize: 16
+                    };
+                    labels.push(label);
+                });
         }
 
         return labels;
