@@ -238,22 +238,21 @@ export class Utils {
      * @returns The localized name of the attribute
      */
     static getAttributeName(name: keyof Attributes): string {
-        // TODO: localize!
         switch (name) {
             case 'occupation':
-                return "Occupation";
+                return Utils.getLabel("ATTRIBUTE-OCCUPATION");
             case 'situation':
-                return "Situation";
+                return Utils.getLabel("ATTRIBUTE-SITUATION");
             case 'atmosphere':
-                return "Atmosphere";
+                return Utils.getLabel("ATTRIBUTE-ATMOSPHERE");
             case 'biosphere':
-                return "Biosphere";
+                return Utils.getLabel("ATTRIBUTE-BIOSPHERE");
             case 'population':
-                return "Population";
+                return Utils.getLabel("ATTRIBUTE-POPULATION");
             case 'techLevel':
-                return "Technology level";
+                return Utils.getLabel("ATTRIBUTE-TECHNOLOGY-LEVEL");
             case 'temperature':
-                return "Temperature";
+                return Utils.getLabel("ATTRIBUTE-TEMPERATURE");
             default:
                 return name;
         }
@@ -265,18 +264,17 @@ export class Utils {
      * @returns The localized name of the tag list
      */
     static getTagListName(name: keyof Tag): string {
-        // TODO: localize!
         switch (name) {
             case 'complications':
-                return "Complications";
+                return Utils.getLabel("TAG-COMPLICATIONS");
             case 'enemies':
-                return "Enemies";
+                return Utils.getLabel("TAG-ENEMIES");
             case 'friends':
-                return "Friends";
+                return Utils.getLabel("TAG-FRIENDS");
             case 'places':
-                return "Places";
+                return Utils.getLabel("TAG-PLACES");
             case 'things':
-                return "Things";
+                return Utils.getLabel("TAG-THINGS");
             default:
                 return name;
         }

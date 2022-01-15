@@ -160,18 +160,18 @@ export class JournalUtils {
             switch (node.parent.type) {
                 case 'asteroidBelt':
                     // TODO: localize!
-                    return "in an asteroid of";
+                    return Utils.getLabel("JOURNAL-IN-AN-ASTEROID");
                 case 'sector':
-                    return "in";
+                    return Utils.getLabel("JOURNAL-IN");
                 case 'blackHole':
                 case 'system':
-                    return "in orbit around";
+                    return Utils.getLabel("JOURNAL-IN-ORBIT-AROUND");
                 case 'moon':
                 case 'planet':
                     if (node.type === 'moonBase' || node.type === 'researchBase') {
-                        return "on the surface of";
+                        return Utils.getLabel("JOURNAL-ON-THE-SURFACE");
                     } else {
-                        return "in orbit around";
+                        return Utils.getLabel("JOURNAL-IN-ORBIT-AROUND");
                     }
                 default:
                     return "in";
