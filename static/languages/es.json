@@ -24,14 +24,15 @@
     "SPACE-STATION": "Estación Espacial",
     "SYSTEM": "Sistema",
 
+    "DIALOG-TITLE": "Importar sector de 'Sectors Without Number'",
     "DIALOG-FILE": "Archivo",
     "DIALOG-UPLOAD-FILE": "Subir archivo de sector",
-    "DIALOG-NOTE": "Nota: Puedes conseguir este archivo haciendo click en 'Export' en <a href=\"https://sectorswithoutnumber.com\">Sectors Without Numbers</a> y seleccionando el formato 'JSON'.",
+    "DIALOG-NOTE": "Nota: Puedes conseguir este archivo haciendo click en 'Export' en <a href=\"https://sectorswithoutnumber.com\">Sectors Without Number</a> y seleccionando el formato 'JSON'.",
     "DIALOG-OPTIONS": "Opciones",
     "DIALOG-COORDINATES": "Genera una etiqueta con las coordenadas bajo cada hexágono.",
     "DIALOG-NAME": "Genera una etiqueta con el nombre del sistema sobre cada hexágono.",
     "DIALOG-NOTES": "Genera pines en el mapa por cada entidad. En caso de ser falso, solo entidades que orbiten directamente la estrella/agujero negro tendrán pines.",
-    "DIALOG-GM": "Genera todas las entradas del diario para que exclusivamente sea visible por el DJ. La visibilidad dependerá del atributo 'hidden' (escondido) de Sectors Without Number.",
+    "DIALOG-GM": "Genera todas las entradas del diario para que exclusivamente sea visible por el DJ. La visibilidad dependerá del atributo 'hidden' (escondido) de 'Sectors Without Number'.",
     "DIALOG-TYPE": "Añade su tipo como prefijo a cada entidad en tu diario (Ej '[Planeta] Nombre del Planeta').",
     "DIALOG-COORD-PREFIX": "Prefija las carpetas de sistemas/agujeros negros con coordenadas (Ej '[0103] Nombre del sistema').",
 
