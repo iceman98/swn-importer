@@ -58,6 +58,8 @@
     "JOURNAL-IN": "in",
     "JOURNAL-IN-ORBIT-AROUND": "in orbit around",
     "JOURNAL-ON-THE-SURFACE": "on the surface of",
+    "JOURNAL-AT-COORDINATES": "at coordinates",
+    "JOURNAL-ITS-IN": "it's in",
 
     "ATTRIBUTE-OCCUPATION": "Occupation",
     "ATTRIBUTE-SITUATION": "Situation",

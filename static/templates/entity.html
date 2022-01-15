@@ -3,14 +3,16 @@
     <div style="display: flex; flex-direction:row; justify-content:space-between;">
         <div>
             <p>
-                <strong>{{name}}</strong> is a {{type}} {{location}} {{parentLink}} {{#if
-                showType}}({{parentType}}){{/if}} {{>tagLinks tags=parentTags}} at coordinates
+                <strong>{{name}}</strong> {{ localize "SWN-IMPORTER.JOURNAL-IS-A" }} {{type}} {{location}}
+                {{parentLink}} {{#if
+                showType}}({{parentType}}){{/if}} {{>tagLinks tags=parentTags}} {{ localize
+                "SWN-IMPORTER.JOURNAL-AT-COORDINATES" }}
                 <strong>{{coordinates}}</strong>.
             </p>
             {{#if systemLink}}
             <p>
-                It's in {{systemLink}} {{#if showType}}({{systemType}}){{/if}} {{>tagLinks tags=systemTags}} at
-                coordinates <strong>{{coordinates}}</strong>.
+                {{ localize "SWN-IMPORTER.JOURNAL-ITS-IN" }} {{systemLink}} {{#if showType}}({{systemType}}){{/if}} {{>tagLinks tags=systemTags}} {{ localize
+                "SWN-IMPORTER.JOURNAL-AT-COORDINATES" }} <strong>{{coordinates}}</strong>.
             </p>
             {{/if}}
         </div>
