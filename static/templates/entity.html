@@ -4,13 +4,12 @@
         <div>
             <p>
                 <strong>{{name}}</strong> is a {{type}} {{location}} {{parentLink}} {{#if
-                showType}}({{parentType}}){{/if}} {{>tagLinks tags=parentTags}} at coordinates
-                <strong>{{coordinates}}</strong>.
+                showType}}({{parentType}}){{/if}} at coordinates <strong>{{coordinates}}</strong>.
             </p>
             {{#if systemLink}}
             <p>
-                It's in {{systemLink}} {{#if showType}}({{systemType}}){{/if}} {{>tagLinks tags=systemTags}} at
-                coordinates <strong>{{coordinates}}</strong>.
+                It's in {{systemLink}} {{#if showType}}({{systemType}}){{/if}} at coordinates
+                <strong>{{coordinates}}</strong>.
             </p>
             {{/if}}
         </div>
@@ -23,7 +22,7 @@
 
     <section class="secret">
         <h2 style="margin-top: 5px;">{{ localize "SWN-IMPORTER.ENTITY-DETAILS" }}</h2>
-        <div style="display:flex;flex-direction: row; justify-content:space-between;">
+        <div style="display:flex; flex-direction: row; justify-content:space-between;">
             <div>
                 {{#if attributes}}
                 <h3>{{ localize "SWN-IMPORTER.ENTITY-ATTRIBUTES" }}</h3>
