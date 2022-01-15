@@ -5,13 +5,13 @@
             <p>
                 <strong>{{name}}</strong> {{ localize "SWN-IMPORTER.JOURNAL-IS-A" }} {{type}} {{location}}
                 {{parentLink}} {{#if
-                showType}}({{parentType}}){{/if}} {{>tagLinks tags=parentTags}} {{ localize
+                showType}}({{parentType}}){{/if}} {{ localize
                 "SWN-IMPORTER.JOURNAL-AT-COORDINATES" }}
                 <strong>{{coordinates}}</strong>.
             </p>
             {{#if systemLink}}
             <p>
-                {{ localize "SWN-IMPORTER.JOURNAL-ITS-IN" }} {{systemLink}} {{#if showType}}({{systemType}}){{/if}} {{>tagLinks tags=systemTags}} {{ localize
+                {{ localize "SWN-IMPORTER.JOURNAL-ITS-IN" }} {{systemLink}} {{#if showType}}({{systemType}}){{/if}} {{ localize
                 "SWN-IMPORTER.JOURNAL-AT-COORDINATES" }} <strong>{{coordinates}}</strong>.
             </p>
             {{/if}}
@@ -25,7 +25,7 @@
 
     <section class="secret">
         <h2 style="margin-top: 5px;">{{ localize "SWN-IMPORTER.ENTITY-DETAILS" }}</h2>
-        <div style="display:flex;flex-direction: row; justify-content:space-between;">
+        <div style="display:flex; flex-direction: row; justify-content:space-between;">
             <div>
                 {{#if attributes}}
                 <h3>{{ localize "SWN-IMPORTER.ENTITY-ATTRIBUTES" }}</h3>
