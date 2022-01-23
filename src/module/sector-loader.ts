@@ -39,7 +39,7 @@ export class SectorLoader {
     }
 
     private async createSectorFolder(sectorTree: SectorTree) {
-        const folder = await Folder.create(FolderUtils.getFolderData(sectorTree.root, this.options));
+        const folder = await Folder.create(FolderUtils.getFolderData(sectorTree.root, this.options, true));
 
         if (folder) {
             sectorTree.root.folder = folder;
@@ -71,7 +71,7 @@ export class SectorLoader {
         const folderData: Partial<Folder.Data>[] = [];
         sectorTree.root.children.forEach(node => {
             if (node.type !== 'note') {
-                folderData.push(FolderUtils.getFolderData(node, this.options));
+                folderData.push(FolderUtils.getFolderData(node, this.options, false));
             }
         });
 
