@@ -31,7 +31,7 @@ export class SceneUtils {
             gridUnits: Utils.getLabel("HEX-UNIT-NAME"),
             height: SceneUtils.getSceneHeight(sector.rows),
             img: options.backgroundPath,
-            name: sectorTree.root.entity.name,
+            name: Utils.getTimestampedName(game.scenes, sectorTree.root.entity.name),
             padding: 0,
             notes: NoteUtils.getSectorNotes(sectorTree, options),
             journal: sectorTree.root.journal?.id,

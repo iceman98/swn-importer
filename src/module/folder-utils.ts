@@ -9,7 +9,7 @@ export class FolderUtils {
      * @param options The options object
      * @returns The Foundry Folder Data
      */
-    static getFolderData(node: TreeNode, options: Options): Partial<Folder.Data> {
+    static getFolderData(node: TreeNode, options: Options, addTimestamp: boolean): Partial<Folder.Data> {
         let name: string;
         const parent: Folder | undefined = FolderUtils.getContainingFolder(node);
 
@@ -21,6 +21,10 @@ export class FolderUtils {
             default:
                 name = node.entity.name;
                 break;
+        }
+
+        if (addTimestamp) {
+            name = Utils.getTimestampedName(game.folders, name);
         }
 
         return {

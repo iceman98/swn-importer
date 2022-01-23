@@ -375,6 +375,21 @@ export class Utils {
         return undefined;
     }
 
+    /**
+     * Returns a unique name for an entity, timestamping the name if necessary
+     * @param collection The collection to check
+     * @param name The entity name to check
+     * @returns The name if not found, or else the name with a timestamp
+     */
+    static getTimestampedName(collection: EntityCollection | undefined, name: string): string {
+        if (collection) {
+            if (collection.getName(name)) {
+                name = `${name} (${(new Date()).toLocaleString()})`;
+            }
+        }
+        return name;
+    }
+
     private static getDisplayTag(tag: Tag): DisplayTag {
         const lists: DisplayList[] = [];
 
