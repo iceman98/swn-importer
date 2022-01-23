@@ -16,9 +16,9 @@ export class Importer {
     // TODO: remove!
     static removeExistingData() {
         if (game.user?.isGM) {
-            game.folders?.forEach(f => f.delete());
-            game.journal?.forEach(j => j.delete());
-            game.scenes?.forEach(s => s.delete());
+            game.folders?.filter(f => Utils.getIdFlag(f) !== undefined).forEach(f => f.delete());
+            game.journal?.filter(j => Utils.getIdFlag(j) !== undefined).forEach(j => j.delete());
+            game.scenes?.filter(s => Utils.getIdFlag(s) !== undefined).forEach(s => s.delete());
         }
     }
 

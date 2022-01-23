@@ -52,7 +52,8 @@ export class SectorLoader {
         const tagFolder = await Folder.create({
             name: "Tags",
             type: "JournalEntry",
-            parent: sectorTree.root.folder
+            parent: sectorTree.root.folder,
+            flags: Utils.getNodeFlags(sectorTree.root)
         });
         const journalDataPromises = Utils.getValueList(sectorTree.tagMap).map(node => JournalUtils.getTagJournalData(node, <Folder>tagFolder));
         const journalData = await Promise.all(journalDataPromises);
