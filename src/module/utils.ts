@@ -392,7 +392,7 @@ export class Utils {
 
     static formatAsHTML(text: string): string {
         if (text) {
-            return text.replace(new RegExp("\n", "g"), "<br/>");
+            return text.replace(new RegExp('\\n', 'g'), "<br/>");
         } else {
             return "";
         }
