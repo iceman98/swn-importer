@@ -390,6 +390,14 @@ export class Utils {
         return name;
     }
 
+    static formatAsHTML(text: string): string {
+        if (text) {
+            return text.replace(new RegExp("\n", "g"), "<br/>");
+        } else {
+            return "";
+        }
+    }
+
     private static getDisplayTag(tag: Tag): DisplayTag {
         const lists: DisplayList[] = [];
 
