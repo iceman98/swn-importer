@@ -36,7 +36,7 @@
                             <strong>{{name}}</strong>
                         </td>
                         <td style="padding: 3px;">
-                            {{description}}
+                            {{{description}}}
                         </td>
                     </tr>
                     {{/attributes}}
@@ -45,7 +45,7 @@
 
                 {{#if description}}
                 <h3>{{ localize "SWN-IMPORTER.ENTITY-DESCRIPTION" }}</h3>
-                <blockquote>{{description}}</blockquote>
+                <blockquote>{{{description}}}</blockquote>
                 {{/if}}
 
                 {{>notes}}

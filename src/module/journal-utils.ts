@@ -105,13 +105,13 @@ export class JournalUtils {
 
         const notes: AttributeEntry[] = node.children
             .filter(node => node.type === 'note')
-            .map(node => { return { name: node.entity.name, description: node.entity.attributes.content } });
+            .map(node => { return { name: node.entity.name, description: Utils.formatAsHTML(node.entity.attributes.content) } });
 
         for (const key in node.entity.attributes) {
             const attributeName = <keyof Attributes>key;
             switch (attributeName) {
                 case 'description':
-                    description = node.entity.attributes.description;
+                    description = Utils.formatAsHTML(node.entity.attributes.description);
                     break;
                 case 'tags':
                     tags = Utils.getEntityDisplayTags(sectorTree, node);
