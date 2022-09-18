@@ -1,3 +1,4 @@
+import { JournalEntryDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/journalEntryData';
 import { FolderUtils } from './folder-utils';
 import { AttributeEntry } from './model/attribute-entry';
 import { Attributes } from './model/attributes';
@@ -21,22 +22,21 @@ export class JournalUtils {
      * @param options The options object
      * @returns The Foundry Journal Data
      */
-    static getEmptyJournalData(node: TreeNode, options: Options): Partial<JournalEntry.Data> {
+    static getEmptyJournalData(node: TreeNode, options: Options): JournalEntryDataConstructorData {
         const hidden = (options.onlyGMJournals || node.entity.isHidden);
-        const permission: Entity.Permission = {
-            default: hidden ? CONST.ENTITY_PERMISSIONS.NONE : CONST.ENTITY_PERMISSIONS.OBSERVER
+        const permission = {
+            default: hidden ? foundry.CONST.DOCUMENT_PERMISSION_LEVELS.NONE : foundry.CONST.DOCUMENT_PERMISSION_LEVELS.OBSERVER
         };
 
         const name = options.addTypeToEntityJournal ? `[${Utils.getTypeName(node.type)}] ${node.entity.name}` : node.entity.name;
         const folder = FolderUtils.getContainingFolder(node)?.id;
 
-        const journal: Partial<JournalEntry.Data> = {
-            type: 'JournalEntry',
+        const journal: any = {
             name,
             folder,
             flags: Utils.getNodeFlags(node),
             permission,
-            img: node.entity.image
+            pages: node.entity.image ? [{ name: 'Image', type: 'image', src: node.entity.image }] : null
         };
 
         return journal;
@@ -49,14 +49,20 @@ export class JournalUtils {
      * @param options The options object
      * @returns The Foundry Journal update Data (promise)
      */
-    static async getUpdateJournalData(sectorTree: SectorTree, node: TreeNode, options: Options): Promise<Partial<JournalEntry.Data>> {
+    static async getUpdateJournalData(sectorTree: SectorTree, node: TreeNode, options: Options): Promise<JournalEntryDataConstructorData> {
         if (node.journal) {
             const templateData = JournalUtils.getTemplateData(sectorTree, node, options);
             const content = await TemplateUtils.renderJournalContent(node.type, templateData);
 
-            const updateData: Partial<JournalEntry.Data> = {
+            const updateData: any = {
                 _id: node.journal.id,
-                content
+                name: options.addTypeToEntityJournal ? `[${Utils.getTypeName(node.type)}] ${node.entity.name}` : node.entity.name,
+                pages: [
+                    {
+                        name: node.entity.name,
+                        text: { content }
+                    }
+                ]
             };
 
             return updateData;
@@ -70,14 +76,13 @@ export class JournalUtils {
      * @param tag The tag to create a journal entry for
      * @param folder The folder to put the journal into
      */
-    static async getTagJournalData(tagNode: TreeTag, folder: Folder): Promise<Partial<JournalEntry.Data>> {
-        const journal: Partial<JournalEntry.Data> = {
-            type: 'JournalEntry',
+    static async getTagJournalData(tagNode: TreeTag, folder: Folder): Promise<JournalEntryDataConstructorData> {
+        const journal: JournalEntryDataConstructorData = {
             name: tagNode.tag.name,
             content: await renderTemplate(Utils.getTemplatePath("tag.html"), tagNode.displayTag),
             folder: folder.id,
             flags: Utils.getTagFlags(tagNode),
-            permission: { default: CONST.ENTITY_PERMISSIONS.NONE }
+            permission: { default: foundry.CONST.DOCUMENT_PERMISSION_LEVELS.NONE }
         };
 
         return journal;

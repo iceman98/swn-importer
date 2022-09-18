@@ -18,7 +18,7 @@ export class Utils {
      * @returns The localized label
      */
     static getLabel(name: string): string {
-        return game.i18n.localize(Constants.LOCALIZATION_NAMESPACE + "." + name);
+        return (<any>game).i18n.localize(Constants.LOCALIZATION_NAMESPACE + "." + name);
     }
 
     /**
@@ -68,7 +68,7 @@ export class Utils {
      * @returns The localized label
      */
     static formatLabel(name: string, data: Record<string, any>): string {
-        return game.i18n.format(Constants.LOCALIZATION_NAMESPACE + "." + name, data);
+        return (<any>game).i18n.format(Constants.LOCALIZATION_NAMESPACE + "." + name, data);
     }
 
     /**
@@ -99,7 +99,7 @@ export class Utils {
      * @param entity The entity to get the id for
      * @returns The entity SWN id
      */
-    static getIdFlag(entity: Entity): string {
+    static getIdFlag(entity: StoredDocument<any>): string {
         return <string>entity.getFlag(Constants.MODULE_ID, "id");
     }
 
@@ -381,7 +381,7 @@ export class Utils {
      * @param name The entity name to check
      * @returns The name if not found, or else the name with a timestamp
      */
-    static getTimestampedName(collection: EntityCollection | undefined, name: string): string {
+    static getTimestampedName(collection: WorldCollection<any, any> | undefined, name: string): string {
         if (collection) {
             if (collection.getName(name)) {
                 name = `${name} (${(new Date()).toLocaleString()})`;

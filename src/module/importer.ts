@@ -15,10 +15,10 @@ export class Importer {
 
     // TODO: remove!
     static removeExistingData() {
-        if (game.user?.isGM) {
-            game.folders?.filter(f => Utils.getIdFlag(f) !== undefined).forEach(f => f.delete());
-            game.journal?.filter(j => Utils.getIdFlag(j) !== undefined).forEach(j => j.delete());
-            game.scenes?.filter(s => Utils.getIdFlag(s) !== undefined).forEach(s => s.delete());
+        if ((<any>game).user?.isGM) {
+            Folders.instance?.filter(f => Utils.getIdFlag(f) !== undefined).forEach(f => f.delete());
+            Journal.instance?.filter(j => Utils.getIdFlag(j) !== undefined).forEach(j => j.delete());
+            Scenes.instance?.filter(s => Utils.getIdFlag(s) !== undefined).forEach(s => s.delete());
         }
     }
 
@@ -32,7 +32,7 @@ export class Importer {
      * @param sceneDirectory The jquery object of the SceneDirectory
      */
     initUI(sceneDirectory: JQuery) {
-        if (game.user?.isGM) {
+        if ((<any>game).user?.isGM) {
             const content = `
                 <button id='swn-import-button' title='${Utils.getLabel("IMPORT-BUTTON-TOOLTIP")}'>
                     <i class='fas fa-cloud-download-alt'></i>
@@ -52,7 +52,7 @@ export class Importer {
     async importFile(fileName: string, options: Options): Promise<void> {
         const start = new Date();
 
-        if (game.user?.isGM) {
+        if ((<any>game).user?.isGM) {
             try {
                 const importedData: SectorData = await (await fetch(fileName)).json();
 

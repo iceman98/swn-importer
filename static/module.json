@@ -1,12 +1,13 @@
 {
+  "id": "swn-importer",
   "name": "swn-importer",
   "title": "Sectors Without Number sector importer",
   "description": "",
   "version": "This is auto replaced",
   "library": "false",
   "manifestPlusVersion": "1.0.0",
-  "minimumCoreVersion": "0.8.6",
-  "compatibleCoreVersion": "9",
+  "minimumCoreVersion": "10",
+  "compatibleCoreVersion": "10",
   "authors": [
     {
       "name": "Iceman98",

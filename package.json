@@ -12,7 +12,7 @@
   "author": "Blackcloud010",
   "license": "MIT",
   "devDependencies": {
-    "@league-of-foundry-developers/foundry-vtt-types": "^0.7.9-5",
+    "@league-of-foundry-developers/foundry-vtt-types": "9.280.0",
     "@types/marked": "^2.0.2",
     "@types/webpack-env": "^1.16.0",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
