@@ -2,12 +2,12 @@ import { Importer } from './importer';
 import { Options } from './model/options';
 import { Utils } from './utils';
 
-export class ImportDialog extends FormApplication<FormApplication.Options, Options, Options> {
+export class ImportDialog extends FormApplication<FormApplicationOptions, Options> {
 
-    static get defaultOptions(): FormApplication.Options {
+    static get defaultOptions(): FormApplicationOptions {
         const defaults = super.defaultOptions;
 
-        const overrides: Partial<FormApplication.Options> = {
+        const overrides: Partial<FormApplicationOptions> = {
             popOut: true,
             minimizable: true,
             resizable: true,
@@ -18,15 +18,14 @@ export class ImportDialog extends FormApplication<FormApplication.Options, Optio
             editable: true
         };
 
-        const mergedOptions = mergeObject(defaults, <FormApplication.Options>overrides);
+        const mergedOptions = mergeObject(defaults, <FormApplicationOptions>overrides);
 
         return mergedOptions;
     }
 
     constructor(private importer: Importer) {
-        super();
+        super({});
     }
-
 
     getData(): Options {
         return new Options();

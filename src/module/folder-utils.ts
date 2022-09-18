@@ -1,6 +1,7 @@
 import { TreeNode } from './model/tree-node';
 import { Utils } from './utils';
 import { Options } from './model/options';
+import { FolderDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/folderData';
 
 export class FolderUtils {
     /**
@@ -9,7 +10,7 @@ export class FolderUtils {
      * @param options The options object
      * @returns The Foundry Folder Data
      */
-    static getFolderData(node: TreeNode, options: Options, addTimestamp: boolean): Partial<Folder.Data> {
+    static getFolderData(node: TreeNode, options: Options, addTimestamp: boolean): FolderDataConstructorData {
         let name: string;
         const parent: Folder | undefined = FolderUtils.getContainingFolder(node);
 
@@ -24,7 +25,8 @@ export class FolderUtils {
         }
 
         if (addTimestamp) {
-            name = Utils.getTimestampedName(game.folders, name);
+            //@ts-ignore
+            name = Utils.getTimestampedName(Folders.instance, name);
         }
 
         return {

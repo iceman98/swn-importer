@@ -1,3 +1,5 @@
+import { FolderDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/folderData';
+import { JournalEntryDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/journalEntryData';
 import { FolderUtils } from './folder-utils';
 import { JournalUtils } from './journal-utils';
 import { Options } from './model/options';
@@ -57,10 +59,10 @@ export class SectorLoader {
         });
         const journalDataPromises = Utils.getValueList(sectorTree.tagMap).map(node => JournalUtils.getTagJournalData(node, <Folder>tagFolder));
         const journalData = await Promise.all(journalDataPromises);
-        const journalEntries = await JournalEntry.create(journalData);
+        const journalEntries = await Promise.all(journalData.map(d => JournalEntry.create(d)));
         Utils.getAsList(journalEntries).forEach(e => {
             const tag = sectorTree.tagMap.get(Utils.getIdFlag(e));
-            if (tag) {
+            if (tag && e) {
                 tag.journal = e;
                 tag.displayTag.link = e.link;
             }
@@ -68,14 +70,14 @@ export class SectorLoader {
     }
 
     private async createSystemFolders(sectorTree: SectorTree) {
-        const folderData: Partial<Folder.Data>[] = [];
+        const folderData: FolderDataConstructorData[] = [];
         sectorTree.root.children.forEach(node => {
             if (node.type !== 'note') {
                 folderData.push(FolderUtils.getFolderData(node, this.options, false));
             }
         });
 
-        const folders = Utils.getAsList(await Folder.create(folderData));
+        const folders = Utils.getAsList(await Promise.all(folderData.map(f => Folder.create(f))));
         folders.forEach(folder => {
             const entityId = Utils.getIdFlag(folder);
             const node = sectorTree.nodeMap.get(entityId);
@@ -86,14 +88,14 @@ export class SectorLoader {
     }
 
     private async createEntityJournals(sectorTree: SectorTree) {
-        const journalData: Partial<JournalEntry.Data>[] = [];
+        const journalData: JournalEntryDataConstructorData[] = [];
         sectorTree.nodeMap.forEach(node => {
             if (node.type !== 'note') {
                 journalData.push(JournalUtils.getEmptyJournalData(node, this.options));
             }
         });
 
-        const journals = Utils.getAsList(await JournalEntry.create(journalData));
+        const journals = Utils.getAsList(await Promise.all(journalData.map(j => JournalEntry.create(j))));
         journals.forEach(journal => {
             const entityId = Utils.getIdFlag(journal);
             const node = sectorTree.nodeMap.get(entityId);
@@ -104,19 +106,21 @@ export class SectorLoader {
     }
 
     private async updateJournalContents(sectorTree: SectorTree) {
-        const journalData: Partial<JournalEntry.Data>[] = [];
+        const journalData: JournalEntryDataConstructorData[] = [];
+
         for (const node of sectorTree.nodeMap.values()) {
             if (node.type !== 'note') {
                 journalData.push(await JournalUtils.getUpdateJournalData(sectorTree, node, this.options));
             }
         }
-        await (<any>JournalEntry).updateDocuments(journalData);
+
+        await JournalEntry.updateDocuments(journalData);
     }
 
     private async createScene(sectorTree: SectorTree) {
         const scene = await Scene.create(SceneUtils.getSceneData(sectorTree, this.options));
         if (scene) {
-            const thumbnail = await scene.createThumbnail({ img: null });
+            const thumbnail = await scene.createThumbnail({ img: undefined });
             await scene.update(<any>{ thumb: thumbnail.thumb }, {});
         } else {
             throw new Error("Couldn't create the scene");

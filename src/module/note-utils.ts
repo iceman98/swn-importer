@@ -1,3 +1,4 @@
+import { NoteDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/noteData';
 import { Constants } from './constants';
 import { Coordinates } from './model/coordinates';
 import { IconPosition } from './model/icon-position';
@@ -16,8 +17,8 @@ export class NoteUtils {
      * @param options The options object
      * @returns The Foundry Note Data list
      */
-    static getSectorNotes(sectorTree: SectorTree, options: Options): Note.Data[] {
-        const notes: Note.Data[] = [];
+    static getSectorNotes(sectorTree: SectorTree, options: Options): NoteDataConstructorData[] {
+        const notes: NoteDataConstructorData[] = [];
 
         sectorTree.root.children.forEach(node => {
             notes.push(...this.getSystemNotes(node, options));
@@ -36,7 +37,7 @@ export class NoteUtils {
         return options[type + "Path"];
     }
 
-    private static getSystemNotes(system: TreeNode, options: Options): Note.Data[] {
+    private static getSystemNotes(system: TreeNode, options: Options): NoteDataConstructorData[] {
         let nodes: TreeNode[];
 
         if (options.generateNotesForAllEntities) {
@@ -47,16 +48,16 @@ export class NoteUtils {
 
         const notes = nodes
             .filter(node => node.type !== 'note')
-            .map((node, index, list) => <Note.Data>this.createEntityNote(node, list.length, index, options))
+            .map((node, index, list) => this.createEntityNote(node, list.length, index, options))
             .reverse();
 
         return notes;
     }
 
-    private static createEntityNote(node: TreeNode, entityCount: number, entityIndex: number, options: Options): Partial<Note.Data> {
+    private static createEntityNote(node: TreeNode, entityCount: number, entityIndex: number, options: Options): NoteDataConstructorData {
         const iconPosition = this.getIconPosition(node, entityCount, entityIndex);
 
-        const note: Partial<Note.Data> = {
+        const note: NoteDataConstructorData = {
             entryId: node.journal?.id,
             x: iconPosition.x,
             y: iconPosition.y,
@@ -75,7 +76,7 @@ export class NoteUtils {
         const center = this.getHexCenterPosition(parent.x - 1, parent.y - 1);
 
         let offset: Coordinates = { x: 0, y: 0 };
-        let tooltipPosition: number = CONST.TEXT_ANCHOR_POINTS.CENTER;
+        let tooltipPosition: foundry.CONST.TEXT_ANCHOR_POINTS = foundry.CONST.TEXT_ANCHOR_POINTS.CENTER;
 
         const orbitingEntities = entityCount - 1;
         const orbitingEntityIndex = entityIndex - 1;
@@ -85,15 +86,15 @@ export class NoteUtils {
             const angle = orbitingEntityIndex * step;
 
             if (angle <= (1 / 4) * Math.PI) {
-                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.RIGHT;
+                tooltipPosition = foundry.CONST.TEXT_ANCHOR_POINTS.RIGHT;
             } else if (angle <= (3 / 4) * Math.PI) {
-                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.BOTTOM;
+                tooltipPosition = foundry.CONST.TEXT_ANCHOR_POINTS.BOTTOM;
             } else if (angle <= (5 / 4) * Math.PI) {
-                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.LEFT;
+                tooltipPosition = foundry.CONST.TEXT_ANCHOR_POINTS.LEFT;
             } else if (angle <= (7 / 4) * Math.PI) {
-                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.TOP;
+                tooltipPosition = foundry.CONST.TEXT_ANCHOR_POINTS.TOP;
             } else {
-                tooltipPosition = CONST.TEXT_ANCHOR_POINTS.RIGHT;
+                tooltipPosition = foundry.CONST.TEXT_ANCHOR_POINTS.RIGHT;
             }
 
             offset = this.getEntityOffset(angle);
@@ -102,7 +103,7 @@ export class NoteUtils {
         return {
             x: Math.floor(center.x + offset.x),
             y: Math.floor(center.y + offset.y),
-            tooltipPosition: <Const.TextAnchorPoint>tooltipPosition
+            tooltipPosition
         };
     }
 

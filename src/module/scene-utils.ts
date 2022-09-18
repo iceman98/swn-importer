@@ -1,3 +1,5 @@
+import { DrawingDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/drawingData';
+import { SceneDataConstructorData } from '@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/sceneData';
 import { Constants } from './constants';
 import { Coordinates } from './model/coordinates';
 import { Options } from './model/options';
@@ -15,10 +17,10 @@ export class SceneUtils {
      * @param options The options object
      * @returns The Foundry Scene Data
      */
-    static getSceneData(sectorTree: SectorTree, options: Options): Partial<Scene.Data> {
+    static getSceneData(sectorTree: SectorTree, options: Options): SceneDataConstructorData {
         const sector = <Sector>sectorTree.root.entity;
 
-        const sceneData: Partial<Scene.Data> = {
+        const sceneData: SceneDataConstructorData = {
             active: true,
             backgroundColor: Constants.BACKGROUND_COLOR,
             drawings: this.getSectorLabels(sectorTree, options),
@@ -27,11 +29,12 @@ export class SceneUtils {
             gridAlpha: 0.3,
             gridColor: Constants.GRID_COLOR,
             gridDistance: 1,
-            gridType: CONST.GRID_TYPES.HEXODDQ,
+            gridType: foundry.CONST.GRID_TYPES.HEXODDQ,
             gridUnits: Utils.getLabel("HEX-UNIT-NAME"),
             height: SceneUtils.getSceneHeight(sector.rows),
             img: options.backgroundPath,
-            name: Utils.getTimestampedName(game.scenes, sectorTree.root.entity.name),
+            //@ts-ignore
+            name: Utils.getTimestampedName(Scenes.instance, sectorTree.root.entity.name),
             padding: 0,
             notes: NoteUtils.getSectorNotes(sectorTree, options),
             journal: sectorTree.root.journal?.id,
@@ -49,8 +52,8 @@ export class SceneUtils {
         return Math.floor((((3 / 4) * Constants.HEX_WIDTH) * columns) + ((1 / 4) * Constants.HEX_WIDTH));
     }
 
-    private static getSectorLabels(sectorTree: SectorTree, options: Options): Drawing.Data[] {
-        const labels: Drawing.Data[] = [];
+    private static getSectorLabels(sectorTree: SectorTree, options: Options): DrawingDataConstructorData[] {
+        const labels: DrawingDataConstructorData[] = [];
 
         if (options.generateSectorCoordinates) {
             const sector = <Sector>sectorTree.root.entity;
